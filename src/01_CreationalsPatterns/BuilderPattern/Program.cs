@@ -12,23 +12,44 @@ namespace BuilderPattern
         {
             Console.WriteLine("Hello Builder Pattern!");
 
-            DelegateTest();
+            // DelegateTest();
 
            //  return;
 
-            Console.WriteLine(Invoice.GetTax());
+            // Console.WriteLine(Invoice.GetTax());
 
-            Invoice invoice = Invoice.Create();
+           //  Invoice invoice = Invoice.Create();
 
             // PresentationBuilderTest();
 
             //PhoneTest();
 
-             SalesReportTest();
+            //  SalesReportTest();
+
+            SalesReportDirectorTest();
 
             // PersonTest();
 
             // RoomTest();
+        }
+
+        private static void SalesReportDirectorTest()
+        {
+            var sales = new List<Sale>
+            {
+                new Sale { Date = DateTime.Today.AddDays(-3), Product = "Woda", Amount = 100 },
+                new Sale { Date = DateTime.Today.AddDays(-2), Product = "Sok", Amount = 150 },
+                new Sale { Date = DateTime.Today.AddDays(-1), Product = "Woda", Amount = 200 }
+            };
+
+            var builder = new MarkdownSalesReportBuilder();
+            var director = new SalesReportDirector();
+
+            director.ConstructFull(builder, "Raport sprzedaży - czerwiec", DateTime.Today.AddDays(-7), DateTime.Today, sales);
+
+            var report = builder.GetReport();
+            Console.WriteLine(report.Body);
+
         }
 
         private static void DelegateTest()
@@ -124,7 +145,7 @@ namespace BuilderPattern
                 .AddSectionProductDetails()
                 .AddSectionGenderDetails(); // Fluent Api
 
-            SalesReport salesReport = builder.Build();
+            Models.SalesReport salesReport = builder.Build();
 
             // Footer
 
