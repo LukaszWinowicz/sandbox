@@ -2,7 +2,8 @@
 
 namespace AdapterPattern
 {
-    public class HyteraRadio
+    // nie wolno ruszać kodu!
+    public sealed class HyteraRadio
     {
 
         private RadioStatus status;

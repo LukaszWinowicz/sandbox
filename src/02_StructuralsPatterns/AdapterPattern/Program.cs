@@ -1,5 +1,6 @@
 ﻿using NGeoHash;
 using System;
+using System.Threading;
 
 namespace AdapterPattern
 {
@@ -10,31 +11,43 @@ namespace AdapterPattern
         {
             Console.WriteLine("Hello Adapter Pattern!");
 
-            MotorolaRadioTest();
+            RadioAdapterTest();
 
-            HyteraRadioTest();
+
 
         }
 
-        private static void MotorolaRadioTest()
+        private static void HackPanasonic()
         {
-            MotorolaRadio radio = new MotorolaRadio();
-            radio.PowerOn("1234");
-            radio.SelectChannel(10);
-            radio.Send("Hello World!");
-            radio.PowerOff();
+            PanasonicRadioAdapter panasonic = new PanasonicRadioAdapter();
+
+            panasonic.SendMessage(new Message { Content = "Hello, World!" }, 10);
         }
 
-        private static void HyteraRadioTest()
+        private static void RadioAdapterTest()
         {
-            HyteraRadio radio = new HyteraRadio();
-            radio.Init();
-            radio.SendMessage(10, "Hello World!");
-            radio.Release();
+
+            var message = new Message { Title = "Test", Content = "Hello, World!" };
+
+            RadioFactory radioFactory = new RadioFactory();
+
+            while (true)
+            {
+
+                Console.WriteLine("Wybierz (M)otorola (H)ytera (P)anasonic");
+
+                var producer = Console.ReadLine();
+
+                IRadioAdapter radio = radioFactory.Create(producer);
+
+                radio.SendMessage(message, 10);
+            }
+
         }
+
     }
 
-    
+
 
 
 }
