@@ -38,7 +38,7 @@ Przygotuj bibliotekę `LabelGenerator`, która umożliwi drukowanie etykiet w fo
 ^XZ
 ```
 
-2. **Pusty tekst** powinien rzucać wyjątek `InvalidArgumentException`.
+2. **Pusty tekst** powinien rzucać wyjątek `ArgumentNullException`.
 3. **Metoda do ustawienia położenia pola** - umożliwia określenie pozycji x, y 
 
 - Kod ZPL
