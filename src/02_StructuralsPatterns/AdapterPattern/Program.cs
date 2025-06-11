@@ -11,7 +11,15 @@ namespace AdapterPattern
         {
             Console.WriteLine("Hello Adapter Pattern!");
 
-            RadioAdapterTest();
+
+            UserController controller = new UserController(new UserRepository(), new UserMapper());
+
+            var userDto = controller.Get(1);
+
+
+            Console.WriteLine(userDto);
+
+            // RadioAdapterTest();
 
 
 
