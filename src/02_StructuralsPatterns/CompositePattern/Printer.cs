@@ -1,11 +1,11 @@
 ﻿namespace CompositePattern;
 
-interface ILogger
+public interface ILogger
 {
     void Info(string message);
 }
 
-class ConsoleLogger : ILogger
+public class ConsoleLogger : ILogger
 {
     public void Info(string message)
     {
@@ -13,7 +13,7 @@ class ConsoleLogger : ILogger
     }
 }
 
-class FileLogger : ILogger
+public class FileLogger : ILogger
 {
     public void Info(string message)
     {
@@ -21,7 +21,7 @@ class FileLogger : ILogger
     }
 }
 
-class DbLogger : ILogger
+public class DbLogger : ILogger
 {
     public void Info(string message)
     {
@@ -29,7 +29,7 @@ class DbLogger : ILogger
     }
 }
 
-class Printer
+public class Printer
 {
     private readonly ILogger _logger;
 
