@@ -8,8 +8,8 @@ namespace PrototypePattern;
 
 public class Offer
 {
-    public string OfferNumber { get; set; } = default!;
-    public string Product { get; set; } = default!;
+    public string OfferNumber { get; set; }
+    public string Product { get; set; }
     public decimal BasePrice { get; set; }
     public decimal DiscountPercent { get; set; }
     public DateTime ValidUntil { get; set; }
@@ -22,6 +22,19 @@ public class Offer
         if (Options.IncludeInstallation) price += 200; // np. koszt montażu
         if (Options.ExtendedWarranty) price += 150;
         return price;
+    }
+
+    public Offer Copy()
+    {
+        var copy = new Offer
+        {
+            Product = this.Product,
+            BasePrice = this.BasePrice,
+            ValidUntil = this.ValidUntil,
+            DiscountPercent = this.DiscountPercent,            
+        };
+
+        return copy;
     }
 
     public override string ToString() =>

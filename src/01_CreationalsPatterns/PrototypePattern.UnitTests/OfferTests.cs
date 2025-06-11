@@ -7,6 +7,10 @@ using Xunit;
 
 namespace PrototypePattern.UnitTests;
 
+// {Method}_{Scenario}_{ExpectedBehavior}
+// Copy_WhenValidOffer_ReturnsCopy
+// Copy_WhenInvalidOffer_ThrowInvalidArgumentException
+
 public class OfferTests
 {
     [Fact]
@@ -23,18 +27,14 @@ public class OfferTests
         };
 
         // Act — kopiowanie ręczne (ktoś zapomniał o polu DiscountPercent!)
-        var copied = new Offer
-        {
-            Product = template.Product,
-            BasePrice = template.BasePrice,
-            ValidUntil = template.ValidUntil,
-            OfferNumber = "OFFER-001",
-        };
+        var copied = template.Copy();
+        copied.OfferNumber = "OFFER-001";
 
         // Assert — pole DiscountPercent NIE zostało skopiowane (ma wartość domyślną 0)
         Assert.Equal(template.DiscountPercent, copied.DiscountPercent); // ❌ test nie przechodzi, pokazuje błąd projektowy
         Assert.Equal(22.5m, template.GetFinalPrice()); // 25 - 10%
         Assert.Equal(22.5m, copied.GetFinalPrice());   // brak rabatu
+        Assert.NotSame(template, copied);
     }
 
 
