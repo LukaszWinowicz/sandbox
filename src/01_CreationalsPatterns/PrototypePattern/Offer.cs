@@ -26,8 +26,7 @@ public class Offer
 
     public Offer Copy()
     {
-        var copy = (Offer) this.MemberwiseClone();  // Tworzy płytką kopię (Shallow Copy)        
-        copy.Options = Options.Copy();
+        var copy = FastDeepCloner.DeepCloner.Clone(this); // głęboka kopia (Deep Copy)
 
         return copy;
     }
