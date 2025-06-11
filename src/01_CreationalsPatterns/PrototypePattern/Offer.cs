@@ -26,13 +26,8 @@ public class Offer
 
     public Offer Copy()
     {
-        var copy = new Offer
-        {
-            Product = this.Product,
-            BasePrice = this.BasePrice,
-            ValidUntil = this.ValidUntil,
-            DiscountPercent = this.DiscountPercent,            
-        };
+        var copy = (Offer) this.MemberwiseClone();  // Tworzy płytką kopię (Shallow Copy)        
+        copy.Options = Options.Copy();
 
         return copy;
     }
@@ -46,4 +41,9 @@ public class OfferOptions
     public bool IncludeInstallation { get; set; }
     public bool ExtendedWarranty { get; set; }
     public string Currency { get; set; } = "PLN";
+
+    public OfferOptions Copy()
+    {
+        return (OfferOptions) this.MemberwiseClone();
+    }
 }

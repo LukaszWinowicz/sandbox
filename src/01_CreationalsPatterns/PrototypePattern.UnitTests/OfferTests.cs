@@ -58,15 +58,7 @@ public class OfferTests
         };
 
         // Act – ręczna kopia (naiwna)
-        var copied = new Offer
-        {
-            OfferNumber = "OFFER-001",
-            Product = template.Product,
-            BasePrice = template.BasePrice,
-            DiscountPercent = template.DiscountPercent,
-            ValidUntil = template.ValidUntil,
-            Options = template.Options // <-- kopiujemy referencję! ❌
-        };
+        var copied = template.Copy();
 
         // Modyfikujemy kopię
         copied.Options.Currency = "USD";
