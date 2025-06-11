@@ -27,7 +27,7 @@ public class OfferTests
         };
 
         // Act — kopiowanie ręczne (ktoś zapomniał o polu DiscountPercent!)
-        var copied = template.Copy();
+        var copied = template.Clone();
         copied.OfferNumber = "OFFER-001";
 
         // Assert — pole DiscountPercent NIE zostało skopiowane (ma wartość domyślną 0)
@@ -58,7 +58,7 @@ public class OfferTests
         };
 
         // Act – ręczna kopia (naiwna)
-        var copied = template.Copy();
+        var copied = template.Clone();
 
         // Modyfikujemy kopię
         copied.Options.Currency = "USD";

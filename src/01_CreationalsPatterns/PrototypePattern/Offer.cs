@@ -1,12 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PrototypePattern;
 
-public class Offer
+// Własny interfejs generyczny bo oryginalny ICloneable zwraca tylko object
+public interface ICloneable<T> : ICloneable
+{
+    new T Clone();
+}
+
+public class Offer : ICloneable<Offer>
 {
     public string OfferNumber { get; set; }
     public string Product { get; set; }
@@ -24,7 +26,7 @@ public class Offer
         return price;
     }
 
-    public Offer Copy()
+    private Offer Copy()
     {
         var copy = FastDeepCloner.DeepCloner.Clone(this); // głęboka kopia (Deep Copy)
 
@@ -33,6 +35,16 @@ public class Offer
 
     public override string ToString() =>
         $"{OfferNumber}: {Product} ({BasePrice:C} - {DiscountPercent}% = {GetFinalPrice():C}), valid until {ValidUntil:d}";
+
+    public Offer Clone()
+    {
+        return Copy();
+    }
+
+    object ICloneable.Clone()
+    {
+        return Clone();
+    }
 }
 
 public class OfferOptions
