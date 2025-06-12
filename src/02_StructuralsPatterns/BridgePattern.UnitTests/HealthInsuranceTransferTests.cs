@@ -36,7 +36,7 @@ public class HealthInsuranceTransferTests
     public void MakeTransfer_LoginAndPassword()
     {
         // Arrange
-        var transfer = new HealthInsuranceTransfernew LoginAndPassword());
+        var transfer = new HealthInsuranceTransfer(new LoginAndPassword());
 
         // Act
         transfer.MakeTransfer(100);
