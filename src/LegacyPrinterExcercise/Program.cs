@@ -11,14 +11,10 @@ public interface IPrinter
     void PrintDocument(string document, int copies);
 }
 
-public class PrinterDecorator : IPrinter
+// Abstract Decorator
+public abstract class PrinterDecorator : IPrinter
 {
-    public decimal Cost { get; set; }
-
-    public virtual void PrintDocument(string document, int copies)
-    {
-
-    }
+    public abstract void PrintDocument(string document, int copies);
 }
 
 // Concrete Decorator A
@@ -39,9 +35,9 @@ public class CostDecorator : PrinterDecorator, IPrinter
     {
         printer.PrintDocument(document, copies);
 
-        Cost = document.Length * copies * costPerPage;
+        var cost = document.Length * copies * costPerPage;
 
-        Console.WriteLine($"Total cost: {Cost}");
+        Console.WriteLine($"Total cost: {cost}");
     }
 }
 
