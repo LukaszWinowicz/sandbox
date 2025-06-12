@@ -2,6 +2,7 @@
 
 namespace BridgePattern.AthorizationMethods;
 
+// Concrete Implementor
 public class Pin : IAthorizationMethod
 {
     public void Authorize()
@@ -11,19 +12,3 @@ public class Pin : IAthorizationMethod
 }
 
 
-
-//public abstract class CryptoTransfer : Transfer
-//{
-
-
-//}
-
-//public class BitcoinTransfer : CryptoTransfer
-//{
-
-//}
-
-//public class EtheriumTransfer : CryptoTransfer
-//{
-
-//}

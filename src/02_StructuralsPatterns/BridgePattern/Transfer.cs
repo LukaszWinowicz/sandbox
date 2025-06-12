@@ -12,6 +12,7 @@ public interface ITransfer
 // Abstraction 1
 public abstract class Transfer : ITransfer
 {
+    // Implementor
     private readonly IAthorizationMethod athorizationMethod;
 
     protected Transfer(IAthorizationMethod athorizationMethod)

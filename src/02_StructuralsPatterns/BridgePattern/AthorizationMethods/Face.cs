@@ -2,6 +2,7 @@
 
 namespace BridgePattern.AthorizationMethods;
 
+// Concrete Implementor
 public class Face : IAthorizationMethod
 {
     public void Authorize()
@@ -10,18 +11,3 @@ public class Face : IAthorizationMethod
     }
 }
 
-//public abstract class CryptoTransfer : Transfer
-//{
-
-
-//}
-
-//public class BitcoinTransfer : CryptoTransfer
-//{
-
-//}
-
-//public class EtheriumTransfer : CryptoTransfer
-//{
-
-//}

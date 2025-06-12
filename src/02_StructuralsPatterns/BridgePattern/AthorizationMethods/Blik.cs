@@ -2,6 +2,7 @@
 
 namespace BridgePattern.AthorizationMethods;
 
+// Concrete Implementor
 public class Blik : IAthorizationMethod
 {
     public void Authorize()

@@ -2,6 +2,7 @@
 
 namespace BridgePattern.Transfers;
 
+// Refined Abstraction
 public class BitcoinTransfer : CryptoTransfer
 {
     public BitcoinTransfer(IAthorizationMethod athorizationMethod) : base(athorizationMethod)

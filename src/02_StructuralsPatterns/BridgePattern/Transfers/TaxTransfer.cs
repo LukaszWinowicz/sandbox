@@ -17,19 +17,3 @@ public class TaxTransfer : Transfer
 }
 
 
-
-//public abstract class CryptoTransfer : Transfer
-//{
-
-
-//}
-
-//public class BitcoinTransfer : CryptoTransfer
-//{
-
-//}
-
-//public class EtheriumTransfer : CryptoTransfer
-//{
-
-//}
