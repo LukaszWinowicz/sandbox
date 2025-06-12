@@ -2,64 +2,18 @@
 
 namespace DecoratorPattern;
 
+// Model danych
+public class Product
+{
+    public string Symbol { get; set; }
+    public string Name { get; set; }
+    public decimal UnitPrice { get; set; }
+}
+
 // Abstract Component
 public interface IPricingRepository
 {
     decimal GetPrice(string symbol);
-}
-
-// Concrete Decorator A
-public class DiscountedPricingRepository : IPricingRepository
-{
-    private readonly IPricingRepository repository;
-    private readonly decimal discountRate;
-
-    public DiscountedPricingRepository(IPricingRepository repository, decimal discountRate)
-    {
-        this.repository = repository;
-        this.discountRate = discountRate;
-    }
-
-    public decimal GetPrice(string symbol)
-    {
-        var originalPrice = repository.GetPrice(symbol);
-
-        return originalPrice * (1 - discountRate);
-    }
-}
-
-
-public interface ICurrencyService
-{
-    decimal GetRatio(string currencySymbol);
-}
-
-public class FakeCurrencyService : ICurrencyService
-{
-    public decimal GetRatio(string currencySymbol)
-    {
-        return 4.01m;
-    }
-}
-
-// Concrete Decorator B
-public class CurrencyPricingRepository : IPricingRepository
-{
-    private readonly IPricingRepository repository;
-    private readonly ICurrencyService currencyService;
-
-    public CurrencyPricingRepository(IPricingRepository repository, ICurrencyService currencyService)
-    {
-        this.repository = repository;
-        this.currencyService = currencyService;
-    }
-
-    public decimal GetPrice(string symbol)
-    {
-        var price = repository.GetPrice(symbol);
-
-        return price * currencyService.GetRatio(symbol);
-    }
 }
 
 // Concrete Component
@@ -83,11 +37,45 @@ public class FakePricingRepository : IPricingRepository
     }
 }
 
-
-
-public class Product
+// Abstract Decorator
+public abstract class PricingDecorator : IPricingRepository
 {
-    public string Symbol { get; set; }
-    public string Name { get; set; }
-    public decimal UnitPrice { get; set; }
+    public abstract decimal GetPrice(string symbol);
 }
+
+// Concrete Decorator A
+public class DiscountedPricingDecorator(IPricingRepository repository, decimal discountRate) : PricingDecorator
+{
+    public override decimal GetPrice(string symbol)
+    {
+        var originalPrice = repository.GetPrice(symbol);
+
+        return originalPrice * (1 - discountRate);
+    }
+}
+
+
+// Concrete Decorator B
+public class CurrencyPricingDecorator(IPricingRepository repository, ICurrencyService currencyService) : PricingDecorator
+{
+    public override decimal GetPrice(string symbol)
+    {
+        var price = repository.GetPrice(symbol);
+
+        return price * currencyService.GetRatio(symbol);
+    }
+}
+
+
+public interface ICurrencyService
+{
+    decimal GetRatio(string currencySymbol);
+}
+
+public class FakeCurrencyService : ICurrencyService
+{
+    public decimal GetRatio(string currencySymbol) => 4.01m;
+}
+
+
+

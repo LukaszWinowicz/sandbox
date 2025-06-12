@@ -22,8 +22,8 @@ public class PricingRepositoryTests()
     public void GetPrice_SymbolADiscounted10Percentage_ShouldReturnPrice9()
     {
         // Arrange
-        IPricingRepository repository = new CurrencyPricingRepository(
-            new DiscountedPricingRepository(
+        IPricingRepository repository = new CurrencyPricingDecorator(
+            new DiscountedPricingDecorator(
                 new FakePricingRepository(), 0.1m), 
            currencyService: new FakeCurrencyService() );
 
