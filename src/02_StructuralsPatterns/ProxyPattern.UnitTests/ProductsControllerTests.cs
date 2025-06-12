@@ -11,8 +11,8 @@ namespace ProxyPattern.UnitTests
         public void Init()
         {
             productsController = new ProductsController(
-                   new DbProductRepository(),
-               new CacheProductRepository());
+                new CacheProductRepository(
+                    new DbProductRepository()));
         }
 
         [TestMethod]
@@ -35,14 +35,13 @@ namespace ProxyPattern.UnitTests
         {
             // Arrange
             int productId = 1;
+            productsController.Get(productId);
 
             // Act
-            productsController.Get(productId);
-            
             var request = productsController.Get(productId);
 
             // Assert
-            Assert.IsNotNull(request); 
+            Assert.IsNotNull(request);
             Assert.AreEqual(1, request.CacheHit);
             Assert.AreEqual(1, request.Id);
             Assert.AreEqual("Product 1", request.Name);
@@ -53,12 +52,11 @@ namespace ProxyPattern.UnitTests
         {
             // Arrange
             int productId = 1;
+            productsController.Get(productId);
+            productsController.Get(productId);
+            productsController.Get(productId);
 
             // Act
-            productsController.Get(productId);
-            productsController.Get(productId);
-            productsController.Get(productId);
-
             var request = productsController.Get(productId);
 
             // Assert

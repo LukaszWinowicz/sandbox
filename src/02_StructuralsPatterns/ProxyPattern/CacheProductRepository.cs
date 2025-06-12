@@ -3,34 +3,46 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace ProxyPattern
+namespace ProxyPattern;
+
+// Proxy (Pośrednik)
+public class CacheProductRepository : IProductRepository
 {
-    public class CacheProductRepository
+    // Real Subject
+    private readonly IProductRepository repository;
+
+    private IDictionary<int, Product> products;
+
+    public CacheProductRepository(IProductRepository repository)
     {
-        private IDictionary<int, Product> products;
+        products = new Dictionary<int, Product>();
+        this.repository = repository;
+    }
 
-        public CacheProductRepository()
+    public void Add(Product product)
+    {
+        products.Add(product.Id, product);
+    }
+
+    public Product Get(int id)
+    {
+        if (products.TryGetValue(id, out Product product))
         {
-            products = new Dictionary<int, Product>();
+            product.CacheHit++;
+
+            return product;
         }
-
-        public void Add(Product product)
+        else
         {
-            products.Add(product.Id, product);
-        }
+           product = repository.Get(id);   // Real Subject
 
-        public Product Get(int id)
-        {
-            if (products.TryGetValue(id, out Product product))
+            if (product != null)
             {
-                product.CacheHit++;
-
-                return product;
+                products.Add(product.Id, product); // Dodaje do cache'a
             }
-            else
-                return null;            
         }
 
+        return product;
     }
 
 }
