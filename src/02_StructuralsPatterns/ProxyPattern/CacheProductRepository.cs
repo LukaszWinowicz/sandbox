@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace ProxyPattern;
 
-// Proxy (Pośrednik)
+// Proxy (Pośrednik) - cache
 public class CacheProductRepository : IProductRepository
 {
     // Real Subject

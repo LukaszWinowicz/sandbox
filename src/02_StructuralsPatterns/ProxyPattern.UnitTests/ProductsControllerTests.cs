@@ -2,6 +2,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ProxyPattern.UnitTests
 {
+
     [TestClass]
     public class ProductsControllerTests
     {
@@ -10,9 +11,10 @@ namespace ProxyPattern.UnitTests
         [TestInitialize]
         public void Init()
         {
-            productsController = new ProductsController(
-                new CacheProductRepository(
-                    new DbProductRepository()));
+            productsController =  new ProductsController(
+                new LoggerProductRepository( 
+                                new CacheProductRepository(
+                                    new DbProductRepository())));
         }
 
         [TestMethod]
