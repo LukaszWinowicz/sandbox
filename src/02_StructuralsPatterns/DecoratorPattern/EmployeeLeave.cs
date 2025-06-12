@@ -9,7 +9,7 @@ public interface ILeaveCalculator
     int CalculateLeaveDays();
 }
 
-// Concrete Component A
+// Concrete Component
 public class BaseLeave : ILeaveCalculator
 {
     public int BaseLeaveDays { get; private set; }

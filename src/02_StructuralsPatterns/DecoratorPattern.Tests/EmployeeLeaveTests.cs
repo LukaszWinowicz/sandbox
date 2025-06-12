@@ -2,66 +2,36 @@
 
 namespace DecoratorPattern.UnitTests;
 
-
-public class LeaveCalculatorTests
+public class PricingRepositoryTests()
 {
 
     [Fact]
-    public void CalculateLeaveDays_SeniorityYearsBelow5_ShouldReturns20Days()
+    public void GetPrice_SymbolA_ShouldReturnPrice10()
     {
         // Arrange
-        ILeaveCalculator calculator = new SeniorityYearsDecorator(
-                                        new BaseLeave(20), 2);
+        IPricingRepository repository = new FakePricingRepository();
 
         // Act
-        var result = calculator.CalculateLeaveDays();
+        var result = repository.GetPrice("a");
 
         // Assert
-        Assert.Equal(20, result );
+        Assert.Equal(10, result);
     }
 
     [Fact]
-    public void CalculateLeaveDays_SeniorityYearsAbove5_ShouldReturns25Days()
+    public void GetPrice_SymbolADiscounted10Percentage_ShouldReturnPrice9()
     {
         // Arrange
-        ILeaveCalculator calculator = new SeniorityYearsDecorator(
-                                        new BaseLeave(20), 6);
+        IPricingRepository repository = new CurrencyPricingRepository(
+            new DiscountedPricingRepository(
+                new FakePricingRepository(), 0.1m), 
+           currencyService: new FakeCurrencyService() );
 
         // Act
-        var result = calculator.CalculateLeaveDays();
+        var result = repository.GetPrice("a");
 
         // Assert
-        Assert.Equal(25, result);
-    }
-
-    [Fact]
-    public void CalculateLeaveDays_SeniorityYearsAbove5AndCompletedTraining_ShouldReturns28Days()
-    {
-        // Arrange
-        ILeaveCalculator calculator = new CompletedTrainingDecorator(
-                                        new SeniorityYearsDecorator(
-                                            new BaseLeave(20), 6), true);
-
-        // Act
-        var result = calculator.CalculateLeaveDays();
-
-        // Assert
-        Assert.Equal(28, result);
-    }
-
-    [Fact]
-    public void CalculateLeaveDays_SeniorityYearsAbove5AndNotCompletedTraining_ShouldReturns25Days()
-    {
-        // Arrange
-        ILeaveCalculator calculator = new CompletedTrainingDecorator(
-                                        new SeniorityYearsDecorator(
-                                            new BaseLeave(20), 6), false);
-
-        // Act
-        var result = calculator.CalculateLeaveDays();
-
-        // Assert
-        Assert.Equal(25, result);
+        Assert.Equal(36.09m, result);
     }
 }
 
