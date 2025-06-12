@@ -25,7 +25,7 @@ namespace FacadePattern.UnitTests
                 new RailwayConnectionRepository(),
                  new TicketCalculator(), new ReservationService());
 
-            ITicketService ticketService = new TicketServiceDirector(ticketBuilder);
+            ITicketService ticketService = new TicketServiceDirector(ticketBuilder, new PaymentService(), new EmailService());
 
             // Act
             var ticket = ticketService.Buy(options);

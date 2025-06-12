@@ -53,7 +53,10 @@ public class LegacyPkpTicketService : ITicketService
 
 // Concrete Facade B
 // Director
-public class TicketServiceDirector(ITicketBuilder builder) : ITicketService
+public class TicketServiceDirector(
+    ITicketBuilder builder, 
+    PaymentService paymentService,
+    EmailService emailService) : ITicketService
 {
     public Ticket Buy(RailwayConnectionOptions options)
     {
@@ -61,7 +64,16 @@ public class TicketServiceDirector(ITicketBuilder builder) : ITicketService
         builder.CalculatePrice();
         builder.MakeReservation();
 
-        return builder.Build();
+        var ticket = builder.Build();
+
+        Payment payment = paymentService.CreateActivePayment(ticket);
+
+        if (payment.IsPaid)
+        {
+            emailService.Send(ticket);
+        }
+
+        return ticket;
     }
 }
 
