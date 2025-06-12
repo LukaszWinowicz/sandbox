@@ -29,6 +29,25 @@ public class DbLogger : ILogger
     }
 }
 
+public class CompositeLogger : ILogger
+{
+    private readonly ILogger[] loggers;
+
+    public CompositeLogger(params ILogger[] loggers)
+    {
+        this.loggers = loggers;
+    }
+
+    public void Info(string message)
+    {
+        foreach (ILogger logger in loggers)
+        {
+            logger.Info(message);
+        }
+
+    }
+}
+
 public class Printer
 {
     private readonly ILogger _logger;

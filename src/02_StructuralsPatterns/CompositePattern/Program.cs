@@ -4,6 +4,17 @@ class Program
 {
     static void Main(string[] args)
     {
+        ILogger logger = new CompositeLogger(new ConsoleLogger(), new FileLogger(), new DbLogger());
+
+        Printer printer = new Printer(logger);
+        printer.Print("a", 3);
+
+        // DecisionTreeTest();
+
+    }
+
+    private static void DecisionTreeTest()
+    {
         var notForYou = new Decision("The Course is not for you.", false);
         var welcome = new Decision("Welcome on Design Pattern in C# Course!", true);
 
@@ -14,7 +25,6 @@ class Program
 
 
         developerQuestion.Message();
-
     }
 }
 
