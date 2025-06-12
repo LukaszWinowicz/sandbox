@@ -1,15 +1,17 @@
 ﻿using FacadePattern.Models;
 
-namespace FacadePattern.Services
+namespace FacadePattern.Services;
+
+
+public interface IEmailService
 {
-    public class EmailService
+    void Send(Ticket ticket);
+}
+
+public class SmtpEmailService : IEmailService
+{
+    public void Send(Ticket ticket)
     {
-        public void Send(Ticket ticket)
-        {
-            System.Console.WriteLine($"Send {ticket}");
-        }
+        System.Console.WriteLine($"Send {ticket}");
     }
-
-
-
 }

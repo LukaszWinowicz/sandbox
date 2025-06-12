@@ -25,7 +25,7 @@ namespace FacadePattern.UnitTests
                 new RailwayConnectionRepository(),
                  new TicketCalculator(), new ReservationService());
 
-            ITicketService ticketService = new TicketServiceDirector(ticketBuilder, new PaymentService(), new EmailService());
+            ITicketService ticketService = new TicketServiceDirector(ticketBuilder, new PaymentService(), new SmtpEmailService());
 
             // Act
             var ticket = ticketService.Buy(options);
@@ -51,7 +51,7 @@ namespace FacadePattern.UnitTests
             TicketCalculator ticketCalculator = new TicketCalculator();
             ReservationService reservationService = new ReservationService();
             PaymentService paymentService = new PaymentService();
-            EmailService emailService = new EmailService();
+            SmtpEmailService emailService = new SmtpEmailService();
 
             RailwayConnection railwayConnection = railwayConnectionRepository.Find(from, to, when);
             decimal price = ticketCalculator.Calculate(railwayConnection, numberOfPlaces);

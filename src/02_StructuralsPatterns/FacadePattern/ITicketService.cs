@@ -33,7 +33,7 @@ public class LegacyPkpTicketService : ITicketService
         TicketCalculator ticketCalculator = new TicketCalculator();
         ReservationService reservationService = new ReservationService();
         PaymentService paymentService = new PaymentService();
-        EmailService emailService = new EmailService();
+        IEmailService emailService = new SmtpEmailService();
 
         // Act
         RailwayConnection railwayConnection = railwayConnectionRepository.Find(from, to, when);
@@ -54,9 +54,9 @@ public class LegacyPkpTicketService : ITicketService
 // Concrete Facade B
 // Director
 public class TicketServiceDirector(
-    ITicketBuilder builder, 
-    PaymentService paymentService,
-    EmailService emailService) : ITicketService
+    ITicketBuilder builder,
+    IPaymentService paymentService,
+    IEmailService emailService) : ITicketService
 {
     public Ticket Buy(RailwayConnectionOptions options)
     {
