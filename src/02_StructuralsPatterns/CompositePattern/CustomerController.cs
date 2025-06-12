@@ -1,14 +1,7 @@
 ﻿namespace CompositePattern;
 
-public class CustomerController
+public class CustomerController(ICustomerValidator validator)
 {
-    private readonly ICustomerValidator validator;
-
-    public CustomerController(ICustomerValidator validator)
-    {
-        this.validator = validator;
-    }
-
     public ActionResult Post(Customer customer)
     {
         bool isValid = validator.Validate(customer);
@@ -21,3 +14,4 @@ public class CustomerController
         return new CreatedResult($"/customers/{customer.Id}", customer);
     }
 }
+

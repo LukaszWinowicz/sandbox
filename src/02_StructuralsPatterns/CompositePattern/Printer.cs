@@ -59,7 +59,6 @@ public class Printer
 
     public void Print(string content, int copies = 1)
     {
-        // TODO: dodaj logowanie do wielu loggerów
         _logger.Info($"[{DateTime.UtcNow}] content: {content} copies: {copies}");
 
         for (int i = 0; i < copies; i++)
