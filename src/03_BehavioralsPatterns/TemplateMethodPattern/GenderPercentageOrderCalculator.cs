@@ -50,3 +50,18 @@ public class GenderPercentageOrderCalculator : PercentageOrderCalculator, IOrder
 
     public override bool CanDiscount(Order order) => order.Customer.Gender == gender;
 }
+
+// Problem: kopiujemy logikę CanDiscount. Lepiej zastosować w tym przypadku most
+public class GenderFixedOrderCalculator : FixedOrderCalculator, IOrderCalculator
+{
+    private readonly Gender gender;
+
+    public GenderFixedOrderCalculator(Gender gender, decimal percentage)
+        : base(percentage)
+    {
+        this.gender = gender;
+    }
+
+    public override bool CanDiscount(Order order) => order.Customer.Gender == gender;
+
+}
