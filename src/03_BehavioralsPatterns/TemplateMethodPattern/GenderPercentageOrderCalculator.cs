@@ -1,26 +1,52 @@
-﻿namespace TemplateMethodPattern
+﻿namespace TemplateMethodPattern;
+
+public interface IOrderCalculator
 {
-    // Gender - 20% upustu dla kobiet
-    public class GenderPercentageOrderCalculator
+    decimal CalculateDiscount(Order order);
+}
+
+
+public abstract class PercentageOrderCalculator(decimal percentage) : OrderCalculator
+{
+    public override decimal GetDiscount(Order order) => order.Amount * percentage;
+}
+
+// Stała zniżka
+public abstract class FixedOrderCalculator(decimal amount) : OrderCalculator
+{
+    public override decimal GetDiscount(Order order) => amount;
+}
+
+// Template 
+public abstract class OrderCalculator
+{
+    public abstract bool CanDiscount(Order order);
+    public abstract decimal GetDiscount(Order order);
+    public decimal NoDiscount => 0;
+
+    // Template Method
+    public decimal CalculateDiscount(Order order)
     {
-        private readonly Gender gender;
-
-        private readonly decimal percentage;
-
-        public GenderPercentageOrderCalculator(Gender gender, decimal percentage)
+        if (CanDiscount(order)) // Warunek (Predykat)
         {
-            this.gender = gender;
-            this.percentage = percentage;
+            return GetDiscount(order); // Upust (procentowy)
         }
-
-        public decimal CalculateDiscount(Order order)
-        {
-            if (order.Customer.Gender == gender)
-            {
-                return order.Amount * percentage;
-            }
-            else
-                return 0;
-        }
+        else
+            return NoDiscount; // Brak upustu
     }
+}
+
+
+// Gender - 20% upustu dla kobiet
+public class GenderPercentageOrderCalculator : PercentageOrderCalculator, IOrderCalculator
+{
+    private readonly Gender gender;
+
+    public GenderPercentageOrderCalculator(Gender gender, decimal percentage)
+        : base(percentage)
+    {
+        this.gender = gender;
+    }
+
+    public override bool CanDiscount(Order order) => order.Customer.Gender == gender;
 }
