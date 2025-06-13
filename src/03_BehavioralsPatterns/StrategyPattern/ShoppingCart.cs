@@ -9,6 +9,25 @@ public interface IDiscountStrategy
     double GetDiscount(double price);
 }
 
+public interface ICanDiscountStrategy
+{
+    bool CanDiscount(ShoppingCart cart);
+}
+
+public class HappyHoursCanDiscountStrategy : ICanDiscountStrategy
+{
+    private readonly TimeSpan from;
+    private readonly TimeSpan to;
+
+    public HappyHoursCanDiscountStrategy(TimeSpan from, TimeSpan to)
+    {
+        this.from = from;
+        this.to = to;
+    }
+
+    public bool CanDiscount(ShoppingCart cart) => cart.OrderDate.TimeOfDay >= from && cart.OrderDate.TimeOfDay <= to;
+}
+
 // Concrete Strategy A
 public class PercentageDiscountStrategy : IDiscountStrategy
 {
@@ -43,38 +62,39 @@ public class FixedDiscountStrategy : IDiscountStrategy
 
 public class ShoppingCart
 {
-    private double _price;
-    private readonly TimeSpan from;
-    private readonly TimeSpan to;
+    public double price;   
 
     public DateTime OrderDate { get; set; }
 
-    private IDiscountStrategy strategy;
+    public ShoppingCart(double price)
+    {
+        this.price = price;
+    }
+}
 
-    public void SetDiscountStrategy(IDiscountStrategy strategy)
+public class PriceCalculator
+{
+    private IDiscountStrategy strategy;
+    private ICanDiscountStrategy canDiscountStrategy;
+
+    public void SetDiscountStrategy(
+        IDiscountStrategy strategy, 
+        ICanDiscountStrategy canDiscountStrategy)
     {
         this.strategy = strategy;
+        this.canDiscountStrategy = canDiscountStrategy;
     }
 
-    public ShoppingCart(double price, TimeSpan from, TimeSpan to)
+    public double CalculateTotalPrice(ShoppingCart cart)
     {
-        _price = price;
-        this.from = from;
-        this.to = to;
-    }
-
-    // Obliczanie ceny na podstawie zniżki
-    public double CalculateTotalPrice()
-    {
-        // Happy Hours
-        if (OrderDate.TimeOfDay >= from && OrderDate.TimeOfDay <= to)
+        if (canDiscountStrategy.CanDiscount(cart))
         {
-            return _price - strategy.GetDiscount(_price);
+            return cart.price - strategy.GetDiscount(cart.price);
         }
         else
         {
             // No Discount
-            return _price; // Brak zniżki
+            return cart.price; // Brak zniżki
         }
     }
 }

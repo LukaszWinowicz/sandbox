@@ -17,15 +17,16 @@ public class ShoppingCartTests
         DateTime specialDate = DateTime.Today; // Irrelevant for Happy Hours
         DateTime orderDate = DateTime.Today.Add(TimeSpan.Parse(orderTime));
 
-        var cart = new ShoppingCart(price, from, to)
+        var cart = new ShoppingCart(price)
         {
             OrderDate = orderDate
         };
 
-        cart.SetDiscountStrategy(new PercentageDiscountStrategy(0.1));
+        var calculator = new HappyHoursPriceCalculator(from, to);
+        calculator.SetDiscountStrategy(new PercentageDiscountStrategy(0.1));
 
         // Act
-        double result = cart.CalculateTotalPrice();
+        double result = calculator.CalculateTotalPrice(cart);
 
         // Assert
         Assert.Equal(expectedPrice, result, 2); // Assert with precision
@@ -45,13 +46,15 @@ public class ShoppingCartTests
         DateTime blackFriday = DateTime.Parse(specialDate);
         DateTime order = DateTime.Today.Add(TimeSpan.Parse(orderTime));
 
-        var cart = new ShoppingCart(price, from, to)
+        var cart = new ShoppingCart(price)
         {
             OrderDate = order
         };
 
+        var calculator = new HappyHoursPriceCalculator(from, to);
+
         // Act
-        double result = cart.CalculateTotalPrice();
+        double result = calculator.CalculateTotalPrice(cart);
 
         // Assert
         Assert.Equal(expectedPrice, result, 2);
