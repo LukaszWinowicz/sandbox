@@ -3,6 +3,7 @@ using Xunit;
 
 namespace StrategyPattern.UnitTests;
 
+
 public class ShoppingCartTests
 {
     [Theory]
