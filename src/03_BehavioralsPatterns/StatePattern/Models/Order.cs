@@ -39,6 +39,8 @@ namespace StatePattern
             else if (Status == OrderStatus.Shipping)
             {
                 Status = OrderStatus.Delivered;
+
+                Console.WriteLine("You order was delivered.");
             }
             else if (Status == OrderStatus.Delivered)
             {
