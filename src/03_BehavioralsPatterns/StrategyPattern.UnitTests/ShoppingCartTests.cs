@@ -17,10 +17,12 @@ public class ShoppingCartTests
         DateTime specialDate = DateTime.Today; // Irrelevant for Happy Hours
         DateTime orderDate = DateTime.Today.Add(TimeSpan.Parse(orderTime));
 
-        var cart = new ShoppingCart(price, from, to, specialDate)
+        var cart = new ShoppingCart(price, from, to)
         {
             OrderDate = orderDate
         };
+
+        cart.SetDiscountStrategy(new PercentageDiscountStrategy(0.1));
 
         // Act
         double result = cart.CalculateTotalPrice();
@@ -29,29 +31,7 @@ public class ShoppingCartTests
         Assert.Equal(expectedPrice, result, 2); // Assert with precision
     }
 
-    [Theory]
-    [InlineData(100.0, "2023-11-24", "2023-11-24", 90.0)] // Black Friday
-    [InlineData(150.0, "2023-12-25", "2023-12-25", 135.0)] // Black Friday
-    public void CalculateTotalPrice_BlackFriday_DiscountApplied(
-        double price, string specialDate, string orderDate, double expectedPrice)
-    {
-        // Arrange
-        TimeSpan from = TimeSpan.Zero; // Irrelevant for Black Friday
-        TimeSpan to = TimeSpan.Zero;   // Irrelevant for Black Friday
-        DateTime blackFriday = DateTime.Parse(specialDate);
-        DateTime order = DateTime.Parse(orderDate);
-
-        var cart = new ShoppingCart(price, from, to, blackFriday)
-        {
-            OrderDate = order
-        };
-
-        // Act
-        double result = cart.CalculateTotalPrice();
-
-        // Assert
-        Assert.Equal(expectedPrice, result, 2);
-    }
+    
 
     [Theory]
     [InlineData(100.0, "14:00", "16:00", "17:00", "2023-11-24", 100.0)] // No Discount
@@ -65,7 +45,7 @@ public class ShoppingCartTests
         DateTime blackFriday = DateTime.Parse(specialDate);
         DateTime order = DateTime.Today.Add(TimeSpan.Parse(orderTime));
 
-        var cart = new ShoppingCart(price, from, to, blackFriday)
+        var cart = new ShoppingCart(price, from, to)
         {
             OrderDate = order
         };
