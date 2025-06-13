@@ -14,3 +14,16 @@ To take this course you'll need the following.
 ```
 git clone https://github.com/your-design-patterns](https://github.com/sulmar/sages-design-patterns-202506)
 ```
+
+
+```mermaid
+stateDiagram-v2
+	Placement --> Picking : Confirm
+	Placement --> Canceled : Cancel
+	Picking --> Shipping : Confirm [Paid]
+	Picking --> Canceled : Confirm [NotPaid]
+	Shipping --> Delivered : Confirm
+	Delivered --> Completed : Confirm
+	Delivered --> Canceled : Cancel
+[*] --> Placement
+```
