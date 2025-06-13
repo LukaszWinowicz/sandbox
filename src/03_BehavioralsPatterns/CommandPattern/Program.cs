@@ -33,7 +33,6 @@ class Program
 
         ICommand command = factory.Create(args[0]);
 
-
         QueueCommandTest();
 
     }
