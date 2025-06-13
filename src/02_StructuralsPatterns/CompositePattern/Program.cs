@@ -4,13 +4,43 @@ class Program
 {
     static void Main(string[] args)
     {
+        InvestmentPlanTest();
+
+
+        // ComposeLoggerTest();
+
+        // DecisionTreeTest();
+
+    }
+
+    private static void InvestmentPlanTest()
+    {
+        var machine = new SimpleInvestment("CNC Machine", 120_000);
+        var software = new SimpleInvestment("CAD License", 12_000);
+        var training = new SimpleInvestment("Operator Training", 5_000);
+
+        var modernization = new InvestmentPlan("Production Modernization");
+        modernization.Add(machine);
+        modernization.Add(software);
+        modernization.Add(training);
+
+        var marketing = new SimpleInvestment("Ad Campaign", 25_000);
+        var website = new SimpleInvestment("Website Redesign", 8_000);
+
+        var businessGrowth = new InvestmentPlan("Business Growth Plan");
+        businessGrowth.Add(modernization);
+        businessGrowth.Add(marketing);
+        businessGrowth.Add(website);
+
+        businessGrowth.Print();
+    }
+
+    private static void ComposeLoggerTest()
+    {
         ILogger logger = new CompositeLogger(new ConsoleLogger(), new FileLogger(), new DbLogger());
 
         Printer printer = new Printer(logger);
         printer.Print("a", 3);
-
-        // DecisionTreeTest();
-
     }
 
     private static void DecisionTreeTest()
