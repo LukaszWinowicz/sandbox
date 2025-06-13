@@ -1,47 +1,80 @@
 ﻿using Stateless;
 using System;
 using System.Diagnostics.Tracing;
+using System.Reflection.PortableExecutable;
 
 
 
 namespace StatePattern;
 
-public class Order
+public class OrderStateMachine : StateMachine<OrderStatus, OrderTrigger>
 {
+    public OrderStateMachine(Order order, OrderStatus initialState = OrderStatus.Placement) : base(initialState)
+    {
+        this.Configure(OrderStatus.Placement)
+            .Permit(OrderTrigger.Confirm, OrderStatus.Picking)
+            .Permit(OrderTrigger.Cancel, OrderStatus.Canceled);
+
+        this.Configure(OrderStatus.Picking)
+            .PermitIf(OrderTrigger.Confirm, OrderStatus.Shipping, () => order.IsPaid, "Paid") // jesli zapłacono
+            .PermitIf(OrderTrigger.Confirm, OrderStatus.Canceled, () => !order.IsPaid, "NotPaid"); // jeśli nie zapłacono
+
+        this.Configure(OrderStatus.Shipping)
+            .Permit(OrderTrigger.Confirm, OrderStatus.Delivered);
+
+        this.Configure(OrderStatus.Delivered)
+            .OnEntry(() => Console.WriteLine("You order was delivered."))
+            .Permit(OrderTrigger.Confirm, OrderStatus.Completed)
+            .Permit(OrderTrigger.Cancel, OrderStatus.Canceled);
+    }
+}
+
+public interface IOrder
+{
+    OrderStatus Status { get; }
+    void Confirm();
+    void Cancel();
+    bool CanConfirm { get; }
+    bool CanCancel { get; }
+
+}
+
+// Proxy
+// wariant klasowy
+public class OrderProxy : Order, IOrder
+{
+    private OrderStateMachine machine;
+
     // dotnet add package Stateless
-    private StateMachine<OrderStatus, OrderTrigger> machine;
+    public OrderProxy()
+    {
+        this.machine = new OrderStateMachine(this, OrderStatus.Placement);
+    }
+
+    public override OrderStatus Status => machine.State;
+
+    public override void Confirm() => machine.Fire(OrderTrigger.Confirm);
+
+    public override void Cancel() => machine.Fire(OrderTrigger.Cancel);
+
+    public override bool CanConfirm =>  machine.CanFire(OrderTrigger.Confirm);
+    public override bool CanCancel => machine.CanFire(OrderTrigger.Cancel);
+
+    public string Graph => Stateless.Graph.MermaidGraph.Format(machine.GetInfo());
+}
+
+public class Order : IOrder
+{
 
     public Order(OrderStatus initialState = OrderStatus.Placement)
     {
         Id = Guid.NewGuid();
         OrderDate = DateTime.Now;
-
-        machine = new StateMachine<OrderStatus, OrderTrigger>(initialState);
-
-        machine.Configure(OrderStatus.Placement)
-            .Permit(OrderTrigger.Confirm, OrderStatus.Picking)
-            .Permit(OrderTrigger.Cancel, OrderStatus.Canceled);
-
-        machine.Configure(OrderStatus.Picking)
-            .PermitIf(OrderTrigger.Confirm, OrderStatus.Shipping, () => IsPaid, "Paid") // jesli zapłacono
-            .PermitIf(OrderTrigger.Confirm, OrderStatus.Canceled, () => !IsPaid, "NotPaid"); // jeśli nie zapłacono
-
-        machine.Configure(OrderStatus.Shipping)
-            .Permit(OrderTrigger.Confirm, OrderStatus.Delivered);
-
-        machine.Configure(OrderStatus.Delivered)
-            .OnEntry(() => Console.WriteLine("You order was delivered."))
-            .Permit(OrderTrigger.Confirm, OrderStatus.Completed)
-            .Permit(OrderTrigger.Cancel, OrderStatus.Canceled);
-
     }
-
-
-    public string Graph => Stateless.Graph.MermaidGraph.Format(machine.GetInfo());
 
     public Guid Id { get; set; }
     public DateTime OrderDate { get; set; }
-    public OrderStatus Status => machine.State;
+    public virtual OrderStatus Status { get; set; }
     public bool IsPaid { get; private set; }
 
     public void Paid()
@@ -49,9 +82,9 @@ public class Order
         IsPaid = true;
     }
 
-    public void Confirm() => machine.Fire(OrderTrigger.Confirm);
+    public virtual void Confirm() => throw new NotImplementedException();
 
-    public void Cancel() => machine.Fire(OrderTrigger.Cancel);
+    public virtual void Cancel() => throw new NotImplementedException();
 
     public override string ToString() => $"Order {Id} created on {OrderDate}{Environment.NewLine}";
 

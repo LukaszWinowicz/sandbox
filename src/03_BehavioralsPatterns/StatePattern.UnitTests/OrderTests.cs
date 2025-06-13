@@ -130,7 +130,7 @@ public class OrderTests
     public void Graph_WhenCalled_ShouldReturnMermaidGraph()
     {
         // Arrange
-        Order order = new Order();
+        var order = new OrderProxy();
 
         // Act
         var result = order.Graph;
