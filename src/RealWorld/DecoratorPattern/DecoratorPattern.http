@@ -1,7 +1,0 @@
-@DecoratorPattern_HostAddress = http://localhost:5195
-@ProductId = 1
-
-GET {{DecoratorPattern_HostAddress}}/products/{{ProductId}}
-Accept: application/json
-
-###
