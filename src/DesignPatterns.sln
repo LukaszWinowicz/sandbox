@@ -89,13 +89,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleFactoryPattern", "01_
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlyweightPattern", "03_BehavioralsPatterns\FlyweightPattern\FlyweightPattern.csproj", "{04807C43-A27A-4462-8CA9-72FE18985B9E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediatorPattern", "03_BehavioralsPatterns\MediatorPattern\MediatorPattern.csproj", "{500149CA-2E5F-412A-8B5E-3091C607058E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediatorPattern", "03_BehavioralsPatterns\MediatorPattern\MediatorPattern.csproj", "{500149CA-2E5F-412A-8B5E-3091C607058E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompositePattern.UnitTests", "02_StructuralsPatterns\CompositePattern.UnitTests\CompositePattern.UnitTests.csproj", "{980DCB76-38BE-4A84-9A3A-24946CBF3F2B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CompositePattern.UnitTests", "02_StructuralsPatterns\CompositePattern.UnitTests\CompositePattern.UnitTests.csproj", "{980DCB76-38BE-4A84-9A3A-24946CBF3F2B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Excercises", "Excercises", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LegacyPrinterExcercise", "LegacyPrinterExcercise\LegacyPrinterExcercise.csproj", "{A39E60BD-850D-4326-A6BE-16B08B102CA4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LegacyPrinterExcercise", "LegacyPrinterExcercise\LegacyPrinterExcercise.csproj", "{A39E60BD-850D-4326-A6BE-16B08B102CA4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ChainOfResponsibilityPattern_MassUpdateData", "ChainOfResponsibilityPattern_MassUpdateData", "{0829E7AA-4263-4C01-811A-4615784DE120}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassUpdateData", "03_BehavioralsPatterns\ChainOfResponsibilityPattern_MassUpdateData\MassUpdateData\MassUpdateData.csproj", "{0A99B857-D6C7-45BF-90A7-87FAA9E85D1D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -275,6 +279,10 @@ Global
 		{A39E60BD-850D-4326-A6BE-16B08B102CA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A39E60BD-850D-4326-A6BE-16B08B102CA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A39E60BD-850D-4326-A6BE-16B08B102CA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A99B857-D6C7-45BF-90A7-87FAA9E85D1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A99B857-D6C7-45BF-90A7-87FAA9E85D1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A99B857-D6C7-45BF-90A7-87FAA9E85D1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A99B857-D6C7-45BF-90A7-87FAA9E85D1D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -323,6 +331,8 @@ Global
 		{500149CA-2E5F-412A-8B5E-3091C607058E} = {AE8F46A4-887F-4B91-99AD-A883344408B6}
 		{980DCB76-38BE-4A84-9A3A-24946CBF3F2B} = {C3AACDBB-31B7-423D-8FA9-C41E6C039CAB}
 		{A39E60BD-850D-4326-A6BE-16B08B102CA4} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{0829E7AA-4263-4C01-811A-4615784DE120} = {AE8F46A4-887F-4B91-99AD-A883344408B6}
+		{0A99B857-D6C7-45BF-90A7-87FAA9E85D1D} = {0829E7AA-4263-4C01-811A-4615784DE120}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AC97C506-DE41-412B-BB0D-1ECD765DD65D}
