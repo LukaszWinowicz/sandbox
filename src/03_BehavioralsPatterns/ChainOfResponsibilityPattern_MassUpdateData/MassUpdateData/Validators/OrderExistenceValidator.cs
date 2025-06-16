@@ -6,9 +6,9 @@ namespace MassUpdateData.Validators;
 
 public class OrderExistenceValidator : ValidationHandler
 {
-    private readonly OrderDataService _dataService;
+    private readonly IOrderDataService _dataService;
 
-    public OrderExistenceValidator(OrderDataService dataService)
+    public OrderExistenceValidator(IOrderDataService dataService)
     {
         _dataService = dataService;
     }

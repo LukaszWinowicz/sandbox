@@ -6,10 +6,10 @@ namespace MassUpdateData.Validators;
 
 public class LineCombinationValidator : ValidationHandler
 {
-    private readonly OrderDataService _dataService;
+    private readonly IOrderDataService _dataService;
 
     // Wstrzykujemy serwis przez konstruktor
-    public LineCombinationValidator(OrderDataService dataService)
+    public LineCombinationValidator(IOrderDataService dataService)
     {
         _dataService = dataService;
     }

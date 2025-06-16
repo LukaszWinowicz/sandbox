@@ -2,7 +2,7 @@
 
 // Klasa symuluje dostęp do bazy danych.
 // W prawdziwej aplikacji łączyłaby się z SQL, Entity Framework, BigQuery, itp.
-public class OrderDataService
+public class OrderDataService : IOrderDataService
 {
     private readonly HashSet<string> _dbOrders =  new() { "PO2025-001", "PROD-00001" };
     private readonly HashSet<string> _dbCombinations = new() { "PO2025-001-1-1", "PROD-00001-10-5" };
@@ -19,3 +19,4 @@ public class OrderDataService
         return _dbCombinations.Contains(combinationKey);
     }
 }
+    

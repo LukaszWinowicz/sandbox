@@ -101,6 +101,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ChainOfResponsibilityPatter
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassUpdateData", "03_BehavioralsPatterns\ChainOfResponsibilityPattern_MassUpdateData\MassUpdateData\MassUpdateData.csproj", "{0A99B857-D6C7-45BF-90A7-87FAA9E85D1D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassUpdateData.Tests", "03_BehavioralsPatterns\ChainOfResponsibilityPattern_MassUpdateData\MassUpdateData.Tests\MassUpdateData.Tests.csproj", "{39FE23A4-815C-437B-A184-CEFEF0C381A7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -283,6 +285,10 @@ Global
 		{0A99B857-D6C7-45BF-90A7-87FAA9E85D1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A99B857-D6C7-45BF-90A7-87FAA9E85D1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A99B857-D6C7-45BF-90A7-87FAA9E85D1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39FE23A4-815C-437B-A184-CEFEF0C381A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39FE23A4-815C-437B-A184-CEFEF0C381A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39FE23A4-815C-437B-A184-CEFEF0C381A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39FE23A4-815C-437B-A184-CEFEF0C381A7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -333,6 +339,7 @@ Global
 		{A39E60BD-850D-4326-A6BE-16B08B102CA4} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{0829E7AA-4263-4C01-811A-4615784DE120} = {AE8F46A4-887F-4B91-99AD-A883344408B6}
 		{0A99B857-D6C7-45BF-90A7-87FAA9E85D1D} = {0829E7AA-4263-4C01-811A-4615784DE120}
+		{39FE23A4-815C-437B-A184-CEFEF0C381A7} = {0829E7AA-4263-4C01-811A-4615784DE120}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AC97C506-DE41-412B-BB0D-1ECD765DD65D}
