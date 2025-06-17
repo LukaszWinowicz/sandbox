@@ -1,41 +1,53 @@
-﻿// === KROK 1: Przygotowanie zależności ===
-// Tworzymy jedną instancję serwisu danych, której będą używać wszystkie walidatory
+﻿// 1. Inicjalizacja serwisu
 using MassUpdateData.Models;
 using MassUpdateData.Services;
 using MassUpdateData.Validators;
 
 var dataService = new OrderDataService();
 
-// === KROK 2: Stworzenie i skonfigurowanie ogniw łańcucha ===
+// 2. Tworzenie instancji "klocków" walidacyjnych
+var poNotEmpty = new NotEmptyValidator(dto => ((MassUpdatePurchaseOrderDto)dto).PurchaseOrder, "Purchase Order");
+var poLength = new StringLengthValidator(dto => ((MassUpdatePurchaseOrderDto)dto).PurchaseOrder, 10, "Purchase Order");
 
-// Tworzymy skonfigurowaną instancję walidatora formatu dla zlecenia zakupu (10 znaków)
-var formatValidator = new OrderFormatValidator(10, "BŁĄD: Numer zlecenia zakupu musi mieć {0} znaków.");
+// POPRAWKA: Tworzymy instancję generycznego, synchronicznego walidatora
+var poExists = new ExistenceValidator<string>(
+    dto => ((MassUpdatePurchaseOrderDto)dto).PurchaseOrder!, // Pobierz wartość pola
+    dataService.OrderExists,                                 // Przekaż metodę z serwisu jako funkcję sprawdzającą
+    "Purchase Order"                                         // Nazwa pola do komunikatu błędu
+);
 
-// Gdybyśmy potrzebowali drugiej, dla zlecenia produkcyjnego, byłoby to:
-// var prodFormatValidator = new OrderFormatValidator(8, "BŁĄD: Numer zlecenia produkcyjnego musi mieć {0} znaków.");
+// POPRAWKA: Tworzymy instancję generycznego walidatora,
+// "ucząc" go, skąd ma brać datę (`ReceiptDate`) i jak nazywa się to pole.
+var dateValidator = new FutureDateValidator(
+    dto => ((MassUpdatePurchaseOrderDto)dto).ReceiptDate,
+    "Receipt Date"
+);
 
-// Tworzymy walidatory, wstrzykując im serwis danych
-var existenceValidator = new OrderExistenceValidator(dataService);
-var combinationValidator = new LineCombinationValidator(dataService);
-var dateValidator = new FutureDateValidator(); // Ten nie ma zależności
+// 3. Ręczne łączenie ogniw w łańcuch
+poNotEmpty.SetNext(poLength);
+poLength.SetNext(poExists);
+poExists.SetNext(dateValidator);
 
-// === KROK 3: Zbudowanie łańcucha ===
-formatValidator.SetNext(existenceValidator);
-existenceValidator.SetNext(combinationValidator);
-combinationValidator.SetNext(dateValidator);
+// 4. Uruchomienie walidacji (już bez 'await')
+var firstHandler = poNotEmpty;
+var request = new ValidationRequest(new MassUpdatePurchaseOrderDto
+{
+    PurchaseOrder = "ZLY_NUMER",
+    ReceiptDate = new DateTime(2020, 1, 1)
+});
 
-// === KROK 4: Testowanie ===
-var request = new UpdateRequest { Order = "ZLE-999", Line = 2, Sequence = 1, ConfirmationDate = DateTime.Now.AddDays(-10) };
+firstHandler.Validate(request);
 
-Console.WriteLine($"--- Walidacja zlecenia: {request.Order} ---");
-formatValidator.Validate(request); // Uruchamiamy łańcuch
-
+// 5. Wyświetlenie wyników
 if (request.IsValid)
 {
-    Console.WriteLine("SUKCES: Żądanie poprawne.");
+    Console.WriteLine("Validation successful!");
 }
 else
 {
-    Console.WriteLine("BŁĘDY:");
-    request.ValidationErrors.ForEach(Console.WriteLine);
+    Console.WriteLine("Validation failed with errors:");
+    foreach (var error in request.ValidationErrors)
+    {
+        Console.WriteLine($"- {error}");
+    }
 }

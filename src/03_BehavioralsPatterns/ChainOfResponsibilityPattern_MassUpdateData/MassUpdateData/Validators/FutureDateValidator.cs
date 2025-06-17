@@ -5,11 +5,29 @@ namespace MassUpdateData.Validators;
 
 public class FutureDateValidator : ValidationHandler
 {
-    public override void Validate(UpdateRequest request)
+    private readonly Func<MassUpdateDto, DateTime> _dateProvider;
+    private readonly string _fieldName;
+
+    public FutureDateValidator(Func<MassUpdateDto, DateTime> dateProvider, string fieldName)
     {
-        if (request.ConfirmationDate.Date <= DateTime.Now.Date)
+        _dateProvider = dateProvider;
+        _fieldName = fieldName;
+    }
+
+    public override void Validate(ValidationRequest request)
+    {
+        // Używamy "sposobu", który dostaliśmy, aby pobrać datę
+        var dateToValidate = _dateProvider(request.Dto);
+
+        // Używamy obecnej daty z uwzględnieniem strefy czasowej
+        var today = DateTime.Today;
+
+        if (dateToValidate.Date < today)
         {
-            request.ValidationErrors.Add($"Error: ConfirmationDate ({request.ConfirmationDate:yyyy-MM-dd}) shoudl be from future.");
+            // Używamy nazwy pola do zbudowania komunikatu
+            request.ValidationErrors.Add($"{_fieldName} must be today or a future date.");
         }
+
+        PassToNext(request);
     }
 }
