@@ -25,7 +25,7 @@ existenceValidator.SetNext(combinationValidator);
 combinationValidator.SetNext(dateValidator);
 
 // === KROK 4: Testowanie ===
-var request = new UpdateRequest { Order = "PO2025-001", Line = 2, Sequence = 1, ConfirmationDate = DateTime.Now.AddDays(-10) };
+var request = new UpdateRequest { Order = "ZLE-999", Line = 2, Sequence = 1, ConfirmationDate = DateTime.Now.AddDays(-10) };
 
 Console.WriteLine($"--- Walidacja zlecenia: {request.Order} ---");
 formatValidator.Validate(request); // Uruchamiamy łańcuch
