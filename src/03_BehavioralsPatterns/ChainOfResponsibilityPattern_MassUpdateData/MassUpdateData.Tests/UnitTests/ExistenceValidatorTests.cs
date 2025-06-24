@@ -3,9 +3,8 @@ using MassUpdateData.Models;
 using MassUpdateData.Services;
 using MassUpdateData.Validators;
 using Moq;
-using Newtonsoft.Json.Linq;
 
-namespace MassUpdateData.Tests;
+namespace MassUpdateData.Tests.UnitTests;
 
 public class ExistenceValidatorTests
 {
@@ -62,7 +61,7 @@ public class ExistenceValidatorTests
         // 4. Tworzymy instancję walidatora, którego będziemy testować.
         // Wstrzykujemy mu funkcję sprawdzającą, która pochodzi z naszego mocka i podpinamy do niego zamockowane następne ogniwo.
         var validator = new ExistenceValidator<string>(
-            dto => ((MassUpdatePurchaseOrderDto)dto).PurchaseOrder!, 
+            dto => ((MassUpdatePurchaseOrderDto)dto).PurchaseOrder!,
             mockDataService.Object.OrderExists,
             "Purchase Order");
         validator.SetNext(mockNextHandler.Object);
