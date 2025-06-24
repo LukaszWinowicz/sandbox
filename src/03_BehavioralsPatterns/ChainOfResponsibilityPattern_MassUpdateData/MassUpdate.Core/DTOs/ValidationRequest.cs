@@ -1,4 +1,4 @@
-﻿namespace MassUpdateData.Models;
+﻿namespace MassUpdate.Core.DTOs;
 
 // Kontener na żądanie
 public class ValidationRequest

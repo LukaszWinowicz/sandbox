@@ -1,10 +1,9 @@
-﻿using MassUpdateData.Builders;
-using MassUpdateData.Handlers;
-using MassUpdateData.Models;
-using MassUpdateData.Services;
-using MassUpdateData.Validators.Components;
+﻿using MassUpdate.Core.Builders;
+using MassUpdate.Core.DTOs;
+using MassUpdate.Core.Handlers;
+using MassUpdate.Core.Interfaces;
 
-namespace MassUpdateData.Validators;
+namespace MassUpdate.Core.Validators.Components;
 
 // Ta klasa nie implementuje IValidationHandler, jest samodzielnym orkiestratorem.
 public class PurchaseOrderMassUpdateValidator

@@ -1,4 +1,6 @@
-﻿namespace MassUpdateData.Services;
+﻿using MassUpdate.Core.Interfaces;
+
+namespace MassUpdate.Infrastructure;
 
 // Klasa symuluje dostęp do bazy danych.
 // W prawdziwej aplikacji łączyłaby się z SQL, Entity Framework, BigQuery, itp.

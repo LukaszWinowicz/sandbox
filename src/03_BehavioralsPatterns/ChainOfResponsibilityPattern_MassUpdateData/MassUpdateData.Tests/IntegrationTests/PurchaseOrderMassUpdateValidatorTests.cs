@@ -1,6 +1,7 @@
-﻿using MassUpdateData.Models;
-using MassUpdateData.Services;
-using MassUpdateData.Validators;
+﻿using MassUpdate.Core.DTOs;
+using MassUpdate.Core.Interfaces;
+using MassUpdate.Core.Validators.Components;
+using MassUpdate.Infrastructure;
 using Moq;
 
 namespace MassUpdateData.Tests.IntegrationTests;
@@ -14,22 +15,17 @@ public class PurchaseOrderMassUpdateValidatorTests
         // 1. Tworzymy mock serwisu danych
         var mockDataService = new Mock<IOrderDataService>();
 
-        // 2. "Uczymy" go, jak ma odpowiadać. Dla "Happy Path", wszystkie odpowiedzi są pozytywne.
+        // 2. Tworzymy w pełni poprawny obiekt DTO do testu.        
+        var validDto = new PurchaseOrderDtoBuilder().Build();
+
+        // 3. "Uczymy" go, jak ma odpowiadać. Dla "Happy Path", wszystkie odpowiedzi są pozytywne.
         // Mówimy: "Dla dowolnego stringa (It.IsAny<string>()), metoda OrderExists zawsze zwróci `true`".
         mockDataService.Setup(service => service.OrderExists(It.IsAny<string>())).Returns(true);
+        mockDataService.Setup(service => service.LineCombinationExists(validDto.PurchaseOrder, validDto.LineNumber, validDto.Sequence)).Returns(true);
 
-        // 3. Tworzymy instancję naszego głównego walidatora, wstrzykując mu zamockowany serwis.
+        // 4. Tworzymy instancję naszego głównego walidatora, wstrzykując mu zamockowany serwis.
         var mainValidator = new PurchaseOrderMassUpdateValidator(mockDataService.Object);
-
-        // 4. Tworzymy w pełni poprawny obiekt DTO do testu.
-        var validDto = new MassUpdatePurchaseOrderDto
-        {
-            PurchaseOrder = "PO12345678",
-            LineNumber = 10,
-            Sequence = 1,
-            ReceiptDate = DateTime.Now.AddDays(1)
-        };
-
+         
         // ACT
         // Wywołujemy główną metodę walidującą.
         List<string> validationErrors = mainValidator.Validate(validDto);
@@ -47,7 +43,7 @@ public class PurchaseOrderMassUpdateValidatorTests
         // 1. Mock serwisu danych. W tym konkretnym teście jego zachowanie nie ma znaczenia,
         // ponieważ walidacja nie powinna do niego dotrzeć (zatrzyma się na walidacji długości),
         // ale dobrą praktyką jest zawsze go przygotować.
-        var mockDataService = new Mock<IOrderDataService>();
+        var mockDataService = new Mock<OrderDataService>();
 
         // 2. Tworzymy instancję naszego głównego walidatora.
         var mainValidator = new PurchaseOrderMassUpdateValidator(mockDataService.Object);

@@ -1,4 +1,4 @@
-﻿using MassUpdateData.Models;
+﻿using MassUpdate.Core.DTOs;
 
 namespace MassUpdateData.Tests;
 

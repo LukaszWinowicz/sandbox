@@ -1,4 +1,4 @@
-﻿namespace MassUpdateData.Services;
+﻿namespace MassUpdate.Core.Interfaces;
 
 public interface IOrderDataService
 {

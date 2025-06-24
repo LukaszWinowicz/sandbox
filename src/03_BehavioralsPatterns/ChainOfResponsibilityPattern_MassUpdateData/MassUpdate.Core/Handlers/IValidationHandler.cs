@@ -1,6 +1,6 @@
-﻿using MassUpdateData.Models;
+﻿using MassUpdate.Core.DTOs;
 
-namespace MassUpdateData.Handlers;
+namespace MassUpdate.Core.Handlers;
 
 public interface IValidationHandler
 {

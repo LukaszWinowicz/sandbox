@@ -1,7 +1,7 @@
-﻿using MassUpdateData.Handlers;
-using MassUpdateData.Models;
+﻿using MassUpdate.Core.DTOs;
+using MassUpdate.Core.Handlers;
 
-namespace MassUpdateData.Validators;
+namespace MassUpdate.Core.Validators.Components;
 
 public class ExistenceValidator<T> : ValidationHandler
 {

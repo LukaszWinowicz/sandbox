@@ -1,7 +1,7 @@
-﻿using MassUpdateData.Handlers;
-using MassUpdateData.Models;
+﻿using MassUpdate.Core.DTOs;
+using MassUpdate.Core.Handlers;
 
-namespace MassUpdateData.Validators.Components;
+namespace MassUpdate.Core.Validators.Components;
 
 // TDto - to będzie konkretny typ naszego DTO, np. MassUpdatePurchaseOrderDto
 // TService - to będzie typ serwisu danych, np. IOrderDataService

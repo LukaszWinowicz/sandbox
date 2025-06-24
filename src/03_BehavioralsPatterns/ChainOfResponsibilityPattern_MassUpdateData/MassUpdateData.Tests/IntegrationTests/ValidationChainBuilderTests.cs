@@ -1,8 +1,7 @@
-﻿using MassUpdateData.Builders;
-using MassUpdateData.Handlers;
-using MassUpdateData.Services;
-using MassUpdateData.Validators;
-using MassUpdateData.Validators.Components;
+﻿using MassUpdate.Core.Builders;
+using MassUpdate.Core.Handlers;
+using MassUpdate.Core.Interfaces;
+using MassUpdate.Core.Validators.Components;
 using Moq;
 using System.Reflection;
 

@@ -1,7 +1,7 @@
-﻿using MassUpdateData.Handlers;
-using MassUpdateData.Models;
+﻿using MassUpdate.Core.DTOs;
+using MassUpdate.Core.Handlers;
 
-namespace MassUpdateData.Validators.Components;
+namespace MassUpdate.Core.Validators.Components;
 
 // Generyczny walidator wartości minimalnej, działa dla int, decimal, itp.
 public class MinValueValidator<T> : ValidationHandler where T : IComparable<T>
