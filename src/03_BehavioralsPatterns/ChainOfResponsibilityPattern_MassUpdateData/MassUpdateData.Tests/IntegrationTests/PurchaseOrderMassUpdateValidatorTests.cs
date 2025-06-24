@@ -3,6 +3,7 @@ using MassUpdateData.Services;
 using MassUpdateData.Validators;
 using Moq;
 using System.ComponentModel.DataAnnotations;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace MassUpdateData.Tests.IntegrationTests;
 
@@ -72,7 +73,41 @@ public class PurchaseOrderMassUpdateValidatorTests
 
         // 2. Sprawdzamy, czy treść tego błędu jest prawidłowa.
         Assert.Equal("Purchase Order must be exactly 10 characters long.", validationErrors[0]);
+    }
 
+    [Fact]
+    public void Validate_ShouldAggregateErrors_WhenMultipleFieldsAreInvalid()
+    {
+        // ARRANGE
+        // 1. Mock serwisu danych. Jego konfiguracja nie jest kluczowa, bo błędy
+        //    powinny zostać wykryte przed jakimkolwiek zapytaniem do serwisu.
+        var mockDataService = new Mock<IOrderDataService>();
 
+        // 2. Tworzymy instancję naszego głównego walidatora.
+        var mainValidator = new PurchaseOrderMassUpdateValidator(mockDataService.Object);
+
+        // 3. Tworzymy DTO z KILKOMA błędami:
+        //    - `PurchaseOrder` jest za krótki.
+        //    - `ReceiptDate` jest datą z przeszłości.
+        var invalidDto = new MassUpdatePurchaseOrderDto
+        {
+            PurchaseOrder = "PO123", // Błąd 1: Niepoprawna długość
+            LineNumber = 10,
+            Sequence = 1,
+            ReceiptDate = new DateTime(2020, 1, 1) // Błąd 2: Data z przeszłości
+        };
+
+        // ACT
+        // Wywołujemy główną metodę walidującą.
+        List<string> validationErrors = mainValidator.Validate(invalidDto);
+
+        // ASSERT
+        // 1. Sprawdzamy, czy lista błędów zawiera DOKŁADNIE dwa elementy.
+        Assert.Equal(2, validationErrors.Count);
+
+        // 2. Sprawdzamy, czy na liście znajdują się OBA oczekiwane komunikaty.
+        //    Używamy Assert.Contains, aby nie martwić się o kolejność, w jakiej błędy zostały dodane.
+        Assert.Contains("Purchase Order must be exactly 10 characters long.", validationErrors);
+        Assert.Contains("Receipt Date must be today or a future date.", validationErrors);
     }
 }
