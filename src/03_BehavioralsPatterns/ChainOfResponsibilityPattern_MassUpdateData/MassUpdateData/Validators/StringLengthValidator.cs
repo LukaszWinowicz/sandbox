@@ -22,6 +22,9 @@ public class StringLengthValidator : ValidationHandler
         if (!string.IsNullOrEmpty(value) && value.Length != _length)
         {
             request.ValidationErrors.Add($"{_fieldName} must be exactly {_length} characters long.");
+            // Błąd formatu jest krytyczny dla dalszych sprawdzeń tego pola, więc zatrzymujemy łańcuch.
+            return;
+
         }
         PassToNext(request);
     }
