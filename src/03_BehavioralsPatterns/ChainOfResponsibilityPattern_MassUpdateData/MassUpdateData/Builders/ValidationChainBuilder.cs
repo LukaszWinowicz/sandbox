@@ -1,6 +1,7 @@
 ﻿using MassUpdateData.Handlers;
 using MassUpdateData.Models;
 using MassUpdateData.Validators;
+using MassUpdateData.Validators.Components;
 
 namespace MassUpdateData.Builders;
 
@@ -46,6 +47,20 @@ public class ValidationChainBuilder
     public ValidationChainBuilder WithFutureDateCheck(Func<MassUpdateDto, DateTime> dateProvider, string fieldName)
     {
         AddHandler(new FutureDateValidator(dateProvider, fieldName));
+        return this;
+    }
+
+    public ValidationChainBuilder WithMinValueCheck<T>(Func<MassUpdateDto, T> valueProvider, T minValue, string fieldName) where T : IComparable<T>
+    {
+        // 1. Tworzysz nową instancję generycznego walidatora MinValueValidator<T>,
+        //    przekazując mu wszystkie potrzebne parametry, które otrzymała ta metoda.
+        var newHandler = new MinValueValidator<T>(valueProvider, minValue, fieldName);
+
+        // 2. Dodajesz ten nowo stworzony handler na koniec aktualnie budowanego łańcucha.
+        AddHandler(newHandler);
+
+        // 3. Zwracasz 'this' (czyli samego siebie - Budowniczego),
+        //    co pozwala na dalsze łączenie metod w płynny interfejs (np. .WithMinValueCheck(...).WithAnotherCheck(...)).
         return this;
     }
 

@@ -2,6 +2,7 @@
 using MassUpdateData.Handlers;
 using MassUpdateData.Services;
 using MassUpdateData.Validators;
+using MassUpdateData.Validators.Components;
 using Moq;
 using System.Reflection;
 

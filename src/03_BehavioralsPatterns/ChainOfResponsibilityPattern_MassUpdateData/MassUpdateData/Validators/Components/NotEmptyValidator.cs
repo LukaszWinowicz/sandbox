@@ -1,7 +1,7 @@
 ﻿using MassUpdateData.Handlers;
 using MassUpdateData.Models;
 
-namespace MassUpdateData.Validators;
+namespace MassUpdateData.Validators.Components;
 
 public class NotEmptyValidator : ValidationHandler
 {
