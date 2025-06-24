@@ -1,4 +1,5 @@
-﻿using MassUpdateData.Handlers;
+﻿using MassUpdateData.Builders;
+using MassUpdateData.Handlers;
 using MassUpdateData.Models;
 using MassUpdateData.Services;
 
@@ -13,28 +14,15 @@ public class PurchaseOrderMassUpdateValidator
 
     public PurchaseOrderMassUpdateValidator(IOrderDataService dataService)
     {
-        // === Budowa łańcucha dla pola 'PurchaseOrder' ===
-        var poNotEmpty = new NotEmptyValidator(dto => ((MassUpdatePurchaseOrderDto)dto).PurchaseOrder, "Purchase Order");
-        var poLength = new StringLengthValidator(dto => ((MassUpdatePurchaseOrderDto)dto).PurchaseOrder, 10, "Purchase Order");
-        var poExists = new ExistenceValidator<string>(
-             dto => ((MassUpdatePurchaseOrderDto)dto).PurchaseOrder!,
-             dataService.OrderExists,
-             "Purchase Order"
-        );
+        _purchaseOrderChainHead = new ValidationChainBuilder()
+             .WithNotEmptyCheck(dto => ((MassUpdatePurchaseOrderDto)dto).PurchaseOrder, "Purchase Order")
+             .WithStringLengthCheck(dto => ((MassUpdatePurchaseOrderDto)dto).PurchaseOrder, 10, "Purchase Order")
+             .WithExistenceCheck<string>(dto => ((MassUpdatePurchaseOrderDto)dto).PurchaseOrder!, dataService.OrderExists, "Purchase Order")
+             .Build();
 
-        // ... tutaj dodalibyśmy walidator kombinacji, ale na razie go pomijamy dla prostoty
-
-        poNotEmpty.SetNext(poLength);
-        poLength.SetNext(poExists);
-
-        _purchaseOrderChainHead = poNotEmpty; // Zapisujemy głowę łańcucha
-
-        // === Budowa łańcucha dla pola 'ReceiptDate' ===
-        var dateValidator = new FutureDateValidator(
-            dto => ((MassUpdatePurchaseOrderDto)dto).ReceiptDate,
-            "Receipt Date"
-        );
-        _receiptDateChainHead = dateValidator; // Ten łańcuch ma tylko jedno ogniwo
+        _receiptDateChainHead = new ValidationChainBuilder()
+            .WithFutureDateCheck(dto => ((MassUpdatePurchaseOrderDto)dto).ReceiptDate, "Receipt Date")
+            .Build();
     }
 
     // Główna metoda walidująca cały obiekt DTO
