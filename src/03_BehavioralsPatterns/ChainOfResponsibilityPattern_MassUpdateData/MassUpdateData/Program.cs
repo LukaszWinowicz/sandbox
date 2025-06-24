@@ -2,6 +2,7 @@
 using MassUpdateData.Models;
 using MassUpdateData.Services;
 using MassUpdateData.Validators;
+using MassUpdateData.Validators.Components;
 
 var dataService = new OrderDataService();
 

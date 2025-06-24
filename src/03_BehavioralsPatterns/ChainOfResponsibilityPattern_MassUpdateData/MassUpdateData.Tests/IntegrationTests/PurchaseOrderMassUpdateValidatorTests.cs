@@ -2,8 +2,6 @@
 using MassUpdateData.Services;
 using MassUpdateData.Validators;
 using Moq;
-using System.ComponentModel.DataAnnotations;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace MassUpdateData.Tests.IntegrationTests;
 
@@ -43,7 +41,7 @@ public class PurchaseOrderMassUpdateValidatorTests
     }
 
     [Fact]
-    public void Validate_ShouldReturnSigleError_WhenPoNumberIsTooShort()
+    public void Validate_ShouldReturnSingleError_WhenPoNumberIsTooShort()
     {
         // ARRANGE
         // 1. Mock serwisu danych. W tym konkretnym teście jego zachowanie nie ma znaczenia,
@@ -54,14 +52,11 @@ public class PurchaseOrderMassUpdateValidatorTests
         // 2. Tworzymy instancję naszego głównego walidatora.
         var mainValidator = new PurchaseOrderMassUpdateValidator(mockDataService.Object);
 
-        // 3. Tworzymy DTO z JEDNYM błędem: numer PO jest za krótki (ma 5 znaków zamiast 10).
-        var invalidDto = new MassUpdatePurchaseOrderDto
-        {
-            PurchaseOrder = "PO123", // Niepoprawna długość
-            LineNumber = 10,
-            Sequence = 1,
-            ReceiptDate = DateTime.Now.AddDays(1)
-        };
+        // 3. Czytelnie tworzymy DTO, które jest domyślnie poprawne,
+        // a następnie wprowadzamy JEDNĄ, konkretną zmianę na potrzeby testu.
+        var invalidDto = new PurchaseOrderDtoBuilder()
+            .WithPurchaseOrder("PO0123") // Zmieniamy tylko to co testujemy
+            .Build();
 
         // ACT
         // Wywołujemy główną metodę walidującą.
@@ -110,4 +105,50 @@ public class PurchaseOrderMassUpdateValidatorTests
         Assert.Contains("Purchase Order must be exactly 10 characters long.", validationErrors);
         Assert.Contains("Receipt Date must be today or a future date.", validationErrors);
     }
+
+    [Fact]
+    public void Validate_ShouldReturnCombinationError_WhenFieldsAreValidButCombinationDoesNotExist()
+    {
+        // ARRANGE
+        // 1. Przygotowujemy dane wejściowe. Wszystkie pola są w sobie poprawne
+        string validPoNumber = "PO12345678";
+        int validLine = 20;
+        int validSeq = 5;
+
+        // 2. Tworzymy mock serwisu danych.
+        var mockDataService = new Mock<IOrderDataService>();
+
+        // 3.Konfigurujemy zachowanie mocka:
+        //    - Sprawdzenie istnienia samego numeru PO zwraca `true` (przechodzi walidację w małym łańcuchu).
+        mockDataService.Setup(service => service.OrderExists(validPoNumber)).Returns(true);
+        //    - Sprawdzenie KOMBINACJI zwraca `false` (to jest nasz scenariusz błędu).
+        mockDataService.Setup(service => service.LineCombinationExists(validPoNumber, validLine, validSeq)).Returns(false);
+
+        // 4. Tworzymy instancję naszego głównego walidatora, wstrzykując mu zamockowany serwis.
+        var mainValidator = new PurchaseOrderMassUpdateValidator(mockDataService.Object);
+
+        // 5. Tworzymy DTO z danymi, które indywidaulnie są poprawne.
+        var dtoWithInvalidCombination = new MassUpdatePurchaseOrderDto
+        {
+            PurchaseOrder = validPoNumber,
+            LineNumber = validLine,
+            Sequence = validSeq,
+            ReceiptDate = DateTime.Now.AddDays(1)
+        };
+
+        // ACT
+        // Wywołujemy główną metodę walidującą.
+        List<string> validationErrors = mainValidator.Validate(dtoWithInvalidCombination);
+
+        // ASSERT
+        // 1. Oczekujemy dokładnie jednego błędu.
+        Assert.Single(validationErrors);
+
+        // 2. Sprawdzamy, czy treść błędu pochodzi z naszego 'CombinationValidator'.
+        Assert.Contains("Combination of PO", validationErrors[0]);
+        Assert.Contains("does not exist", validationErrors[0]);
+
+
+    }
+
 }
