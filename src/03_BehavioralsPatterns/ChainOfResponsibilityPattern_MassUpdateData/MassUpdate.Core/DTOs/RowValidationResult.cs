@@ -3,13 +3,13 @@
 public class RowValidationResult
 {
     public int RowNumber { get; }
-    public List<string> ValidationErrors { get; }
-    public bool IsValid => ValidationErrors.Count == 0;
+    public List<string> Errors { get; }
+    public bool IsValid => !Errors.Any();
 
-    public RowValidationResult(int rowNumber, List<string> validationErrors)
+    public RowValidationResult(int rowNumber, List<string> errors)
     {
         RowNumber = rowNumber;
-        ValidationErrors = validationErrors;
+        Errors = errors;
     }
 }
 

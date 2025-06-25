@@ -1,7 +1,10 @@
-using MassUpdate.BlazorUI.Components;
+﻿using MassUpdate.BlazorUI.Components;
+using MassUpdate.Core.DTOs;
+using MassUpdate.Core.Factories;
 using MassUpdate.Core.Interfaces;
 using MassUpdate.Core.Validators.Orchestrators;
 using MassUpdate.Infrastructure;
+using MassUpdate.Infrastructure.Services;
 using Microsoft.FluentUI.AspNetCore.Components;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +16,12 @@ builder.Services.AddFluentUIComponents();
 
 builder.Services.AddScoped<IOrderDataService, OrderDataService>();
 builder.Services.AddScoped<IPurchaseOrderMassUpdateValidator, PurchaseOrderMassUpdateValidator>();
+
+// Rejestrujemy naszą fabrykę
+builder.Services.AddScoped<ValidatorFactory>();
+
+// Rejestrujemy serwis, który używa fabryki
+builder.Services.AddScoped<IMassUpdateValidationService, MassUpdateValidationService>();
 
 var app = builder.Build();
 
