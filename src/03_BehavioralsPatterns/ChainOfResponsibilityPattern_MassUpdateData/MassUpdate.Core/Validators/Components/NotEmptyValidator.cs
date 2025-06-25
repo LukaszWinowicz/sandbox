@@ -20,6 +20,7 @@ public class NotEmptyValidator : ValidationHandler
         if (string.IsNullOrEmpty(value))
         {
             request.ValidationErrors.Add($"{_fieldName} is required.");
+            return;
         }
         PassToNext(request);
     }
