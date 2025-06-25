@@ -12,7 +12,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddFluentUIComponents();
 
 builder.Services.AddScoped<IOrderDataService, OrderDataService>();
-builder.Services.AddScoped<PurchaseOrderMassUpdateValidator>();
+builder.Services.AddScoped<IPurchaseOrderMassUpdateValidator, PurchaseOrderMassUpdateValidator>();
 
 var app = builder.Build();
 

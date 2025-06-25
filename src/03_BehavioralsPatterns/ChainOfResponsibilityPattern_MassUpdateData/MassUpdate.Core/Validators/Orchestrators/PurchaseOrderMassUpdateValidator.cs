@@ -7,7 +7,7 @@ using MassUpdate.Core.Validators.Components;
 namespace MassUpdate.Core.Validators.Orchestrators;
 
 // Ta klasa nie implementuje IValidationHandler, jest samodzielnym orkiestratorem.
-public class PurchaseOrderMassUpdateValidator
+public class PurchaseOrderMassUpdateValidator : IPurchaseOrderMassUpdateValidator
 {
     // Przechowujemy tylko pierwsze ogniwa każdego z łańcuchów
     private readonly IValidationHandler _purchaseOrderChain;

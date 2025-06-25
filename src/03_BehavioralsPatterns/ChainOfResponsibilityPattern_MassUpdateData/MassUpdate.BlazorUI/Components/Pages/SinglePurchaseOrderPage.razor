@@ -3,7 +3,7 @@
 @using MassUpdate.Core.DTOs
 @using MassUpdate.Core.Validators.Orchestrators
 
-@inject PurchaseOrderMassUpdateValidator PoValidator
+@inject IPurchaseOrderMassUpdateValidator PoValidator
 
 <SingleItemValidatorPage TItem="MassUpdatePurchaseOrderDto"
                          @bind-ItemToValidate="dto"

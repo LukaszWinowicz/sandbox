@@ -68,5 +68,8 @@
                 IsValidationSuccess = true;
             }
         }
+
+        // Informujemy Blazora jawnie: "Hej, stan się zmienił, przerysuj proszę interfejs!"
+        StateHasChanged();
     }
 }

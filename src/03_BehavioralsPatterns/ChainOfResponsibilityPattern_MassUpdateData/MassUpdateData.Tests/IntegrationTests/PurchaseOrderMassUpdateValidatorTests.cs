@@ -1,6 +1,6 @@
 ﻿using MassUpdate.Core.DTOs;
 using MassUpdate.Core.Interfaces;
-using MassUpdate.Core.Validators.Components;
+using MassUpdate.Core.Validators.Orchestrators;
 using MassUpdate.Infrastructure;
 using Moq;
 
