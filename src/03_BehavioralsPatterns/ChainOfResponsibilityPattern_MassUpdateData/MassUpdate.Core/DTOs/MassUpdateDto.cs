@@ -8,13 +8,13 @@ public class MassUpdatePurchaseOrderDto : MassUpdateDto
     public required string PurchaseOrder { get; set; }
     public int LineNumber { get; set; }
     public int Sequence { get; set; }
-    public DateTime ReceiptDate { get; set; }
+    public DateTime? ReceiptDate { get; set; }
 }
 
 public class MassUpdateProductionOrderDto : MassUpdateDto
 {
     public required string ProductionOrder { get; set; }
-    public DateTime NewDate { get; set; }
+    public DateTime? NewDate { get; set; }
     public required string UpdateType { get; set; }
 }
 

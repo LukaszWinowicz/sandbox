@@ -2,8 +2,9 @@
 using MassUpdate.Core.DTOs;
 using MassUpdate.Core.Handlers;
 using MassUpdate.Core.Interfaces;
+using MassUpdate.Core.Validators.Components;
 
-namespace MassUpdate.Core.Validators.Components;
+namespace MassUpdate.Core.Validators.Orchestrators;
 
 // Ta klasa nie implementuje IValidationHandler, jest samodzielnym orkiestratorem.
 public class PurchaseOrderMassUpdateValidator
@@ -22,15 +23,15 @@ public class PurchaseOrderMassUpdateValidator
         _purchaseOrderChain = new ValidationChainBuilder()
            .WithNotEmptyCheck(dto => ((MassUpdatePurchaseOrderDto)dto).PurchaseOrder, "Purchase Order")
            .WithStringLengthCheck(dto => ((MassUpdatePurchaseOrderDto)dto).PurchaseOrder, 10, "Purchase Order")
-           .WithExistenceCheck<string>(dto => ((MassUpdatePurchaseOrderDto)dto).PurchaseOrder!, dataService.OrderExists, "Purchase Order")
+           .WithExistenceCheck(dto => ((MassUpdatePurchaseOrderDto)dto).PurchaseOrder!, dataService.OrderExists, "Purchase Order")
            .Build();
 
         _lineNumberChain = new ValidationChainBuilder()
-            .WithMinValueCheck<int>(dto => ((MassUpdatePurchaseOrderDto)dto).LineNumber, 10, "Line Number")
+            .WithMinValueCheck(dto => ((MassUpdatePurchaseOrderDto)dto).LineNumber, 10, "Line Number")
             .Build();
 
         _sequenceChain = new ValidationChainBuilder()
-            .WithMinValueCheck<int>(dto => ((MassUpdatePurchaseOrderDto)dto).Sequence, 1, "Sequence")
+            .WithMinValueCheck(dto => ((MassUpdatePurchaseOrderDto)dto).Sequence, 1, "Sequence")
             .Build();
 
         _receiptDateChain = new ValidationChainBuilder()

@@ -43,7 +43,7 @@ public class ValidationChainBuilder
         return this;
     }
 
-    public ValidationChainBuilder WithFutureDateCheck(Func<MassUpdateDto, DateTime> dateProvider, string fieldName)
+    public ValidationChainBuilder WithFutureDateCheck(Func<MassUpdateDto, DateTime?> dateProvider, string fieldName)
     {
         AddHandler(new FutureDateValidator(dateProvider, fieldName));
         return this;

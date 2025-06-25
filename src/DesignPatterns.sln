@@ -13,11 +13,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ChainOfResponsibilityPatter
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MassUpdateData.Tests", "03_BehavioralsPatterns\ChainOfResponsibilityPattern_MassUpdateData\MassUpdateData.Tests\MassUpdateData.Tests.csproj", "{39FE23A4-815C-437B-A184-CEFEF0C381A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassUpdate.Core", "03_BehavioralsPatterns\ChainOfResponsibilityPattern_MassUpdateData\MassUpdate.Core\MassUpdate.Core.csproj", "{B0FCDA08-FEC2-4E56-9C52-43D773CB6101}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MassUpdate.Core", "03_BehavioralsPatterns\ChainOfResponsibilityPattern_MassUpdateData\MassUpdate.Core\MassUpdate.Core.csproj", "{B0FCDA08-FEC2-4E56-9C52-43D773CB6101}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassUpdate.Infrastructure", "03_BehavioralsPatterns\ChainOfResponsibilityPattern_MassUpdateData\MassUpdate.Infrastructure\MassUpdate.Infrastructure.csproj", "{99C2D073-50A9-4EA3-A7EF-00BF81A89E5B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MassUpdate.Infrastructure", "03_BehavioralsPatterns\ChainOfResponsibilityPattern_MassUpdateData\MassUpdate.Infrastructure\MassUpdate.Infrastructure.csproj", "{99C2D073-50A9-4EA3-A7EF-00BF81A89E5B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassUpdate.BlazorUI", "03_BehavioralsPatterns\ChainOfResponsibilityPattern_MassUpdateData\MassUpdate.BlazorUI\MassUpdate.BlazorUI.csproj", "{28877579-7BDF-4657-911F-6C5AA7366DEB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MassUpdate.BlazorUI", "03_BehavioralsPatterns\ChainOfResponsibilityPattern_MassUpdateData\MassUpdate.BlazorUI\MassUpdate.BlazorUI.csproj", "{28877579-7BDF-4657-911F-6C5AA7366DEB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
