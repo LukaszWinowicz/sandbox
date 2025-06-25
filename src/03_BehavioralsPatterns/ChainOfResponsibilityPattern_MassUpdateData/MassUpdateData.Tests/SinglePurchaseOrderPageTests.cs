@@ -27,7 +27,7 @@ public class SinglePurchaseOrderPageTests : TestContext
     {
         // ARRANGE
         // 1. Definiujemy, jakie błędy ma zwrócić nasz "fałszywy" walidator.
-        var expectedErrors = new List<string> { "Purchase Order is required", "Date is in the past." };
+        var expectedErrors = new List<string> { "PO number is too short.", "Date is in the past." };
 
         // 2. Tworzymy mocka naszego głównego walidatora.
         var mockValidator = new Mock<IPurchaseOrderMassUpdateValidator>();
@@ -44,8 +44,7 @@ public class SinglePurchaseOrderPageTests : TestContext
         var cut = RenderComponent<SinglePurchaseOrderPage>(); // "cut" = Component Under Test
 
         // 6. Znajdujemy przycisk "Validate" w wyrenderowanym HTML-u i symulujemy jego kliknięcie.
-        //cut.FindComponent<FluentButton>().Find("button").Click();
-        cut.Find("fluent-button").Click();
+        cut.Find("form").Submit();
 
         // ASSERT
         // 7. Sprawdzamy, czy wyrenderowany kod HTML (Markup) zawiera teraz nasze komunikaty o błędach.
