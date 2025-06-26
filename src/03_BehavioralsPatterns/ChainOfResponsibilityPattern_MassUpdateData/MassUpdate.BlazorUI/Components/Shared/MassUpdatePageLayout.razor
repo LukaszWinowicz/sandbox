@@ -1,0 +1,115 @@
+﻿@using MassUpdate.Core.DTOs
+@typeparam TItem where TItem : class
+
+<h3>@PageTitle</h3>
+<p>@PageDescription</p>
+
+<FluentCard Style="padding: 20px;">
+    <div class="form-grid-header">
+        @HeaderTemplate
+    </div>
+
+    @foreach (var row in Rows)
+    {
+        <div class="form-grid-row">
+            @RowTemplate(row)
+        </div>
+    }
+
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="10" Class="mt-3">
+        <FluentButton Appearance="Appearance.Accent" @onclick="HandleValidation">Validate All</FluentButton>
+        <FluentButton Appearance="Appearance.Neutral" @onclick="AddNewRow">Add Row</FluentButton>
+    </FluentStack>
+</FluentCard>
+
+
+@* Sekcja wyświetlania wyników walidacji (taka sama jak poprzednio) *@
+@if (validationHasRun)
+{
+    @if (ValidationResults.Any())
+    {
+        <div class="alert alert-danger mt-4">
+            <h5>Validation finished. Found errors in @ValidationResults.Count row(s):</h5>
+            @foreach (var result in ValidationResults)
+            {
+                <div class="mt-2">
+                    <strong>Row @result.RowNumber:</strong>
+                    <ul>
+                        @foreach (var error in result.Errors)
+                        {
+                            <li>@error</li>
+                        }
+                    </ul>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-success mt-4">
+            <strong>Validation successful!</strong> All rows are valid.
+        </div>
+    }
+}
+
+@code {
+    // --- Parametry Komponentu ---
+    [Parameter] public string PageTitle { get; set; } = "Mass Update";
+    [Parameter] public string PageDescription { get; set; } = "Enter data and validate.";
+
+    // "Dziura" na nagłówki kolumn
+    [Parameter] public RenderFragment HeaderTemplate { get; set; }
+
+    // "Dziura" na pola formularza dla jednego wiersza
+    [Parameter] public RenderFragment<TItem> RowTemplate { get; set; }
+
+    // "Przepis" na logikę walidacji przekazany z zewnątrz
+    [Parameter] public Func<List<TItem>, List<RowValidationResult>>? ValidationLogic { get; set; }
+
+    // PARAMETR: "Fabryka" do tworzenia nowych obiektów TItem
+    [Parameter] public Func<TItem>? NewItemFactory { get; set; }
+
+    // --- Stan Wewnętrzny Komponentu ---
+    private List<TItem> Rows { get; set; } = new();
+    private List<RowValidationResult> ValidationResults { get; set; } = new();
+    private bool validationHasRun = false;
+
+    protected override void OnInitialized()
+    {
+        // Jeśli nie ma wierszy, dodajmy jeden na start, używając naszej nowej fabryki
+        if (!Rows.Any() && NewItemFactory != null)
+        {
+            AddNewRow();
+        }
+    }
+
+    private void AddNewRow()
+    {
+        if (NewItemFactory != null)
+        {
+            var newItem = NewItemFactory.Invoke();
+            Rows.Add(newItem);
+        }
+    }
+
+    private void HandleValidation()
+    {
+        validationHasRun = true;
+        if (ValidationLogic != null)
+        {
+            ValidationResults = ValidationLogic.Invoke(Rows);
+        }
+    }
+}
+
+<style>
+    /* Style pozostają te same */
+    .form-grid-header, .form-grid-row {
+        display: grid;
+        /* Można by to też uczynić parametrem w przyszłości! */
+        grid-template-columns: 2fr 1fr 1fr 2fr;
+        gap: 16px;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+</style>
