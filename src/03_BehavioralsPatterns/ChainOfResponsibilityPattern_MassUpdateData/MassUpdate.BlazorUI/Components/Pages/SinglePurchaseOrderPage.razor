@@ -1,9 +1,10 @@
 ﻿@page "/single-purchase-order"
 @using MassUpdate.BlazorUI.Components.Shared
 @using MassUpdate.Core.DTOs
+@using MassUpdate.Core.Interfaces
 @using MassUpdate.Core.Validators.Orchestrators
 
-@inject IPurchaseOrderMassUpdateValidator PoValidator
+@inject IEntityValidator<MassUpdatePurchaseOrderDto> PoValidator
 
 <SingleItemValidatorPage TItem="MassUpdatePurchaseOrderDto"
                          @bind-ItemToValidate="dto"

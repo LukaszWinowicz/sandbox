@@ -1,7 +1,7 @@
 ﻿using Bunit;
 using MassUpdate.BlazorUI.Components.Pages;
 using MassUpdate.Core.DTOs;
-using MassUpdate.Core.Validators.Orchestrators;
+using MassUpdate.Core.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Moq;
@@ -30,14 +30,14 @@ public class SinglePurchaseOrderPageTests : TestContext
         var expectedErrors = new List<string> { "PO number is too short.", "Date is in the past." };
 
         // 2. Tworzymy mocka naszego głównego walidatora.
-        var mockValidator = new Mock<IPurchaseOrderMassUpdateValidator>();
+        var mockValidator = new Mock<IEntityValidator<MassUpdatePurchaseOrderDto>>();
 
         // 3. "Uczymy" go, że gdy jego metoda Validate zostanie wywołana, ma zwrócić naszą listę błędów.
         // Używamy It.IsAny<>() aby mock reagował na dowolny obiekt DTO.
         mockValidator.Setup(v => v.Validate(It.IsAny<MassUpdatePurchaseOrderDto>())).Returns(expectedErrors);
 
         // 4. Rejestrujemy zamockowany walidator w kontenerze DI biblioteki bUnit.
-        Services.AddScoped<IPurchaseOrderMassUpdateValidator>(sp => mockValidator.Object);
+        Services.AddScoped<IEntityValidator<MassUpdatePurchaseOrderDto>>(sp => mockValidator.Object);
 
         // ACT
         // 5. Renderujemy nasz komponent w pamięci.

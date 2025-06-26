@@ -14,13 +14,14 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddFluentUIComponents();
 
+// Rejestrujemy serwisy potrzebne dla naszej fabryki
 builder.Services.AddScoped<IOrderDataService, OrderDataService>();
-builder.Services.AddScoped<IPurchaseOrderMassUpdateValidator, PurchaseOrderMassUpdateValidator>();
+// W przyszłości: builder.Services.AddScoped<IProductionOrderService, ProductionOrderService>();
 
-// Rejestrujemy naszą fabrykę
+// Rejestrujemy naszą fabrykę, która będzie tworzyć walidatory
 builder.Services.AddScoped<ValidatorFactory>();
 
-// Rejestrujemy serwis, który używa fabryki
+// Rejestrujemy główny serwis, który używa fabryki
 builder.Services.AddScoped<IMassUpdateValidationService, MassUpdateValidationService>();
 
 var app = builder.Build();
