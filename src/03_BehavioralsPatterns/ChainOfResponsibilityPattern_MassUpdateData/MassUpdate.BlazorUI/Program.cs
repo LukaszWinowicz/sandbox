@@ -1,7 +1,9 @@
 ﻿using MassUpdate.BlazorUI.Components;
 using MassUpdate.Core.Factories;
 using MassUpdate.Core.Interfaces;
+using MassUpdate.Core.Interfaces.Repositories;
 using MassUpdate.Infrastructure;
+using MassUpdate.Infrastructure.Persistence.Repositories;
 using MassUpdate.Infrastructure.Services;
 using Microsoft.FluentUI.AspNetCore.Components;
 
@@ -14,7 +16,7 @@ builder.Services.AddFluentUIComponents();
 
 // Rejestrujemy serwisy potrzebne dla naszej fabryki
 builder.Services.AddScoped<IOrderDataService, OrderDataService>();
-// W przyszłości: builder.Services.AddScoped<IProductionOrderService, ProductionOrderService>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
 // Rejestrujemy naszą fabrykę, która będzie tworzyć walidatory
 builder.Services.AddScoped<ValidatorFactory>();
