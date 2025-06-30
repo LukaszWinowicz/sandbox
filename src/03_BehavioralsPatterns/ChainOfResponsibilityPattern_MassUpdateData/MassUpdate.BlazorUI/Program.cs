@@ -2,9 +2,8 @@
 using MassUpdate.Core.Factories;
 using MassUpdate.Core.Interfaces;
 using MassUpdate.Core.Interfaces.Repositories;
-using MassUpdate.Infrastructure;
+using MassUpdate.Core.Services;
 using MassUpdate.Infrastructure.Persistence.Repositories;
-using MassUpdate.Infrastructure.Services;
 using Microsoft.FluentUI.AspNetCore.Components;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,7 +14,6 @@ builder.Services.AddRazorComponents()
 builder.Services.AddFluentUIComponents();
 
 // Rejestrujemy serwisy potrzebne dla naszej fabryki
-builder.Services.AddScoped<IOrderDataService, OrderDataService>();
 builder.Services.AddScoped<IPurchaseOrderValidationRepository, OrderRepository>();
 
 // Rejestrujemy naszą fabrykę, która będzie tworzyć walidatory

@@ -1,86 +1,107 @@
 ﻿using MassUpdate.Core.DTOs;
+using MassUpdate.Core.Enums;
 using MassUpdate.Core.Handlers;
-using MassUpdate.Core.Interfaces;
+using MassUpdate.Core.Interfaces.Repositories;
 using MassUpdate.Core.Validators.Components;
 using Moq;
 
 namespace MassUpdateData.Tests.UnitTests;
 
+/// <summary>
+/// Testy jednostkowe dla generycznego komponentu walidacyjnego ExistenceValidator.
+/// </summary>
 public class ExistenceValidatorTests
 {
+    // Prywatne pola dla obiektów używanych we wszystkich testach.
+    private readonly Mock<IPurchaseOrderValidationRepository> _mockRepo;
+    private readonly Mock<IValidationHandler> _mockNextHandler;
+    private readonly UpdateReceiptDateDto _testDto;
+
+    /// <summary>
+    /// Konstruktor klasy testowej. Inicjalizuje wspólne obiekty
+    /// używane we wszystkich scenariuszach testowych w tej klasie, zgodnie z zasadą DRY.
+    /// </summary>
+    public ExistenceValidatorTests()
+    {
+        // Inicjalizacja wspólnych mocków i danych testowych.
+        _mockRepo = new Mock<IPurchaseOrderValidationRepository>();
+        _mockNextHandler = new Mock<IValidationHandler>();
+        _testDto = new UpdateReceiptDateDto
+        {
+            PurchaseOrder = "DUMMY_PO",
+            LineNumber = 10,
+            Sequence = 1,
+            ReceiptDate = DateTime.Now,
+            DateType = ReceiptDateUpdateType.Confirmed
+        };
+    }
+
+    /// <summary>
+    /// Weryfikuje, że walidator poprawnie dodaje błąd,
+    /// gdy przekazana funkcja sprawdzająca istnienie zwróci `false`.
+    /// </summary>
     [Fact]
-    // MetodaTestowana_OczekiwanyRezultat_Scenariusz
-    public void Validate_ShouldAddError_WhenEntityDoesNotExist()
+    public async Task ValidateAsync_ShouldAddError_WhenEntityDoesNotExist()
     {
         // ARRANGE
-        // 1. Tworzymy zaślepkę (mock) naszego serwisu danych.
-        var mockDataService = new Mock<IOrderDataService>();
+        // Konfigurujemy ZACHOWANIE mocka specyficzne dla tego testu.
+        _mockRepo.Setup(repo => repo.OrderExistsAsync(_testDto.PurchaseOrder)).ReturnsAsync(false);
 
-        // 2. "Uczymy" mocka, jak ma się zachować.
-        // Mówimy mu: "Gdy ktoś wywoła na Tobię metodę OrderExist z argumentem 'BAD_PO', ZAWSZE zwróć `false`"
-        mockDataService.Setup(service => service.OrderExists("BAD_PO")).Returns(false);
-
-        // 3. Tworzymy instancję walidatora, którego będziemy testować.
-        // Wstrzykujemy mu funkcję sprawdzającą, która pochodzi z naszego mocka.
+        // Tworzymy instancję walidatora, którego testujemy.
         var validator = new ExistenceValidator<string>(
-            dto => ((MassUpdatePurchaseOrderDto)dto).PurchaseOrder!,
-            mockDataService.Object.OrderExists,
+            dto => ((UpdateReceiptDateDto)dto).PurchaseOrder,
+            _mockRepo.Object.OrderExistsAsync,
             "Purchase Order"
         );
 
-        // 4. Przygotowujemy dane wejściowe dla testu.
-        var request = new ValidationRequest(new MassUpdatePurchaseOrderDto { PurchaseOrder = "BAD_PO" });
-
-        // 5. Przygotowujemy dokładny, oczekiwany komunikat
-        string expectedError = "does not exist";
+        // Tworzymy obiekt żądania walidacji.
+        var request = new ValidationRequest(_testDto);
 
         // ACT
-        // Wywołujemy metodę, którą testujemy.
-        validator.Validate(request);
+        // Wywołujemy główną metodę walidacyjną.
+        await validator.ValidateAsync(request);
 
         // ASSERT
-        // Sprawdzamy, czy rezultat jest zgodny z oczekiwaniami.
-        Assert.Single(request.ValidationErrors); // Oczekujemy dokładnie jednego błędu na liście.
-        Assert.Contains(expectedError, request.ValidationErrors[0]); // Sprawdzamy, czy komunikat zawiera oczekiwany tekst.
+        // Sprawdzamy, czy na liście jest dokładnie jeden błąd i czy ma poprawną treść.
+        Assert.Single(request.ValidationErrors);
+        Assert.Contains("does not exist", request.ValidationErrors[0]);
+
     }
 
+    /// <summary>
+    /// Weryfikuje, że walidator nie dodaje błędu i przekazuje żądanie dalej,
+    /// gdy przekazana funkcja sprawdzająca istnienie zwróci `true`.
+    /// </summary>
     [Fact]
-    public void Validate_ShouldNotAddError_AndShouldCallNext_WhenEntityExists()
+    public async Task Validate_ShouldNotAddError_AndShouldCallNext_WhenEntityExists()
     {
         // ARRANGE
-        // 1. Tworzymy zaślepkę (mock) naszego serwisu danych.
-        var mockDataService = new Mock<IOrderDataService>();
+        // Konfigurujemy ZACHOWANIE mocka specyficzne dla tego testu.
+        _mockRepo.Setup(repo => repo.OrderExistsAsync(_testDto.PurchaseOrder)).ReturnsAsync(true);
 
-        // 2. "Uczymy" mocka, jak ma się zachować.
-        // Mówimy mu: "Gdy ktoś wywoła na Tobię metodę OrderExist z argumentem 'GOOD_PO', ZAWSZE zwróć `true`"
-        mockDataService.Setup(service => service.OrderExists("GOOD_PO")).Returns(true);
-
-        // 3. Tworzymy mocka NASTĘPNEGO ogniwa w łańcuchu, aby sprawdzić, czy zostanie wywołany.
-        var mockNextHandler = new Mock<IValidationHandler>();
-
-        // 4. Tworzymy instancję walidatora, którego będziemy testować.
-        // Wstrzykujemy mu funkcję sprawdzającą, która pochodzi z naszego mocka i podpinamy do niego zamockowane następne ogniwo.
+        // Tworzymy instancję walidatora, którego testujemy.
         var validator = new ExistenceValidator<string>(
-            dto => ((MassUpdatePurchaseOrderDto)dto).PurchaseOrder!,
-            mockDataService.Object.OrderExists,
-            "Purchase Order");
-        validator.SetNext(mockNextHandler.Object);
+            dto => ((UpdateReceiptDateDto)dto).PurchaseOrder,
+            _mockRepo.Object.OrderExistsAsync,
+            "Purchase Order"
+        );
 
-        // 5. Przygotowujemy dane wejściowe.
-        var request = new ValidationRequest(new MassUpdatePurchaseOrderDto { PurchaseOrder = "GOOD_PO" });
+        // Ustawiamy "kolejne ogniwo" w łańcuchu, aby sprawdzić, czy zostanie wywołane.
+        validator.SetNext(_mockNextHandler.Object);
+
+        // Tworzymy obiekt żądania walidacji.
+        var request = new ValidationRequest(_testDto);
 
         // ACT
-        // Wywołujemy metodę, którą testujemy.
-        validator.Validate(request);
+        // Wywołujemy główną metodę walidacyjną.
+        await validator.ValidateAsync(request);
 
         // ASSERT
-        // 1. Sprawdzamy, czy nie został dodany żaden błąd
+        // Sprawdzamy, czy lista błędów jest pusta.
         Assert.Empty(request.ValidationErrors);
 
-        // 2. Weryfikujemy, czy metoda Validate() na następnym ogniwie została wywołana dokładnie raz.
-        // To potwierdza, że łańcuch jest kontynuowany.
-        mockNextHandler.Verify(handler => handler.Validate(request), Times.Once);
-
+        // Weryfikujemy, czy następne ogniwo w łańcuchu zostało wywołane.
+        _mockNextHandler.Verify(handler => handler.ValidateAsync(request), Times.Once);
 
     }
 }

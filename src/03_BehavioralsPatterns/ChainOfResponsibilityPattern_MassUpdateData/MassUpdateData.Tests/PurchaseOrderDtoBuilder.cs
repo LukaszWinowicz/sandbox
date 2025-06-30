@@ -45,14 +45,14 @@ public class PurchaseOrderDtoBuilder
     }
 
     // Metoda Build składa finalny obiekt z przygotowanych wartości.
-    public MassUpdatePurchaseOrderDto Build()
-    {
-        return new MassUpdatePurchaseOrderDto
-        { 
-            PurchaseOrder = _purchaseOrder, 
-            LineNumber = _lineNumber,
-            Sequence = _sequence,
-            ReceiptDate = _receiptDate 
-        };
-    }
+    //public MassUpdatePurchaseOrderDto Build()
+    //{
+    //    return new MassUpdatePurchaseOrderDto
+    //    { 
+    //        PurchaseOrder = _purchaseOrder, 
+    //        LineNumber = _lineNumber,
+    //        Sequence = _sequence,
+    //        ReceiptDate = _receiptDate 
+    //    };
+    //}
 }

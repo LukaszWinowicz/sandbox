@@ -6,7 +6,8 @@
 
 @inject IMassUpdateValidationService ValidationService
 
-<MassUpdatePageLayout TItem="MassUpdatePurchaseOrderDto"
+
+@* <MassUpdatePageLayout TItem="MassUpdatePurchaseOrderDto"
                       PageTitle="Mass Update Purchase Order"
                       PageDescription="Enter Purchase Order data below. You can add new rows or paste from Excel."
                       ValidationLogic="@((dtoList) => ValidationService.Validate(dtoList))"
@@ -20,11 +21,11 @@
     </HeaderTemplate>
 
     <RowTemplate>
-        @* 'context' to jest nasz obiekt 'row' (typu MassUpdatePurchaseOrderDto) z szablonu *@
+        @* 'context' to jest nasz obiekt 'row' (typu MassUpdatePurchaseOrderDto) z szablonu 
         <FluentTextField @bind-Value="context.PurchaseOrder" />
         <FluentNumberField @bind-Value="context.LineNumber" />
         <FluentNumberField @bind-Value="context.Sequence" />
         <FluentDatePicker @bind-Value="context.ReceiptDate" />
     </RowTemplate>
 
-</MassUpdatePageLayout>
+    </MassUpdatePageLayout>*@
