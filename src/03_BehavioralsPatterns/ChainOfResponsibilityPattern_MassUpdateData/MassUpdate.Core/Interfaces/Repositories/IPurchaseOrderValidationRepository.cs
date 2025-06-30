@@ -1,6 +1,6 @@
 ﻿namespace MassUpdate.Core.Interfaces.Repositories;
 
-public interface IOrderRepository
+public interface IPurchaseOrderValidationRepository
 {
     /// <summary>
     /// Sprawdza, czy zlecenie o danym numerze istnieje.

@@ -1,75 +1,76 @@
 ﻿using MassUpdate.Core.DTOs;
 using MassUpdate.Core.Handlers;
 using MassUpdate.Core.Validators.Components;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-namespace MassUpdate.Core.Builders;
-
-public class ValidationChainBuilder
+namespace MassUpdate.Core.Builders
 {
-    private IValidationHandler? _head; // Pierwsze ogniwo w budowanym łańcuchu
-    private IValidationHandler? _tail; // Ostatnie ogniwo, aby efektywnie dodawać kolejne
-
-    // Prywatna metoda pomocnicza do dodawania nowego ogniwa na końcu łańcucha
-    private void AddHandler(IValidationHandler handler)
+    public class ValidationChainBuilder
     {
-        if (_head == null)
+        private IValidationHandler? _head;
+        private IValidationHandler? _tail;
+
+        private void AddHandler(IValidationHandler handler)
         {
-            _head = handler;
-            _tail = handler;
+            if (_head == null)
+            {
+                _head = handler;
+                _tail = handler;
+            }
+            else
+            {
+                _tail!.SetNext(handler);
+                _tail = handler;
+            }
         }
-        else 
+
+        public ValidationChainBuilder WithNotEmptyCheck(Func<MassUpdateDto, string?> valueProvider, string fieldName)
         {
-            _tail!.SetNext(handler);
-            _tail = handler;
+            AddHandler(new NotEmptyValidator(valueProvider, fieldName));
+            return this;
         }
-    }
 
-    // --- Metody Budujące (zwracają 'this', aby można je było łączyć) ---
-    public ValidationChainBuilder WithNotEmptyCheck(Func<MassUpdateDto, string?> valueProvider, string fieldName)
-    {
-        AddHandler(new NotEmptyValidator(valueProvider, fieldName));
-        return this;
-    }
-
-    public ValidationChainBuilder WithStringLengthCheck(Func<MassUpdateDto, string?> valueProvider, int length, string fieldName)
-    {
-        AddHandler(new StringLengthValidator(valueProvider, length, fieldName));
-        return this;
-    }
-
-    public ValidationChainBuilder WithExistenceCheck<T>(Func<MassUpdateDto, T> valueProvider, Func<T, bool> existenceCheckFunc, string fieldName)
-    {
-        AddHandler(new ExistenceValidator<T>(valueProvider, existenceCheckFunc, fieldName));
-        return this;
-    }
-
-    public ValidationChainBuilder WithFutureDateCheck(Func<MassUpdateDto, DateTime?> dateProvider, string fieldName)
-    {
-        AddHandler(new FutureDateValidator(dateProvider, fieldName));
-        return this;
-    }
-
-    public ValidationChainBuilder WithMinValueCheck<T>(Func<MassUpdateDto, T> valueProvider, T minValue, string fieldName) where T : IComparable<T>
-    {
-        // 1. Tworzysz nową instancję generycznego walidatora MinValueValidator<T>,
-        //    przekazując mu wszystkie potrzebne parametry, które otrzymała ta metoda.
-        var newHandler = new MinValueValidator<T>(valueProvider, minValue, fieldName);
-
-        // 2. Dodajesz ten nowo stworzony handler na koniec aktualnie budowanego łańcucha.
-        AddHandler(newHandler);
-
-        // 3. Zwracasz 'this' (czyli samego siebie - Budowniczego),
-        //    co pozwala na dalsze łączenie metod w płynny interfejs (np. .WithMinValueCheck(...).WithAnotherCheck(...)).
-        return this;
-    }
-
-    // Metoda finalizująca, która zwraca gotowy produkt - głowę łańcucha
-    public IValidationHandler Build()
-    {
-        if (_head == null)
+        public ValidationChainBuilder WithStringLengthCheck(Func<MassUpdateDto, string?> valueProvider, int length, string fieldName)
         {
-            throw new InvalidOperationException("Cannot build an empty validation chain.");
+            AddHandler(new StringLengthValidator(valueProvider, length, fieldName));
+            return this;
         }
-        return _head;
+
+        // POPRAWKA 1: Ta metoda teraz poprawnie akceptuje Func<T, Task<bool>>
+        public ValidationChainBuilder WithExistenceCheck<T>(Func<MassUpdateDto, T> valueProvider, Func<T, Task<bool>> existenceCheckFunc, string fieldName)
+        {
+            AddHandler(new ExistenceValidator<T>(valueProvider, existenceCheckFunc, fieldName));
+            return this;
+        }
+
+        // POPRAWKA 2: Ta metoda nie ma już błędnego ograniczenia "where T : class"
+        public ValidationChainBuilder WithNotNullCheck<T>(Func<MassUpdateDto, T?> valueProvider, string fieldName)
+        {
+            AddHandler(new NotNullValidator<T>(valueProvider, fieldName));
+            return this;
+        }
+
+        public ValidationChainBuilder WithFutureDateCheck(Func<MassUpdateDto, DateTime?> dateProvider, string fieldName)
+        {
+            AddHandler(new FutureDateValidator(dateProvider, fieldName));
+            return this;
+        }
+
+        public ValidationChainBuilder WithMinValueCheck<T>(Func<MassUpdateDto, T> valueProvider, T minValue, string fieldName) where T : IComparable<T>
+        {
+            AddHandler(new MinValueValidator<T>(valueProvider, minValue, fieldName));
+            return this;
+        }
+
+        public IValidationHandler Build()
+        {
+            if (_head == null)
+            {
+                throw new InvalidOperationException("Cannot build an empty validation chain.");
+            }
+            return _head;
+        }
     }
 }

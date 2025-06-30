@@ -2,8 +2,9 @@
 
 namespace MassUpdate.Infrastructure.Persistence.Repositories;
 
-public class OrderRepository : IOrderRepository
-{   public Task<bool> OrderExistsAsync(string orderNumber)
+public class OrderRepository : IPurchaseOrderValidationRepository
+{   
+    public Task<bool> OrderExistsAsync(string orderNumber)
     {
         // TODO: W następnym kroku zaimplementujemy tutaj prawdziwe zapytanie do bazy danych.
         // Na razie zwracamy prostą logikę do testów.

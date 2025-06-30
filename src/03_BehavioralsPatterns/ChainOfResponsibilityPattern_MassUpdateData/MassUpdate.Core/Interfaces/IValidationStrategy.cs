@@ -14,5 +14,5 @@ public interface IValidationStrategy<T> where T : MassUpdateDto
     /// </summary>
     /// <param name="dto">Obiekt DTO do zwalidowania.</param>
     /// <returns>Lista stringów z komunikatami o błędach. Pusta lista oznacza sukces.</returns>
-    List<string> Validate(T dto);
+    Task<List<string>> ValidateAsync(T dto);
 }

@@ -17,7 +17,7 @@ public class MinValueValidator<T> : ValidationHandler where T : IComparable<T>
         _fieldName = fieldName;
     }
 
-    public override void Validate(ValidationRequest request)
+    public override async Task ValidateAsync(ValidationRequest request)
     {
         var value = _valueProvider(request.Dto);
         // CompareTo zwraca < 0, jeśli wartość jest mniejsza od minValue
@@ -25,6 +25,6 @@ public class MinValueValidator<T> : ValidationHandler where T : IComparable<T>
         {
             request.ValidationErrors.Add($"{_fieldName} must be greater than or equal to {_minValue}.");
         }
-        PassToNext(request);
+        await PassToNextAsync(request);
     }
 }

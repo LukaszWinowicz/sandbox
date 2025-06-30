@@ -24,7 +24,7 @@ public class PurchaseOrderMassUpdateValidatorTests
         mockDataService.Setup(service => service.LineCombinationExists(validDto.PurchaseOrder, validDto.LineNumber, validDto.Sequence)).Returns(true);
 
         // 4. Tworzymy instancję naszego głównego walidatora, wstrzykując mu zamockowany serwis.
-        var mainValidator = new PurchaseOrderMassUpdateValidator(mockDataService.Object);
+        var mainValidator = new UpdateReceiptDateValidationStrategy(mockDataService.Object);
          
         // ACT
         // Wywołujemy główną metodę walidującą.
@@ -46,7 +46,7 @@ public class PurchaseOrderMassUpdateValidatorTests
         var mockDataService = new Mock<OrderDataService>();
 
         // 2. Tworzymy instancję naszego głównego walidatora.
-        var mainValidator = new PurchaseOrderMassUpdateValidator(mockDataService.Object);
+        var mainValidator = new UpdateReceiptDateValidationStrategy(mockDataService.Object);
 
         // 3. Czytelnie tworzymy DTO, które jest domyślnie poprawne,
         // a następnie wprowadzamy JEDNĄ, konkretną zmianę na potrzeby testu.
@@ -75,7 +75,7 @@ public class PurchaseOrderMassUpdateValidatorTests
         var mockDataService = new Mock<IOrderDataService>();
 
         // 2. Tworzymy instancję naszego głównego walidatora.
-        var mainValidator = new PurchaseOrderMassUpdateValidator(mockDataService.Object);
+        var mainValidator = new UpdateReceiptDateValidationStrategy(mockDataService.Object);
 
         // 3. Tworzymy DTO z KILKOMA błędami:
         //    - `PurchaseOrder` jest za krótki.
@@ -121,7 +121,7 @@ public class PurchaseOrderMassUpdateValidatorTests
         mockDataService.Setup(service => service.LineCombinationExists(validPoNumber, validLine, validSeq)).Returns(false);
 
         // 4. Tworzymy instancję naszego głównego walidatora, wstrzykując mu zamockowany serwis.
-        var mainValidator = new PurchaseOrderMassUpdateValidator(mockDataService.Object);
+        var mainValidator = new UpdateReceiptDateValidationStrategy(mockDataService.Object);
 
         // 5. Tworzymy DTO z danymi, które indywidaulnie są poprawne.
         var dtoWithInvalidCombination = new MassUpdatePurchaseOrderDto

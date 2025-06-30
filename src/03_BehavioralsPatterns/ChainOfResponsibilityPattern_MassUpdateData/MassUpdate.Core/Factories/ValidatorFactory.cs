@@ -1,35 +1,31 @@
 ﻿using MassUpdate.Core.DTOs;
 using MassUpdate.Core.Interfaces;
+using MassUpdate.Core.Interfaces.Repositories;
 using MassUpdate.Core.Validators.Orchestrators;
 
 namespace MassUpdate.Core.Factories;
 
 public class ValidatorFactory
 {
-    private readonly IOrderDataService _orderDataService;
-    // W przyszłości dodamy tu inne serwisy, np. IProductionOrderService
+    // Fabryka zależy od wszystkich repozytoriów, których mogą potrzebować jej produkty
+    private readonly IPurchaseOrderValidationRepository _poValidationRepository;
+    // W przyszłości: private readonly IProductionOrderValidationRepository _prodValidationRepo;
 
-    public ValidatorFactory(IOrderDataService orderDataService)
+    public ValidatorFactory(IPurchaseOrderValidationRepository poValidationRepository)
     {
-        _orderDataService = orderDataService;
+        _poValidationRepository = poValidationRepository;
     }
 
-    // Generyczna metoda tworząca walidator
     public IEntityValidator<T> Create<T>() where T : MassUpdateDto
     {
-        // Logika "decyzyjna" - serce fabryki
-        if (typeof(T) == typeof(MassUpdatePurchaseOrderDto))
+        if (typeof(T) == typeof(UpdateReceiptDateDto))
         {
-            // Rzutowanie ...
-            return (IEntityValidator<T>)new PurchaseOrderMassUpdateValidator(_orderDataService);
+            // Teraz wywołanie jest poprawne - przekazujemy jeden wymagany argument
+            return (IEntityValidator<T>)new UpdateReceiptDateValidationStrategy(_poValidationRepository);
         }
-        // W przyszłości dodamy kolejne warunki
-        // if (typeof(T) == typeof(MassUpdateProductionOrderDto))
-        // {
-        //     return (IEntityValidator<T>)new ProductionOrderMassUpdateValidator(new FakeProductionOrderService());
-        // }
 
-        // Jeśli nie znamy typu, rzucamy wyjątkiem
+        // ... inne warunki w przyszłości ...
+
         throw new NotSupportedException($"No validator registered for type {typeof(T).Name}");
     }
 }

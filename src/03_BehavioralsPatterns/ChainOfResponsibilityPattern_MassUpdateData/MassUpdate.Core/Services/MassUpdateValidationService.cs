@@ -1,9 +1,8 @@
 ﻿using MassUpdate.Core.DTOs;
 using MassUpdate.Core.Factories;
 using MassUpdate.Core.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace MassUpdate.Infrastructure.Services;
+namespace MassUpdate.Core.Services;
 
 public class MassUpdateValidationService : IMassUpdateValidationService
 {
@@ -34,5 +33,4 @@ public class MassUpdateValidationService : IMassUpdateValidationService
         }
         return allResults;
     }
-
 }

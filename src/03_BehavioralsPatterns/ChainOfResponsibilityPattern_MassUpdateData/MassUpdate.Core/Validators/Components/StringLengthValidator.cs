@@ -16,7 +16,7 @@ public class StringLengthValidator : ValidationHandler
         _fieldName = fieldName;
     }
 
-    public override void Validate(ValidationRequest request)
+    public override async Task ValidateAsync(ValidationRequest request)
     {
         var value = _valueProvider(request.Dto);
         if (!string.IsNullOrEmpty(value) && value.Length != _length)
@@ -26,6 +26,6 @@ public class StringLengthValidator : ValidationHandler
             return;
 
         }
-        PassToNext(request);
+        await PassToNextAsync(request);
     }
 }

@@ -25,7 +25,7 @@ public class CombinationValidator<TDto, TService> : ValidationHandler
         _errorMessage = errorMessage;
     }
 
-    public override void Validate(ValidationRequest request)
+    public override async Task ValidateAsync(ValidationRequest request)
     {
         // Sprawdzamy, czy DTO jest właściwego typu, którego oczekuje nasz "przepis"
         if (request.Dto is TDto specificDto)
@@ -36,9 +36,6 @@ public class CombinationValidator<TDto, TService> : ValidationHandler
                 request.ValidationErrors.Add(_errorMessage);
             }
         }
-
-        PassToNext(request);
-
+        await PassToNextAsync(request);
     }
-
 }

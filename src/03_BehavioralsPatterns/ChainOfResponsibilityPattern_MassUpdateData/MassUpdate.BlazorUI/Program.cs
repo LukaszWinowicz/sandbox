@@ -16,7 +16,7 @@ builder.Services.AddFluentUIComponents();
 
 // Rejestrujemy serwisy potrzebne dla naszej fabryki
 builder.Services.AddScoped<IOrderDataService, OrderDataService>();
-builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IPurchaseOrderValidationRepository, OrderRepository>();
 
 // Rejestrujemy naszą fabrykę, która będzie tworzyć walidatory
 builder.Services.AddScoped<ValidatorFactory>();

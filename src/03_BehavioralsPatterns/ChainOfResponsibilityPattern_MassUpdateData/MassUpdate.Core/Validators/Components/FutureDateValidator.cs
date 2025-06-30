@@ -14,7 +14,7 @@ public class FutureDateValidator : ValidationHandler
         _fieldName = fieldName;
     }
 
-    public override void Validate(ValidationRequest request)
+    public override async Task ValidateAsync(ValidationRequest request)
     {
         // Używamy "sposobu", który dostaliśmy, aby pobrać datę
         var dateToValidate = _dateProvider(request.Dto);
@@ -35,6 +35,6 @@ public class FutureDateValidator : ValidationHandler
             request.ValidationErrors.Add($"{_fieldName} must be today or a future date.");
         }
 
-        PassToNext(request);
+        await PassToNextAsync(request);
     }
 }

@@ -3,12 +3,11 @@ using MassUpdate.Core.Handlers;
 
 namespace MassUpdate.Core.Validators.Components;
 
-public class NotEmptyValidator : ValidationHandler
+public class NotNullValidator<T> : ValidationHandler
 {
-    private readonly Func<MassUpdateDto, string> _valueProvider;
+    private readonly Func<MassUpdateDto, T?> _valueProvider;
     private readonly string _fieldName;
-
-    public NotEmptyValidator(Func<MassUpdateDto, string> valueProvider, string fieldName)
+    public NotNullValidator(Func<MassUpdateDto, T?> valueProvider, string fieldName) 
     {
         _valueProvider = valueProvider;
         _fieldName = fieldName;
@@ -16,8 +15,7 @@ public class NotEmptyValidator : ValidationHandler
 
     public override async Task ValidateAsync(ValidationRequest request)
     {
-        var value = _valueProvider(request.Dto);
-        if (string.IsNullOrEmpty(value))
+        if (_valueProvider(request.Dto) == null)
         {
             request.ValidationErrors.Add($"{_fieldName} is required.");
             return;
