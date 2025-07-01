@@ -1,87 +1,111 @@
-﻿//using MassUpdate.Core.DTOs;
-//using MassUpdate.Core.Handlers;
-//using MassUpdate.Core.Interfaces;
-//using MassUpdate.Core.Validators.Components;
-//using Moq;
+﻿using MassUpdate.Core.DTOs;
+using MassUpdate.Core.Enums;
+using MassUpdate.Core.Handlers;
+using MassUpdate.Core.Interfaces.Repositories;
+using MassUpdate.Core.Services;
+using MassUpdate.Core.Validators.Components;
+using Moq;
 
-//namespace MassUpdateData.Tests.UnitTests;
+namespace MassUpdateData.Tests.UnitTests;
 
-//public class CombinationValidatorTests
-//{
-//    [Fact]
-//    public void Validate_ShouldAddError_WhenCombinationCheckReturnsFalse()
-//    {
-//        // 1. Mock serwisu danych nie jest tutaj kluczowy, ale potrzebujemy obiektu,
-//        //    który implementuje interfejs, aby przekazać go do walidatora.
-//        var mockDataService = new Mock<IOrderDataService>();
+public class CombinationValidatorTests
+{
+    // Prywatne pola do obiektów używanych we wszystkich testach
+    private readonly Mock<IPurchaseOrderValidationRepository> _mockRepo;
+    private readonly Mock<IValidationHandler> _mockNextHandler;
+    private readonly UpdateReceiptDateDto _testDto;
 
-//        // 2. Definiujemy nasz "przepis na walidację". W tym teście chcemy,
-//        //    aby zawsze zwracał `false`, symulując nieudaną walidację.
-//        Func<MassUpdatePurchaseOrderDto, IOrderDataService, bool> failingCheck =
-//            (dto, service) => false;
+    /// <summary>
+    /// Konstruktor klasy testowej. Inicjalizuje wspólne obiekty
+    /// używane we wszystkich scenariuszach testowych w tej klasie, zgodnie z zasadą DRY.
+    /// </summary>
+    public CombinationValidatorTests()
+    {
+        // Inicjalizacja wspólnych mocków i danych testowych
+        _mockRepo = new Mock<IPurchaseOrderValidationRepository>();
+        _mockNextHandler = new Mock<IValidationHandler>();
+        _testDto = new UpdateReceiptDateDto
+        {
+            PurchaseOrder = "DUMMY_PO",
+            LineNumber = 10,
+            Sequence = 1,
+            ReceiptDate = DateTime.Now,
+            DateType = ReceiptDateUpdateType.Confirmed
+        };
+    }
 
-//        // 3. Tworzymy instancję naszego generycznego walidatora.
-//        var validator = new CombinationValidator<MassUpdatePurchaseOrderDto, IOrderDataService>(
-//            mockDataService.Object,
-//            failingCheck,
-//            "Combination is invalid."
-//        );
+    [Fact]
+    public async Task ValidateAsync_ShouldAddError_WhenCombinationCheckReturnsFalse()
+    {
+        // ARRANGE
+        // Konfigurujemy ZACHOWANIE mocka specyficzne dla tego testu.
+        _mockRepo.Setup(repo => repo.CombinationExistsAsync(
+            _testDto.PurchaseOrder, _testDto.LineNumber, _testDto.Sequence))
+            .ReturnsAsync(false);
 
-//        var request = new ValidationRequest(new MassUpdatePurchaseOrderDto
-//        {
-//            // Musimy podać wartość dla każdego wymaganego pola.
-//            // Konkretne wartości nie mają znaczenia dla tego testu.
-//            PurchaseOrder = "DUMMY_PO_FOR_TEST",
-//            LineNumber = 1,
-//            Sequence = 1,
-//            ReceiptDate = DateTime.Now
-//        });
+        // Tworzymy "przepis", który będzie wywoływać nasz zamockowany serwis.
+        Func<UpdateReceiptDateDto, IPurchaseOrderValidationRepository, Task<bool>> checkFunc =
+               (dto, repo) => repo.CombinationExistsAsync(dto.PurchaseOrder, dto.LineNumber, dto.Sequence);
 
-//        // ACT
-//        validator.Validate(request);
+        // Tworzymy instancję walidatora, ktrego testujemy.
+        var validator = new CombinationValidator<UpdateReceiptDateDto, IPurchaseOrderValidationRepository>(
+                        _mockRepo.Object,
+                        checkFunc,
+                        "Combination does not exist."
+                    );
 
-//        // ASSERT
-//        Assert.Single(request.ValidationErrors); // Oczekujemy dokładnie jednego błędu.
-//        Assert.Equal("Combination is invalid.", request.ValidationErrors[0]); // Sprawdzamy treść błędu.
-//    }
+        // Tworzymy obiekt żądania walidacji.
+        var request = new ValidationRequest(_testDto);
 
-//    [Fact]
-//    public void Validate_ShouldNotAddError_WhenCombinationCheckReturnsTrue()
-//    {
-//        // 1. Mock serwisu danych nie jest tutaj kluczowy, ale potrzebujemy obiektu,
-//        //    który implementuje interfejs, aby przekazać go do walidatora.
-//        var mockDataService = new Mock<IOrderDataService>();
+        // ACT
+        // Wywołujemy główną metodę walidacyjną.
+            await validator.ValidateAsync(request);
 
-//        // 2. Definiujemy nasz "przepis na walidację". W tym teście chcemy,
-//        //    aby zawsze zwracał `false`, symulując nieudaną walidację.
-//        Func<MassUpdatePurchaseOrderDto, IOrderDataService, bool> passingCheck =
-//            (dto, service) => true;
+        // ASSERT
+        // Sprawdzamy, czy na liście jest dokładnie jeden błąd i czy ma poprawną treść.
+        Assert.Single(request.ValidationErrors);
+        Assert.Equal("Combination does not exist.", request.ValidationErrors[0]);
+    }
 
-//        // 3. Tworzymy mocka NASTĘPNEGO ogniwa w łańcuchu, aby sprawdzić, czy zostanie wywołany.
-//        var mockNextHandler = new Mock<IValidationHandler>();
+    /// <summary>
+    /// Weryfikuje, że walidator nie dodaje błędu i przekazuje żądanie dalej,
+    /// gdy przekazany "przepis na walidację" zwróci `true`.
+    /// </summary>
+    [Fact]
+    public async Task ValidateAsync_ShouldNotAddError_WhenCombinationSucceeds()
+    {
+        // ARRANGE
+        // Konfigurujemy ZACHOWANIE mocka specyficzne dla tego testu.
+        _mockRepo.Setup(repo => repo.CombinationExistsAsync(
+           _testDto.PurchaseOrder, _testDto.LineNumber, _testDto.Sequence))
+           .ReturnsAsync(true);
 
-//        // 4. Tworzymy instancję naszego generycznego walidatora.
-//        var validator = new CombinationValidator<MassUpdatePurchaseOrderDto, IOrderDataService>(
-//            mockDataService.Object,
-//            passingCheck,
-//            "Combination is invalid."
-//        );
+        // Tworzymy "przepis", który będzie wywoływać nasz zamockowany serwis.
+        Func<UpdateReceiptDateDto, IPurchaseOrderValidationRepository, Task<bool>> checkFunc =
+               (dto, repo) => repo.CombinationExistsAsync(dto.PurchaseOrder, dto.LineNumber, dto.Sequence);
 
-//        var request = new ValidationRequest(new MassUpdatePurchaseOrderDto
-//        {
-//            // Musimy podać wartość dla każdego wymaganego pola.
-//            // Konkretne wartości nie mają znaczenia dla tego testu.
-//            PurchaseOrder = "DUMMY_PO_FOR_TEST",
-//            LineNumber = 1,
-//            Sequence = 1,
-//            ReceiptDate = DateTime.Now
-//        });
+        // Tworzymy instancję walidatora, ktrego testujemy.
+        var validator = new CombinationValidator<UpdateReceiptDateDto, IPurchaseOrderValidationRepository>(
+                        _mockRepo.Object,
+                        checkFunc,
+                        "Combination does not exist."
+                    );
 
-//        // ACT
-//        validator.Validate(request);
+        // Ustawiamy "kolejne ogniwo" w łańcuchu.
+        validator.SetNext(_mockNextHandler.Object);
 
-//        // ASSERT
-//        // 1. Sprawdzamy, czy nie został dodany żaden błąd
-//        Assert.Empty(request.ValidationErrors);
-//    }
-//}
+        // Tworzymy obiekt żądania walidacji.
+        var request = new ValidationRequest(_testDto);
+
+        // ACT
+        // Wywołujemy główną metodę walidacyjną.
+        await validator.ValidateAsync(request);
+
+        // ASSERT
+        // Sprawdzamy, czy lista błędów jest pusta.
+        Assert.Empty(request.ValidationErrors);
+
+        // Weryfikujemy, czy następne ogniwo w łańcuchu zostało wywołane.
+        _mockNextHandler.Verify(handler => handler.ValidateAsync(request), Times.Once);
+    }
+}

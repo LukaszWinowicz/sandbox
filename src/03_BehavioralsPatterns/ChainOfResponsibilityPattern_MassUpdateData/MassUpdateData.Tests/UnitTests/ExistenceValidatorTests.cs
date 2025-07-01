@@ -73,7 +73,7 @@ public class ExistenceValidatorTests
     /// gdy przekazana funkcja sprawdzająca istnienie zwróci `true`.
     /// </summary>
     [Fact]
-    public async Task Validate_ShouldNotAddError_AndShouldCallNext_WhenEntityExists()
+    public async Task ValidateAsync_ShouldNotAddError_AndShouldCallNext_WhenEntityExists()
     {
         // ARRANGE
         // Konfigurujemy ZACHOWANIE mocka specyficzne dla tego testu.

@@ -45,7 +45,8 @@ public class UpdateReceiptDateValidationStrategy : IValidationStrategy<UpdateRec
         // Specjalny walidator dla kombinacji
         _combinationValidator = new CombinationValidator<UpdateReceiptDateDto, IPurchaseOrderValidationRepository>(
             validationRepository,
-            (dto, repo) => repo.CombinationExistsAsync(dto.PurchaseOrder, dto.LineNumber, dto.Sequence).Result, // Używamy .Result, bo Func jest synchroniczny
+            // Używamy async/await, aby poprawnie przekazać funkcję asynchroniczną
+            async (dto, repo) => await repo.CombinationExistsAsync(dto.PurchaseOrder, dto.LineNumber, dto.Sequence),
             "Combination of PO, Line, and Sequence does not exist."
         );
     }
