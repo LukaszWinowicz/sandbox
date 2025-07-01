@@ -3,10 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34003.232
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01_CreationalsPatterns", "01_CreationalsPatterns", "{F2386B77-C42E-43C8-8A89-C1DA19D3DFCA}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02_StructuralsPatterns", "02_StructuralsPatterns", "{C3AACDBB-31B7-423D-8FA9-C41E6C039CAB}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03_BehavioralsPatterns", "03_BehavioralsPatterns", "{AE8F46A4-887F-4B91-99AD-A883344408B6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ChainOfResponsibilityPattern_MassUpdateData", "ChainOfResponsibilityPattern_MassUpdateData", "{0829E7AA-4263-4C01-811A-4615784DE120}"
@@ -18,6 +14,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MassUpdate.Infrastructure", "03_BehavioralsPatterns\ChainOfResponsibilityPattern_MassUpdateData\MassUpdate.Infrastructure\MassUpdate.Infrastructure.csproj", "{99C2D073-50A9-4EA3-A7EF-00BF81A89E5B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MassUpdate.BlazorUI", "03_BehavioralsPatterns\ChainOfResponsibilityPattern_MassUpdateData\MassUpdate.BlazorUI\MassUpdate.BlazorUI.csproj", "{28877579-7BDF-4657-911F-6C5AA7366DEB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MassUpdateApp", "MassUpdateApp", "{E7F4C2DC-B24F-4BF7-87B7-8C8204B35F09}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassUpdateApp.Core", "MassUpdateApp\MassUpdateApp.Core\MassUpdateApp.Core.csproj", "{0D05D0E0-D86F-496D-900B-DDF189E6C8BF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +41,10 @@ Global
 		{28877579-7BDF-4657-911F-6C5AA7366DEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28877579-7BDF-4657-911F-6C5AA7366DEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28877579-7BDF-4657-911F-6C5AA7366DEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D05D0E0-D86F-496D-900B-DDF189E6C8BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D05D0E0-D86F-496D-900B-DDF189E6C8BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D05D0E0-D86F-496D-900B-DDF189E6C8BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D05D0E0-D86F-496D-900B-DDF189E6C8BF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -51,6 +55,7 @@ Global
 		{B0FCDA08-FEC2-4E56-9C52-43D773CB6101} = {0829E7AA-4263-4C01-811A-4615784DE120}
 		{99C2D073-50A9-4EA3-A7EF-00BF81A89E5B} = {0829E7AA-4263-4C01-811A-4615784DE120}
 		{28877579-7BDF-4657-911F-6C5AA7366DEB} = {0829E7AA-4263-4C01-811A-4615784DE120}
+		{0D05D0E0-D86F-496D-900B-DDF189E6C8BF} = {E7F4C2DC-B24F-4BF7-87B7-8C8204B35F09}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AC97C506-DE41-412B-BB0D-1ECD765DD65D}
