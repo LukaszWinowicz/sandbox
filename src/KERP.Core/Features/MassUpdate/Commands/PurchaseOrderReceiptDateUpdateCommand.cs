@@ -6,7 +6,7 @@ namespace KERP.Core.Features.MassUpdate.Commands;
 /// <summary>
 /// Represents the command to process a request for updating a Purchase Order's receipt date.
 /// </summary>
-public class PurchaseOrderReceiptDateUpdateCommand : CommandBase
+public class PurchaseOrderReceiptDateUpdateCommand : CommandBase, IRequest<List<string>>
 {
     public required string PurchaseOrder { get; set; }
 
