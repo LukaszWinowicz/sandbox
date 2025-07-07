@@ -1,6 +1,7 @@
 ﻿using KERP.Core.Abstractions.Messaging;
 using KERP.Core.Features.MassUpdate.Entities;
 using KERP.Core.Interfaces.Repositories;
+using KERP.Core.Interfaces.ValidationStrategies;
 
 namespace KERP.Core.Features.MassUpdate.Commands;
 

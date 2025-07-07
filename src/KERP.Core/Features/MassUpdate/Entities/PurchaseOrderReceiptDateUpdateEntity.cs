@@ -34,7 +34,6 @@ public class PurchaseOrderReceiptDateUpdateEntity
     [Required]
     public required string UserId { get; set; }
 
-    [Required]
     DateTime AddedDate { get; set; } = DateTime.UtcNow;
 
     public bool IsProcessed { get; set; } = false;

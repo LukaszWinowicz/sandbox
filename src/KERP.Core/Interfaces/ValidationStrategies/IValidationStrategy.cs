@@ -1,0 +1,22 @@
+﻿using KERP.Core.Abstractions.Messaging;
+
+namespace KERP.Core.Interfaces.ValidationStrategies;
+
+/// <summary>
+/// Defines a generic contract for a validation strategy.
+/// Each strategy is responsible for validating a specific command.
+/// </summary>
+/// <typeparam name="TCommand">The type of the command this strategy can validate.</typeparam>
+public interface IValidationStrategy<TCommand> where TCommand : CommandBase
+{
+    /// <summary>
+    /// Executes the validation logic for the given command.
+    /// </summary>
+    /// <param name="command">The command object to validate.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation.
+    /// The task result contains a list of validation error messages.
+    /// An empty list signifies a successful validation.
+    /// </returns>
+    Task<List<string>> ValidateAsync(TCommand command);
+}
