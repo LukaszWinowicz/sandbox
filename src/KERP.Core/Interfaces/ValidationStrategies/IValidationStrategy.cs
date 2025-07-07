@@ -13,10 +13,6 @@ public interface IValidationStrategy<TCommand> where TCommand : CommandBase
     /// Executes the validation logic for the given command.
     /// </summary>
     /// <param name="command">The command object to validate.</param>
-    /// <returns>
-    /// A task that represents the asynchronous operation.
-    /// The task result contains a list of validation error messages.
-    /// An empty list signifies a successful validation.
-    /// </returns>
+    /// <returns>A list of validation error messages. An empty list signifies success.</returns>
     Task<List<string>> ValidateAsync(TCommand command);
 }
