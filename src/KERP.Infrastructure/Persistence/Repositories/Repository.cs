@@ -1,6 +1,9 @@
 ﻿using KERP.Core.Interfaces.Repositories;
 namespace KERP.Infrastructure.Persistence.Repositories;
 
+/// <summary>
+/// A generic repository implementation for common database write operations.
+/// </summary>
 public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
 {
     protected readonly AppDbContext _context;
@@ -10,13 +13,13 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
         _context = context;
     }
 
+    /// <inheritdoc />
     public async Task AddRangeAsync(IEnumerable<TEntity> entities)
     {
-        // context.Set<TEntity>() to metoda EF Core, która dynamicznie
-        // zwraca odpowiedni DbSet dla danego typu encji (np. PurchaseOrderReceiptDateUpdateEntity).
         await _context.Set<TEntity>().AddRangeAsync(entities);
     }
 
+    /// <inheritdoc />
     public async Task<int> SaveChangesAsync()
     {
         return await _context.SaveChangesAsync();

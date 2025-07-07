@@ -37,9 +37,24 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // Ważne, aby najpierw wywołać metodę bazową dla konfiguracji Identity
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<ValidationPurchaseOrderEntity>()
-            .HasKey(e => new { e.PurchaseOrder, e.LineNumber, e.Sequence });
+        // Konfiguracja dla encji walidacyjnej, synchronizowanej z BigQuery
+        modelBuilder.Entity<ValidationPurchaseOrderEntity>(entity =>
+        {
+            // Ustawiamy schemat 'bgq' i nazwę tabeli
+            entity.ToTable("PurchaseOrders", "bgq");
+
+            // Definiujemy klucz złożony na podstawie trzech pól.
+            entity.HasKey(e => new { e.PurchaseOrder, e.LineNumber, e.Sequence });
+        });
+
+        // Konfiguracja dla encji z prośbami o aktualizację
+        modelBuilder.Entity<PurchaseOrderReceiptDateUpdateEntity>(entity =>
+        {
+            // Ustawiamy schemat 'upd' i nazwę tabeli
+            entity.ToTable("PurchaseOrderReceiptDate", "upd");
+        });
     }
 }
