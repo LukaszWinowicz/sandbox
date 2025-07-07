@@ -3,13 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34003.232
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KERP.Core", "KERP.Core\KERP.Core.csproj", "{79FA0687-A454-486D-9D32-4BBE744213C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KERP.Core", "KERP.Core\KERP.Core.csproj", "{79FA0687-A454-486D-9D32-4BBE744213C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KERP.Infrastructure", "KERP.Infrastructure\KERP.Infrastructure.csproj", "{48AAB1DA-550D-4757-B714-84DEF6DB7D14}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KERP.Infrastructure", "KERP.Infrastructure\KERP.Infrastructure.csproj", "{48AAB1DA-550D-4757-B714-84DEF6DB7D14}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KERP.Tests", "KERP.Tests\KERP.Tests.csproj", "{57024BC3-5942-4C0C-BCD6-423FFE5B0F7F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KERP.BlazorUI", "KERP.BlazorUI\KERP.BlazorUI.csproj", "{1644D3FE-9EE7-4B2B-A845-2B60B810F370}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KERP.BlazorUI", "KERP.BlazorUI\KERP.BlazorUI.csproj", "{1644D3FE-9EE7-4B2B-A845-2B60B810F370}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,10 +23,6 @@ Global
 		{48AAB1DA-550D-4757-B714-84DEF6DB7D14}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48AAB1DA-550D-4757-B714-84DEF6DB7D14}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{48AAB1DA-550D-4757-B714-84DEF6DB7D14}.Release|Any CPU.Build.0 = Release|Any CPU
-		{57024BC3-5942-4C0C-BCD6-423FFE5B0F7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{57024BC3-5942-4C0C-BCD6-423FFE5B0F7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{57024BC3-5942-4C0C-BCD6-423FFE5B0F7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{57024BC3-5942-4C0C-BCD6-423FFE5B0F7F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1644D3FE-9EE7-4B2B-A845-2B60B810F370}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1644D3FE-9EE7-4B2B-A845-2B60B810F370}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1644D3FE-9EE7-4B2B-A845-2B60B810F370}.Release|Any CPU.ActiveCfg = Release|Any CPU
