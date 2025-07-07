@@ -20,6 +20,13 @@ public class DiyMediator
         _serviceProvider = serviceProvider;
     }
 
+    /// <summary>
+    /// Sends a request to its corresponding handler.
+    /// </summary>
+    /// <typeparam name="TResponse">The type of the response.</typeparam>
+    /// <param name="request">The request to send.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the handler's response.</returns>
     public Task<TResponse> Send<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
     {
         // 1. Get the concrete type of the request (e.g., PurchaseOrderReceiptDateUpdateCommand)
