@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KERP.Infrastructure", "KERP
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KERP.BlazorUI", "KERP.BlazorUI\KERP.BlazorUI.csproj", "{1644D3FE-9EE7-4B2B-A845-2B60B810F370}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KERP.Tests", "KERP.Tests\KERP.Tests.csproj", "{DB1C7E5B-35BC-4B50-8F60-B204874C3E47}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{1644D3FE-9EE7-4B2B-A845-2B60B810F370}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1644D3FE-9EE7-4B2B-A845-2B60B810F370}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1644D3FE-9EE7-4B2B-A845-2B60B810F370}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB1C7E5B-35BC-4B50-8F60-B204874C3E47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB1C7E5B-35BC-4B50-8F60-B204874C3E47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB1C7E5B-35BC-4B50-8F60-B204874C3E47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB1C7E5B-35BC-4B50-8F60-B204874C3E47}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

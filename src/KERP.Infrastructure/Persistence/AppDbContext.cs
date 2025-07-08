@@ -1,5 +1,5 @@
 ﻿using KERP.Core.Features.MassUpdate.Entities;
-using Microsoft.AspNetCore.Identity;
+using KERP.Core.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,7 +9,7 @@ namespace KERP.Infrastructure.Persistence;
 /// The main database context for the application, based on Entity Framework Core.
 /// It includes DbSets for application-specific entities and Identity tables.
 /// </summary>
-public class AppDbContext : IdentityDbContext<IdentityUser>
+public class AppDbContext : IdentityDbContext<ApplicationUser>
 {
     public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
