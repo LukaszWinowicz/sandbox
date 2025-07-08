@@ -1,113 +1,60 @@
 ﻿@page "/mass-update/purchase-order/receipt-date"
-@rendermode InteractiveServer
-
+@using KERP.BlazorUI.Components.Shared.MassUpdate
 @using KERP.Core.Features.MassUpdate.Commands
 @using KERP.Core.Features.MassUpdate.Enums
+@using KERP.Core.Results
 @using KERP.Infrastructure.Messaging
+
+@rendermode InteractiveServer
 
 @inject DiyMediator Mediator
 
-<h3>Mass Update - Purchase Order Receipt Date</h3>
+<MassUpdatePageLayout TItem="PurchaseOrderReceiptDateUpdateCommand"
+                      PageTitle="Mass Update - Purchase Order Receipt Date"
+                      PageDescription="Enter or paste data to update receipt dates for Purchase Orders."
+                      NewItemFactory="@CreateNewCommand"
+                      ProcessRequestFunc="@ProcessRowsAsync">
 
-<FluentCard Style="padding: 20px;">
-    <div class="form-grid-header">
+    <HeaderTemplate>
         <strong>Purchase Order</strong>
-        <strong>Line Number</strong>
+        <strong>Line</strong>
         <strong>Sequence</strong>
         <strong>New Receipt Date</strong>
         <strong>Date Type</strong>
-        <div style="width: 50px;"></div>
-    </div>
+    </HeaderTemplate>
 
-    @foreach (var command in Rows)
-    {
-        <div class="form-grid-row" @key="command">
-            <FluentTextField @bind-Value="command.PurchaseOrder" />
-            <FluentNumberField @bind-Value="command.LineNumber" />
-            <FluentNumberField @bind-Value="command.Sequence" />
-            <FluentDatePicker @bind-Value="command.ReceiptDate" />
-            <FluentSelect @bind-Value="command.DateTypeAsString" Items="@(Enum.GetNames<ReceiptDateUpdateType>())"/>
-            <FluentButton IconStart="@(new Icons.Regular.Size20.Delete())" OnClick="@(() => RemoveRow(command))" Appearance="Appearance.Stealth" />
-        </div>
-    }
+    <RowTemplate>
+        <FluentTextField @bind-Value="context.PurchaseOrder" />
+        <FluentNumberField @bind-Value="context.LineNumber" />
+        <FluentNumberField @bind-Value="context.Sequence" />
+        <FluentDatePicker @bind-Value="context.ReceiptDate" />
+        <FluentSelect @bind-Value="context.DateTypeAsString" Items="@(Enum.GetNames<ReceiptDateUpdateType>())" />
+    </RowTemplate>
 
-    <FluentStack HorizontalAlignment="HorizontalAlignment.End" Class="mt-3" Style="gap: 10px;">
-        <FluentButton OnClick="AddRow">Add Row</FluentButton>
-        <FluentButton Appearance="Appearance.Accent" @onclick="ProcessUpdates">Process All Rows</FluentButton>
-    </FluentStack>
-</FluentCard>
-
-@if (ProcessingResults.Any())
-{
-    <div class="mt-4">
-        <h4>Processing Results:</h4>
-        @foreach (var result in ProcessingResults)
-        {
-            <div class="alert @(result.Value.Any() ? "alert-danger" : "alert-success")">
-                <strong>Row with PO: @result.Key.PurchaseOrder</strong> -
-                @if (result.Value.Any())
-                {
-                    <span>Failed: @string.Join(", ", result.Value)</span>
-                }
-                else
-                {
-                    <span>Processed Successfully!</span>
-                }
-            </div>
-        }
-    </div>
-}
+</MassUpdatePageLayout>
 
 @code {
-    private List<PurchaseOrderReceiptDateUpdateCommand> Rows { get; set; } = new();
-    private Dictionary<PurchaseOrderReceiptDateUpdateCommand, List<string>> ProcessingResults { get; set; } = new();
-    private bool IsProcessing = false;
-
-    protected override void OnInitialized()
+    private PurchaseOrderReceiptDateUpdateCommand CreateNewCommand()
     {
-        // Dodajemy jeden pusty wiersz na start
-        AddRow();
-    }
-
-    private void AddRow()
-    {
-        Rows.Add(new PurchaseOrderReceiptDateUpdateCommand
-            {
-                PurchaseOrder = "",
-                LineNumber = 0,
-                Sequence = 0,
-                ReceiptDate = DateTime.Today,
-                DateType = ReceiptDateUpdateType.Confirmed
-            });
-    }
-
-    private void RemoveRow(PurchaseOrderReceiptDateUpdateCommand commandToRemove)
-    {
-        Rows.Remove(commandToRemove);
-    }
-
-    private async Task ProcessUpdates()
-    {
-        IsProcessing = true;
-        ProcessingResults.Clear();
-
-        foreach (var command in Rows)
+        return new PurchaseOrderReceiptDateUpdateCommand
         {
-            // Wysyłamy polecenie do mediatora i zapisujemy wynik dla danego wiersza
-            var errors = await Mediator.Send(command);
-            ProcessingResults[command] = errors;
-        }
+            PurchaseOrder = string.Empty,
+            LineNumber = 0,
+            Sequence = 0,
+            ReceiptDate = DateTime.Today,
+            DateType = ReceiptDateUpdateType.Confirmed
+        };
+    }
 
-        IsProcessing = false;
+    private async Task<List<RowValidationResult>> ProcessRowsAsync(List<PurchaseOrderReceiptDateUpdateCommand> commands)
+    {
+        var results = new List<RowValidationResult>();
+        int rowNumber = 1;
+        foreach (var command in commands)
+        {
+            var errors = await Mediator.Send(command);
+            results.Add(new RowValidationResult(rowNumber++, errors));
+        }
+        return results;
     }
 }
-
-<style>
-    .form-grid-header, .form-grid-row {
-        display: grid;
-        grid-template-columns: 2fr 1fr 1fr 2fr 1.5fr 50px;
-        gap: 16px;
-        align-items: center;
-        margin-bottom: 8px;
-    }
-</style>
