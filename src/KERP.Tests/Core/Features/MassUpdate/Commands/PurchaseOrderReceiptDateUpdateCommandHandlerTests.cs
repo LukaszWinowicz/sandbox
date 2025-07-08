@@ -34,6 +34,15 @@ public class PurchaseOrderReceiptDateUpdateCommandHandlerTests
         );
     }
 
+    private PurchaseOrderReceiptDateUpdateCommand ValidCommand() => new()
+    {
+        PurchaseOrder = "PO12345678",
+        LineNumber = 10,
+        Sequence = 1,
+        ReceiptDate = DateTime.Now.AddDays(1),
+        DateType = ReceiptDateUpdateType.Confirmed
+    };
+
     /// <summary>
     /// Verifies that the handler returns validation errors immediately
     /// if the validation strategy fails, without attempting to save data.
@@ -43,14 +52,8 @@ public class PurchaseOrderReceiptDateUpdateCommandHandlerTests
     {
         // ARRANGE
         // 1. Przygotowanie polecenia z danymi, które spowodują błąd walidacji.
-        var command = new PurchaseOrderReceiptDateUpdateCommand
-        {
-            PurchaseOrder = "PO123",
-            LineNumber = 10,
-            Sequence = 1,
-            ReceiptDate = DateTime.Now,
-            DateType = ReceiptDateUpdateType.Confirmed
-        };
+        var command = ValidCommand();
+        command.PurchaseOrder = "PO123";       
 
         // 2. Zdefiniowanie, jakie błędy ma zwrócić mock walidacji.
         var expectedErrors = new List<string> { "PO number is too short." };
@@ -78,14 +81,7 @@ public class PurchaseOrderReceiptDateUpdateCommandHandlerTests
     {
         // ARRANGE
         // 1. Przygotowanie polecenia z poprawnymi danymi.
-        var command = new PurchaseOrderReceiptDateUpdateCommand
-        {
-            PurchaseOrder = "PO12345678",
-            LineNumber = 10,
-            Sequence = 1,
-            ReceiptDate = DateTime.Now.AddDays(5),
-            DateType = ReceiptDateUpdateType.Confirmed
-        };
+        var command = ValidCommand();
 
         // 2. Nauczenie mocka walidacji, aby zwrócił pustą listę błędów (czyli walidacja przeszła).
         _mockValidationStrategy
@@ -109,5 +105,29 @@ public class PurchaseOrderReceiptDateUpdateCommandHandlerTests
         // To jest dowód na to, że handler poprawnie kontynuował proces po pomyślnej walidacji.
         _mockRepository.Verify(r => r.AddRangeAsync(It.IsAny<IEnumerable<PurchaseOrderReceiptDateUpdateEntity>>()), Times.Once);
         _mockRepository.Verify(r => r.SaveChangesAsync(), Times.Once);
+    }
+
+    [Theory]
+    [InlineData(null, "Purchase order cannot be null.")]
+    [InlineData("", "Purchase order cannot be empty.")]
+    [InlineData("PO", "Purchase order is too short.")]
+    public async Task Handle_ShouldReturnValidationErrors_ForInvalidPurchaseOrders(string inputPO, string expectedError)
+    {
+        // ARRANGE
+        var command = ValidCommand();
+        command.PurchaseOrder = inputPO;
+
+        _mockValidationStrategy
+        .Setup(v => v.ValidateAsync(command))
+        .ReturnsAsync(new List<string> { expectedError });
+
+        // ACT
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // ASSERT
+        Assert.Single(result);
+        Assert.Equal(expectedError, result.First());
+        _mockRepository.Verify(r => r.AddRangeAsync(It.IsAny<IEnumerable<PurchaseOrderReceiptDateUpdateEntity>>()), Times.Never);
+        _mockRepository.Verify(r => r.SaveChangesAsync(), Times.Never);
     }
 }

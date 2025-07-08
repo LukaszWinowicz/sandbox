@@ -19,6 +19,8 @@ public class PurchaseOrderValidationRepository : IPurchaseOrderValidationReposit
     /// <inheritdoc />
     public async Task<bool> OrderExistsAsync(string orderNumber)
     {
+        // Uses EF Core's LINQ extension method to efficiently check for existence.
+        // This translates to an "EXISTS" query in SQL.
         return await _context.ValidationPurchaseOrders
             .AnyAsync(p => p.PurchaseOrder == orderNumber);
     }
