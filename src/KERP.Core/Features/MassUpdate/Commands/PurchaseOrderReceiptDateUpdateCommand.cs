@@ -1,5 +1,6 @@
 ﻿using KERP.Core.Abstractions.Messaging;
 using KERP.Core.Features.MassUpdate.Enums;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace KERP.Core.Features.MassUpdate.Commands;
 
@@ -17,4 +18,11 @@ public class PurchaseOrderReceiptDateUpdateCommand : CommandBase, IRequest<List<
     public required DateTime? ReceiptDate { get; set; }
 
     public required ReceiptDateUpdateType DateType { get; set; }
+
+    [NotMapped] // Ważne, aby EF Core nie próbował tego mapować, jeśli kiedyś będziemy go używać jako encji
+    public string DateTypeAsString
+    {
+        get => DateType.ToString();
+        set => DateType = Enum.Parse<ReceiptDateUpdateType>(value);
+    }
 }
