@@ -5,6 +5,7 @@ using KERP.Core.Interfaces.Repositories;
 using KERP.Core.Interfaces.Services;
 using KERP.Core.Interfaces.ValidationStrategies;
 using Moq;
+using System;
 
 namespace KERP.Tests.Core.Features.MassUpdate.Commands;
 
@@ -47,7 +48,7 @@ public class PurchaseOrderReceiptDateUpdateCommandHandlerTests
             PurchaseOrder = "PO123",
             LineNumber = 10,
             Sequence = 1,
-            ReceiptDate = System.DateTime.Now,
+            ReceiptDate = DateTime.Now,
             DateType = ReceiptDateUpdateType.Confirmed
         };
 
@@ -70,5 +71,43 @@ public class PurchaseOrderReceiptDateUpdateCommandHandlerTests
         // 6.KLUCZOWE: Weryfikacja, że repozytorium do zapisu NIGDY nie zostało wywołane.
         _mockRepository.Verify(r => r.AddRangeAsync(It.IsAny<IEnumerable<PurchaseOrderReceiptDateUpdateEntity>>()), Times.Never);
         _mockRepository.Verify(r => r.SaveChangesAsync(), Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldSaveChanges_WhenValidationSucceeds()
+    {
+        // ARRANGE
+        // 1. Przygotowanie polecenia z poprawnymi danymi.
+        var command = new PurchaseOrderReceiptDateUpdateCommand
+        {
+            PurchaseOrder = "PO12345678",
+            LineNumber = 10,
+            Sequence = 1,
+            ReceiptDate = DateTime.Now.AddDays(5),
+            DateType = ReceiptDateUpdateType.Confirmed
+        };
+
+        // 2. Nauczenie mocka walidacji, aby zwrócił pustą listę błędów (czyli walidacja przeszła).
+        _mockValidationStrategy
+            .Setup(s => s.ValidateAsync(command))
+            .ReturnsAsync(new List<string>());
+
+        // 3. Konfiguracja serwisu użytkownika, aby zwracał jakieś ID.
+        _mockUserService
+            .Setup(s => s.GetCurrentUserId())
+            .Returns("test-user-id");
+
+        // ACT
+        // 4. Wywołanie metody Handle na handlerze z przygotowanym poleceniem.
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // ASSERT
+        // 5. Sprawdzenie, czy operacja zakończyła się sukcesem (brak błędów).
+        Assert.Empty(result);
+
+        // 6. KLUCZOWE: Weryfikujemy, czy metody zapisu na repozytorium zostały wywołane DOKŁADNIE RAZ.
+        // To jest dowód na to, że handler poprawnie kontynuował proces po pomyślnej walidacji.
+        _mockRepository.Verify(r => r.AddRangeAsync(It.IsAny<IEnumerable<PurchaseOrderReceiptDateUpdateEntity>>()), Times.Once);
+        _mockRepository.Verify(r => r.SaveChangesAsync(), Times.Once);
     }
 }
