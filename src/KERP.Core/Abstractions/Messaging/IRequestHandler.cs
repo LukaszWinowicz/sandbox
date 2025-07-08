@@ -13,5 +13,5 @@ public interface IRequestHandler<TRequest, TResponse> where TRequest : IRequest<
     /// <param name="request">The request object.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A task representing the response.</returns>
-    Task<TResponse> Handler(TRequest request, CancellationToken cancellationToken);
+    Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken);
 }
