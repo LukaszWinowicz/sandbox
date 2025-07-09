@@ -12,12 +12,11 @@ namespace KERP.Application.Features.MassUpdate.Commands;
 /// Handles the <see cref="PurchaseOrderReceiptDateUpdateCommand"/>.
 /// </summary>
 public class PurchaseOrderReceiptDateUpdateCommandHandler
-       : IRequestHandler<PurchaseOrderReceiptDateUpdateCommand, List<RowValidationResult>>
+       : IRequestHandler<PurchaseOrderReceiptDateUpdateCommand, Result<List<RowValidationResult>>>
 {
     private readonly IRepository<PurchaseOrderReceiptDateUpdateEntity> _repository;
     private readonly IUserService _userService;
 
-    // Usunęliśmy zależność od IUserService
     public PurchaseOrderReceiptDateUpdateCommandHandler(
         IRepository<PurchaseOrderReceiptDateUpdateEntity> repository,
         IUserService userService)
@@ -29,7 +28,7 @@ public class PurchaseOrderReceiptDateUpdateCommandHandler
     /// <summary>
     /// Handles the command by validating the input, mapping it to an entity, and persisting it.
     /// </summary>
-    public async Task<List<RowValidationResult>> Handle(PurchaseOrderReceiptDateUpdateCommand command, CancellationToken cancellationToken)
+    public async Task<Result<List<RowValidationResult>>> Handle(PurchaseOrderReceiptDateUpdateCommand command, CancellationToken cancellationToken)
     {
         // --- Krok 1: Mapowanie (z Command na Encję) ---
         var entity = new PurchaseOrderReceiptDateUpdateEntity
@@ -48,6 +47,7 @@ public class PurchaseOrderReceiptDateUpdateCommandHandler
         await _repository.SaveChangesAsync();
 
         // --- Krok 3: Sukces ---
-        return new List<RowValidationResult>();
+        return Result<List<RowValidationResult>>.Success(new List<RowValidationResult>());
+
     }
 }
