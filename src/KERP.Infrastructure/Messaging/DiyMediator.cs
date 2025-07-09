@@ -43,7 +43,6 @@ public class DiyMediator
         var pipelineType = typeof(IPipelineBehavior<,>).MakeGenericType(requestType, typeof(TResponse));
         var behaviors = _serviceProvider.GetServices(pipelineType)
             .Cast<object>() // Cast to object to work with a common type
-            .Reverse() // Reverse to build the pipeline from the outside in
             .ToList();
 
         // 5. Create the delegate for the actual handler invocation

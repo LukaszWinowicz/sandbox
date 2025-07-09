@@ -45,8 +45,11 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<DiyMediator>();
 builder.Services.AddTransient<IRequestHandler<PurchaseOrderReceiptDateUpdateCommand, List<RowValidationResult>>, PurchaseOrderReceiptDateUpdateCommandHandler>();
 
-// 6. Rejestracja generycznego Pipeline Behavior
-// To zarejestruje ValidationPipelineBehavior dla każdej kombinacji TRequest/TResponse
+// 6. Rejestracja generycznego Pipeline Behavior - KOLEJNOŚĆ MA ZNACZENIE
+// 1. Transaction Behavior (zewnętrzna warstwa)
+builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(TransactionPipelineBehavior<,>));
+
+// 2. Validation Behavior (wewnętrzna warstwa)
 builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
 
 var app = builder.Build();
