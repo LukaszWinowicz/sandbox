@@ -1,4 +1,4 @@
-﻿using KERP.Core.Abstractions.Messaging;
+﻿using KERP.Application.Abstractions.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace KERP.Infrastructure.Messaging;

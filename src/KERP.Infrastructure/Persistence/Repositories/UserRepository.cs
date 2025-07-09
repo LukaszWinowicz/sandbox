@@ -1,5 +1,5 @@
-﻿using KERP.Core.Identity;
-using KERP.Core.Interfaces.Repositories;
+﻿using KERP.Domain.Identity;
+using KERP.Domain.Interfaces.Repositories;
 using Microsoft.AspNetCore.Identity;
 
 namespace KERP.Infrastructure.Persistence.Repositories;

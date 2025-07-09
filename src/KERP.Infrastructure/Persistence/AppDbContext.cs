@@ -1,5 +1,5 @@
-﻿using KERP.Core.Features.MassUpdate.Entities;
-using KERP.Core.Identity;
+﻿using KERP.Domain.Identity;
+using KERP.Domain.MassUpdate.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

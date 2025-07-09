@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\KERP.Application\KERP.Application.csproj" />
     <ProjectReference Include="..\KERP.Infrastructure\KERP.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

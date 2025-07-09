@@ -1,4 +1,4 @@
-﻿using KERP.Core.Interfaces.Repositories;
+﻿using KERP.Domain.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace KERP.Infrastructure.Persistence.Repositories;

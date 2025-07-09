@@ -1,4 +1,8 @@
-﻿namespace KERP.Application.Validation.Components;
+﻿using KERP.Application.Abstractions.Messaging;
+using KERP.Application.Validation.Context;
+using KERP.Application.Validators.Handlers;
+
+namespace KERP.Application.Validation.Components;
 /// <summary>
 /// Validates that a string field is not null or empty.
 /// Stops processing for this chain if validation fails.

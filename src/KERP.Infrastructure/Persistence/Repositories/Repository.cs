@@ -1,4 +1,4 @@
-﻿using KERP.Core.Interfaces.Repositories;
+﻿using KERP.Domain.Interfaces.Repositories;
 namespace KERP.Infrastructure.Persistence.Repositories;
 
 /// <summary>

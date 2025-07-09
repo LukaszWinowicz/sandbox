@@ -1,11 +1,10 @@
-﻿using KERP.Core.Features.MassUpdate.Commands;
-using KERP.Core.Features.MassUpdate.Entities;
-using KERP.Core.Features.MassUpdate.Enums;
-using KERP.Core.Interfaces.Repositories;
-using KERP.Core.Interfaces.Services;
-using KERP.Core.Interfaces.ValidationStrategies;
+﻿using KERP.Application.Features.MassUpdate.Commands;
+using KERP.Application.Interfaces.Services;
+using KERP.Application.Interfaces.ValidationStrategies;
+using KERP.Domain.Interfaces.Repositories;
+using KERP.Domain.MassUpdate.Entities;
+using KERP.Domain.MassUpdate.Enums;
 using Moq;
-using System;
 
 namespace KERP.Tests.Core.Features.MassUpdate.Commands;
 
