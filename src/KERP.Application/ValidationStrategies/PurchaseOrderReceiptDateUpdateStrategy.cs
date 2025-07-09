@@ -6,7 +6,7 @@ using KERP.Application.Validation.Context;
 using KERP.Application.Validation.Handlers;
 using KERP.Domain.Interfaces.Repositories;
 
-namespace KERP.Core.Features.MassUpdate.ValidationStrategies;
+namespace KERP.Application.ValidationStrategies;
 
 /// <summary>
 /// Implements the validation strategy for the PurchaseOrderReceiptDateUpdateCommand.
@@ -31,15 +31,15 @@ public class PurchaseOrderReceiptDateUpdateStrategy : IValidationStrategy<Purcha
             .Build();
 
         _lineNumberChain = new ValidationChainBuilder()
-            .WithMinValueCheck<int>(cmd => ((PurchaseOrderReceiptDateUpdateCommand)cmd).LineNumber, 10, "Line Number")
+            .WithMinValueCheck(cmd => ((PurchaseOrderReceiptDateUpdateCommand)cmd).LineNumber, 10, "Line Number")
             .Build();
 
         _sequenceChain = new ValidationChainBuilder()
-            .WithMinValueCheck<int>(cmd => ((PurchaseOrderReceiptDateUpdateCommand)cmd).Sequence, 1, "Sequence")
+            .WithMinValueCheck(cmd => ((PurchaseOrderReceiptDateUpdateCommand)cmd).Sequence, 1, "Sequence")
             .Build();
 
         _receiptDateChain = new ValidationChainBuilder()
-            .WithNotNullCheck<System.DateTime?>(cmd => ((PurchaseOrderReceiptDateUpdateCommand)cmd).ReceiptDate, "Receipt Date")
+            .WithNotNullCheck(cmd => ((PurchaseOrderReceiptDateUpdateCommand)cmd).ReceiptDate, "Receipt Date")
             .WithFutureDateCheck(cmd => ((PurchaseOrderReceiptDateUpdateCommand)cmd).ReceiptDate, "Receipt Date")
             .Build();
 
