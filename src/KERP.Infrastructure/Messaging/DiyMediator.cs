@@ -4,8 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 namespace KERP.Infrastructure.Messaging;
 
 /// <summary>
-/// A simple, custom implementation of the Mediator pattern that dispatches requests
-/// to their respective handlers using the service provider.
+/// A custom implementation of the Mediator pattern that support pipeline behaviors
+/// to handle cross-cutting concerns.
 /// </summary>
 public class DiyMediator
 {
@@ -21,7 +21,7 @@ public class DiyMediator
     }
 
     /// <summary>
-    /// Sends a request to its corresponding handler.
+    /// Sends a request through the pipeline to its corresponding handler.
     /// </summary>
     /// <typeparam name="TResponse">The type of the response.</typeparam>
     /// <param name="request">The request to send.</param>
@@ -39,9 +39,28 @@ public class DiyMediator
         // 3. Ask the DI container to provide an instance of that handler
         var handler = _serviceProvider.GetRequiredService(handlerType);
 
-        // 4. Invoke the "Handle" method on the resolved handler, passing the request
-        return (Task<TResponse>)handler.GetType()
+        // 4. Resolve all registered pipeline behaviors for the current request/response
+        var pipelineType = typeof(IPipelineBehavior<,>).MakeGenericType(requestType, typeof(TResponse));
+        var behaviors = _serviceProvider.GetServices(pipelineType)
+            .Cast<object>() // Cast to object to work with a common type
+            .Reverse() // Reverse to build the pipeline from the outside in
+            .ToList();
+
+        // 5. Create the delegate for the actual handler invocation
+        Func<Task<TResponse>> handle = () => (Task<TResponse>)handler.GetType()
             .GetMethod("Handle")!
             .Invoke(handler, new object[] { request, cancellationToken })!;
+
+        // 6. Chain the behaviors together, with the handler at the very end
+        foreach (var behavior in behaviors)
+        {
+            var previousHandle = handle; // Capture the current state of the delegate
+            handle = () => (Task<TResponse>)behavior.GetType()
+                .GetMethod("Handle")!
+                .Invoke(behavior, new object[] { request, previousHandle, cancellationToken })!;
+        }
+
+        // 7. Invoke the final, wrapped delegate
+        return handle();
     }
 }

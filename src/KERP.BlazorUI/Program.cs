@@ -3,10 +3,12 @@ using KERP.Application.Features.MassUpdate.Commands;
 using KERP.Application.Interfaces.Services;
 using KERP.Application.Interfaces.ValidationStrategies;
 using KERP.Application.Services;
+using KERP.Application.Validation;
 using KERP.Application.ValidationStrategies;
 using KERP.BlazorUI.Components;
 using KERP.Domain.Identity;
 using KERP.Domain.Interfaces.Repositories;
+using KERP.Domain.Results;
 using KERP.Infrastructure.Messaging;
 using KERP.Infrastructure.Persistence;
 using KERP.Infrastructure.Persistence.Repositories;
@@ -41,7 +43,11 @@ builder.Services.AddScoped<IUserService, UserService>();
 
 // 5. Rejestracja Handlera i Mediatora
 builder.Services.AddScoped<DiyMediator>();
-builder.Services.AddTransient<IRequestHandler<PurchaseOrderReceiptDateUpdateCommand, List<string>>, PurchaseOrderReceiptDateUpdateCommandHandler>();
+builder.Services.AddTransient<IRequestHandler<PurchaseOrderReceiptDateUpdateCommand, List<RowValidationResult>>, PurchaseOrderReceiptDateUpdateCommandHandler>();
+
+// 6. Rejestracja generycznego Pipeline Behavior
+// To zarejestruje ValidationPipelineBehavior dla każdej kombinacji TRequest/TResponse
+builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
 
 var app = builder.Build();
 

@@ -1,5 +1,6 @@
 ﻿using KERP.Application.Abstractions.Messaging;
 using KERP.Domain.MassUpdate.Enums;
+using KERP.Domain.Results;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace KERP.Application.Features.MassUpdate.Commands;
@@ -7,7 +8,7 @@ namespace KERP.Application.Features.MassUpdate.Commands;
 /// <summary>
 /// Represents the command to process a request for updating a Purchase Order's receipt date.
 /// </summary>
-public class PurchaseOrderReceiptDateUpdateCommand : CommandBase, IRequest<List<string>>
+public class PurchaseOrderReceiptDateUpdateCommand : CommandBase, IRequest<List<RowValidationResult>>
 {
     public required string PurchaseOrder { get; set; }
 

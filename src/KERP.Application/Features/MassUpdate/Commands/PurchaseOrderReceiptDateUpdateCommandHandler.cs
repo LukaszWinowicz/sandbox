@@ -2,9 +2,9 @@
 
 using KERP.Application.Abstractions.Messaging;
 using KERP.Application.Interfaces.Services;
-using KERP.Application.Interfaces.ValidationStrategies;
 using KERP.Domain.Interfaces.Repositories;
 using KERP.Domain.MassUpdate.Entities;
+using KERP.Domain.Results;
 
 namespace KERP.Application.Features.MassUpdate.Commands;
 
@@ -12,19 +12,16 @@ namespace KERP.Application.Features.MassUpdate.Commands;
 /// Handles the <see cref="PurchaseOrderReceiptDateUpdateCommand"/>.
 /// </summary>
 public class PurchaseOrderReceiptDateUpdateCommandHandler
-       : IRequestHandler<PurchaseOrderReceiptDateUpdateCommand, List<string>>
+       : IRequestHandler<PurchaseOrderReceiptDateUpdateCommand, List<RowValidationResult>>
 {
-    private readonly IValidationStrategy<PurchaseOrderReceiptDateUpdateCommand> _validationStrategy;
     private readonly IRepository<PurchaseOrderReceiptDateUpdateEntity> _repository;
     private readonly IUserService _userService;
 
     // Usunęliśmy zależność od IUserService
     public PurchaseOrderReceiptDateUpdateCommandHandler(
-        IValidationStrategy<PurchaseOrderReceiptDateUpdateCommand> validationStrategy,
         IRepository<PurchaseOrderReceiptDateUpdateEntity> repository,
         IUserService userService)
     {
-        _validationStrategy = validationStrategy;
         _repository = repository;
         _userService = userService;
     }
@@ -32,16 +29,9 @@ public class PurchaseOrderReceiptDateUpdateCommandHandler
     /// <summary>
     /// Handles the command by validating the input, mapping it to an entity, and persisting it.
     /// </summary>
-    public async Task<List<string>> Handle(PurchaseOrderReceiptDateUpdateCommand command, CancellationToken cancellationToken)
+    public async Task<List<RowValidationResult>> Handle(PurchaseOrderReceiptDateUpdateCommand command, CancellationToken cancellationToken)
     {
-        // --- Krok 1: Walidacja ---
-        var validationErrors = await _validationStrategy.ValidateAsync(command);
-        if (validationErrors.Any())
-        {
-            return validationErrors;
-        }
-
-        // --- Krok 2: Mapowanie (z Command na Encję) ---
+        // --- Krok 1: Mapowanie (z Command na Encję) ---
         var entity = new PurchaseOrderReceiptDateUpdateEntity
         {
             PurchaseOrder = command.PurchaseOrder,
@@ -53,11 +43,11 @@ public class PurchaseOrderReceiptDateUpdateCommandHandler
 
         };
 
-        // --- Krok 3: Zapis do Bazy Danych ---
+        // --- Krok 2: Zapis do Bazy Danych ---
         await _repository.AddRangeAsync(new[] { entity });
         await _repository.SaveChangesAsync();
 
-        // --- Krok 4: Sukces ---
-        return new List<string>();
+        // --- Krok 3: Sukces ---
+        return new List<RowValidationResult>();
     }
 }
