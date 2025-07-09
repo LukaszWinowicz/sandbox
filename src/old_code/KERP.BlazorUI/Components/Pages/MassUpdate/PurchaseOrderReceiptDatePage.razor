@@ -46,7 +46,7 @@
         };
     }
 
-    private async Task<List<RowValidationResult>> ProcessRowsAsync(List<PurchaseOrderReceiptDateUpdateCommand> commands)
+    private async Task<Result<List<RowValidationResult>>> ProcessRowsAsync(List<PurchaseOrderReceiptDateUpdateCommand> commands)
     {
         var results = new List<RowValidationResult>();
         int rowNumber = 1;
