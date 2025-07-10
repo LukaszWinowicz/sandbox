@@ -1,8 +1,9 @@
 ﻿using KERP.Application.Interfaces;
 using KERP.Application.MassUpdate.PurchaseOrder.Commands;
-using KERP.Application.Shared.Validation;
+using KERP.Application.MassUpdate.PurchaseOrder.Validation.Rules;
 using KERP.Domain.Interfaces.MassUpdate.PurchaseOrder;
-namespace KERP.Application.MassUpdate.PurchaseOrder.Validators;
+
+namespace KERP.Application.MassUpdate.PurchaseOrder.Validation;
 
 /// <summary>
 /// Metody rozszerzające dla ValidationPipelineBuilder, specyficzne dla PurchaseOrder.
@@ -14,8 +15,8 @@ public static class ValidationBuilderExtensions
         IPurchaseOrderRepository repository,
         ICurrentUserService userService)
     {
-        builder.Add(new OrderExistenceValidator(repository, userService));
-        return builder;
+        // Używamy publicznej metody Add() z buildera
+        return builder.Add(new OrderExistenceValidator(repository, userService));
     }
 
     public static ValidationPipelineBuilder<PurchaseOrderUpdateDto> WithCombinationCheck(
@@ -23,7 +24,6 @@ public static class ValidationBuilderExtensions
         IPurchaseOrderRepository repository,
         ICurrentUserService userService)
     {
-        builder.Add(new CombinationValidator(repository, userService));
-        return builder;
+        return builder.Add(new CombinationValidator(repository, userService));
     }
 }

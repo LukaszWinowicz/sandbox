@@ -3,14 +3,15 @@ using KERP.Application.MassUpdate.PurchaseOrder.Commands;
 using KERP.Application.Shared.Validation;
 using KERP.Domain.Interfaces.MassUpdate.PurchaseOrder;
 
-namespace KERP.Application.MassUpdate.PurchaseOrder.Validators;
+namespace KERP.Application.MassUpdate.PurchaseOrder.Validation;
 
-public class CombinationValidator : AbstractValidationHandler<PurchaseOrderUpdateDto>
+public class OrderExistenceValidator : AbstractValidationHandler<PurchaseOrderUpdateDto>
 {
     private readonly IPurchaseOrderRepository _purchaseOrderRepository;
     private readonly ICurrentUserService _currentUserService;
 
-    public CombinationValidator(
+    // Zależności są jawnie wstrzykiwane przez konstruktor
+    public OrderExistenceValidator(
         IPurchaseOrderRepository purchaseOrderRepository,
         ICurrentUserService currentUserService)
     {
@@ -21,15 +22,15 @@ public class CombinationValidator : AbstractValidationHandler<PurchaseOrderUpdat
     protected override async Task HandleValidation(ValidationRequest<PurchaseOrderUpdateDto> request)
     {
         var factoryId = _currentUserService.SelectedFactoryId ?? 0;
-        var dto = request.DtoToValidate;
+        var purchaseOrder = request.DtoToValidate.PurchaseOrder;
 
-        // Sprawdzamy tylko jeśli mamy wszystkie potrzebne dane
-        if (factoryId > 0 && !string.IsNullOrWhiteSpace(dto.PurchaseOrder) && dto.LineNumber > 0)
+        // Sprawdzamy tylko, jeśli pole nie jest puste (za to odpowiada NotEmptyValidator)
+        if (factoryId > 0 && !string.IsNullOrWhiteSpace(purchaseOrder))
         {
-            bool exists = await _purchaseOrderRepository.CombinationExistsAsync(dto.PurchaseOrder, dto.LineNumber, dto.Sequence, factoryId);
+            bool exists = await _purchaseOrderRepository.OrderExistsAsync(purchaseOrder, factoryId);
             if (!exists)
             {
-                request.Errors.Add($"Combination PO '{dto.PurchaseOrder}', Line '{dto.LineNumber}', Sequence '{dto.Sequence}' does not exist.");
+                request.Errors.Add($"Purchase Order '{purchaseOrder}' does not exist in factory {factoryId}.");
             }
         }
     }
