@@ -3,7 +3,7 @@
 /// <summary>
 /// Reprezentuje fabrykę (jednostkę operacyjną) w systemie.
 /// </summary>
-public class Factory
+public class FactoryEntity
 {
     /// <summary>
     /// Identyfikator fabryki (np. 241, 276).

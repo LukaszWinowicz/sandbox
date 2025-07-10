@@ -4,5 +4,5 @@ namespace KERP.Domain.Interfaces.Shared;
 
 public interface IFactoryRepository
 {
-    Task<Factory?> GetByIdAsync(int factoryId, CancellationToken cancellationToken = default);
+    Task<FactoryEntity?> GetByIdAsync(int factoryId, CancellationToken cancellationToken = default);
 }

@@ -8,7 +8,7 @@ namespace KERP.Infrastructure.Persistence;
 public class KerpDbContext : DbContext
 {
     public DbSet<PurchaseOrderReceiptDateUpdateEntity> PurchaseOrderReceiptDateUpdates { get; set; }
-    public DbSet<Factory> Factories { get; set; }
+    public DbSet<FactoryEntity> Factories { get; set; }
     public DbSet<PurchaseOrderEntity> PurchaseOrders { get; set; }
 
     public KerpDbContext(DbContextOptions<KerpDbContext> options) : base(options)

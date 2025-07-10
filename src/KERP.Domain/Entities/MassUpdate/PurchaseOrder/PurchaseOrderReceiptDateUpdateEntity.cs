@@ -23,7 +23,7 @@ public class PurchaseOrderReceiptDateUpdateEntity
     /// <summary>
     /// Właściwość nawigacyjna do powiązanej fabryki.
     /// </summary>
-    public required Factory Factory { get; set; }
+    public required FactoryEntity Factory { get; set; }
 
     public required string UserId { get; set; }
     public DateTime AddedDate { get; set; } = DateTime.UtcNow;
