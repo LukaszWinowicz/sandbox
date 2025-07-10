@@ -14,6 +14,9 @@ public class PurchaseOrderReceiptDateUpdateConfiguration : IEntityTypeConfigurat
         // Definiujemy klucz główny
         builder.HasKey(e => e.Id);
 
+        // Poinformuj EF Core, że baza danych generuje wartość dla tej właściwości podczas dodawania
+        builder.Property(e => e.Id).ValueGeneratedOnAdd();
+
         // Konfigurujemy właściwości
         builder.Property(e => e.PurchaseOrder)
             .IsRequired()

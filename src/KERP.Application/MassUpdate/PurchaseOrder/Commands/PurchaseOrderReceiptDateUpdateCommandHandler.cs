@@ -35,13 +35,14 @@ public class PurchaseOrderReceiptDateUpdateCommandHandler : ICommandHandler<Purc
     {
         var userId = _currentUserService.UserId ?? throw new UnauthorizedAccessException();
         var factoryId = _currentUserService.SelectedFactoryId ?? throw new InvalidOperationException("No factory selected.");
-        var factory = await _factoryRepository.GetByIdAsync(factoryId, cancellationToken)
-            ?? throw new InvalidOperationException($"Factory with ID {factoryId} not found.");
+
+        // KROK 1: Usuwamy pobieranie obiektu Factory. Nie jest już potrzebne.
+        // var factory = await _factoryRepository.GetByIdAsync(factoryId, cancellationToken) 
+        //    ?? throw new InvalidOperationException($"Factory with ID {factoryId} not found.");
 
         var allErrors = new List<string>();
         int rowNumber = 1;
 
-        // --- PĘTLA WALIDACYJNA ---
         foreach (var orderDto in command.OrdersToUpdate)
         {
             var validationErrors = await _validator.ValidateAsync(orderDto);
@@ -57,7 +58,6 @@ public class PurchaseOrderReceiptDateUpdateCommandHandler : ICommandHandler<Purc
             throw new ValidationException(allErrors);
         }
 
-        // --- PĘTLA ZAPISUJĄCA (z pełnym mapowaniem) ---
         foreach (var orderDto in command.OrdersToUpdate)
         {
             var newUpdateEntity = new PurchaseOrderReceiptDateUpdateEntity
@@ -67,12 +67,14 @@ public class PurchaseOrderReceiptDateUpdateCommandHandler : ICommandHandler<Purc
                 Sequence = orderDto.Sequence,
                 ReceiptDate = orderDto.ReceiptDate,
                 DateType = orderDto.DateType,
-                FactoryId = factory.Id,
-                Factory = factory,
                 UserId = userId,
                 AddedDate = DateTime.UtcNow,
                 IsProcessed = false,
-                ProcessedDate = null
+                ProcessedDate = null,
+
+                // KROK 2: Ustawiamy TYLKO klucz obcy. Właściwość nawigacyjna zostaje pusta.
+                FactoryId = factoryId
+                // Usunęliśmy: Factory = factory 
             };
             await _updateRepository.AddAsync(newUpdateEntity, cancellationToken);
         }
