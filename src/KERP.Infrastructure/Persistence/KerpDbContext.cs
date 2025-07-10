@@ -1,11 +1,13 @@
 ﻿using KERP.Domain.Entities.MassUpdate.PurchaseOrder;
 using KERP.Domain.Entities.Shared;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
 namespace KERP.Infrastructure.Persistence;
 
-public class KerpDbContext : DbContext
+public class KerpDbContext : IdentityDbContext<IdentityUser>
 {
     public DbSet<PurchaseOrderReceiptDateUpdateEntity> PurchaseOrderReceiptDateUpdates { get; set; }
     public DbSet<FactoryEntity> Factories { get; set; }
@@ -17,10 +19,10 @@ public class KerpDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // Ta linia automatycznie skanuje i stosuje wszystkie konfiguracje
-        // zdefiniowane w naszym projekcie (jak PurchaseOrderReceiptDateUpdateConfiguration)
-        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
+        // WAŻNE: Wywołanie base.OnModelCreating() jest kluczowe dla Identity.
+        // Konfiguruje ono schemat potrzebny do obsługi tożsamości.
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
 }
