@@ -10,4 +10,9 @@
     <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.*-*" />
     <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.*-*" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\KERP.Domain\KERP.Domain.csproj" />
+    <ProjectReference Include="..\KERP.Infrastructure\KERP.Infrastructure.csproj" />
+  </ItemGroup>
 </Project>
