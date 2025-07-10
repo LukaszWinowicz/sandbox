@@ -1,49 +1,62 @@
 ﻿using KERP.Application.Interfaces;
+using KERP.Application.MassUpdate.PurchaseOrder.Validators;
+using KERP.Application.Shared.Exceptions;
 using KERP.Domain.Entities.MassUpdate.PurchaseOrder;
 using KERP.Domain.Interfaces.MassUpdate.PurchaseOrder;
 using KERP.Domain.Interfaces.Shared;
 
 namespace KERP.Application.MassUpdate.PurchaseOrder.Commands;
 
-// W przyszłości ten interfejs będzie pochodził z naszego DiyMediator
-public interface ICommandHandler<TCommand>
-{
-    Task Handle(TCommand command, CancellationToken cancellationToken);
-}
 
-public class PurchaseOrderReceiptDateUpdateCommandHandler : ICommandHandler<PurchaseOrderReceiptDateUpdateCommand>
+public class PurchaseOrderReceiptDateUpdateCommandHandler
 {
-    private readonly IPurchaseOrderReceiptDateUpdateRepository _updateRepository;
-    private readonly IFactoryRepository _factoryRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IFactoryRepository _factoryRepository;
+    private readonly IPurchaseOrderReceiptDateUpdateRepository _updateRepository;
+    private readonly IReceiptDateUpdateValidator _validator;
 
     public PurchaseOrderReceiptDateUpdateCommandHandler(
-    IPurchaseOrderReceiptDateUpdateRepository updateRepository,
-    IFactoryRepository factoryRepository,
-    IUnitOfWork unitOfWork,
-    ICurrentUserService currentUserService)
+        IUnitOfWork unitOfWork,
+        ICurrentUserService currentUserService,
+        IFactoryRepository factoryRepository,
+        IPurchaseOrderReceiptDateUpdateRepository updateRepository,
+        IReceiptDateUpdateValidator validator)
     {
-        _updateRepository = updateRepository;
-        _factoryRepository = factoryRepository;
         _unitOfWork = unitOfWork;
         _currentUserService = currentUserService;
+        _factoryRepository = factoryRepository;
+        _updateRepository = updateRepository;
+        _validator = validator;
     }
 
     public async Task Handle(PurchaseOrderReceiptDateUpdateCommand command, CancellationToken cancellationToken)
     {
-        // Pobieramy ID użytkownika i fabryki z serwisu
-        var userId = _currentUserService.UserId ?? throw new UnauthorizedAccessException("User is not authenticated.");
+        var userId = _currentUserService.UserId ?? throw new UnauthorizedAccessException();
         var factoryId = _currentUserService.SelectedFactoryId ?? throw new InvalidOperationException("No factory selected.");
+        var factory = await _factoryRepository.GetByIdAsync(factoryId, cancellationToken)
+            ?? throw new InvalidOperationException($"Factory with ID {factoryId} not found.");
 
-        var factory = await _factoryRepository.GetByIdAsync(factoryId, cancellationToken);
-        if (factory is null)
+        var allErrors = new List<string>();
+        int rowNumber = 1;
+
+        // --- PĘTLA WALIDACYJNA ---
+        foreach (var orderDto in command.OrdersToUpdate)
         {
-            throw new InvalidOperationException($"Factory with ID {factoryId} not found.");
+            var validationErrors = await _validator.ValidateAsync(orderDto);
+            if (validationErrors.Any())
+            {
+                allErrors.AddRange(validationErrors.Select(e => $"Row {rowNumber}: {e}"));
+            }
+            rowNumber++;
         }
 
-        // TODO: W tym miejscu w przyszłości uruchomimy nasz łańcuch walidacji!
+        if (allErrors.Any())
+        {
+            throw new ValidationException(allErrors);
+        }
 
+        // --- PĘTLA ZAPISUJĄCA (z pełnym mapowaniem) ---
         foreach (var orderDto in command.OrdersToUpdate)
         {
             var newUpdateEntity = new PurchaseOrderReceiptDateUpdateEntity
@@ -53,17 +66,16 @@ public class PurchaseOrderReceiptDateUpdateCommandHandler : ICommandHandler<Purc
                 Sequence = orderDto.Sequence,
                 ReceiptDate = orderDto.ReceiptDate,
                 DateType = orderDto.DateType,
-                FactoryId = factory.Id,   // Możemy użyć ID z pobranego obiektu
-                Factory = factory,        // <-- A TUTAJ PRZYPISUJEMY CAŁY OBIEKT
-                UserId = userId,       // Używamy ID z kontekstu
-                AddedDate = DateTime.UtcNow
+                FactoryId = factory.Id,
+                Factory = factory,
+                UserId = userId,
+                AddedDate = DateTime.UtcNow,
+                IsProcessed = false,
+                ProcessedDate = null
             };
-
-            // Dodajemy encję do "koszyka" zmian (DbContext)
             await _updateRepository.AddAsync(newUpdateEntity, cancellationToken);
         }
 
-        // Zapisujemy wszystkie zmiany z "koszyka" do bazy danych w jednej transakcji
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }
