@@ -1,0 +1,127 @@
+﻿@page "/mass-update/purchase-order/receipt-date"
+@rendermode InteractiveServer
+
+@using KERP.Application.MassUpdate.PurchaseOrder.Commands
+@using KERP.Domain.Enums.MassUpdate.PurchaseOrder
+@using KERP.Application.Shared.Exceptions
+@using KERP.Application.Shared.Mediator
+
+@inject IMediator Mediator
+@inject NavigationManager NavigationManager
+
+<h3>Mass Update - Purchase Order Receipt Date</h3>
+<hr />
+
+<EditForm Model="@_command" OnValidSubmit="HandleValidSubmit" FormName="ReceiptDateUpdateForm">
+    <DataAnnotationsValidator />
+
+    @* Wyświetlanie błędów walidacji lub komunikatu o sukcesie *@
+    @if (_errorMessages.Any())
+    {
+        <div class="alert alert-danger" role="alert">
+            <strong>Errors found:</strong>
+            <ul>
+                @foreach (var error in _errorMessages)
+                {
+                    <li>@error</li>
+                }
+            </ul>
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(_successMessage))
+    {
+        <div class="alert alert-success" role="alert">
+            @_successMessage
+        </div>
+    }
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Purchase Order</th>
+                <th>Line Number</th>
+                <th>Sequence</th>
+                <th>Receipt Date</th>
+                <th>Date Type</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var orderDto in _command.OrdersToUpdate)
+            {
+                <tr>
+                    <td><InputText @bind-Value="orderDto.PurchaseOrder" class="form-control" /></td>
+                    <td><InputNumber @bind-Value="orderDto.LineNumber" class="form-control" /></td>
+                    <td><InputNumber @bind-Value="orderDto.Sequence" class="form-control" /></td>
+                    <td><InputDate @bind-Value="orderDto.ReceiptDate" class="form-control" /></td>
+                    <td>
+                        <InputSelect @bind-Value="orderDto.DateType" class="form-select">
+                            @foreach (var type in Enum.GetValues<ReceiptDateUpdateType>())
+                            {
+                                <option value="@type">@type</option>
+                            }
+                        </InputSelect>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger btn-sm" @onclick="() => RemoveRow(orderDto)">Remove</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button type="button" class="btn btn-secondary" @onclick="AddRow">Add Row</button>
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+
+</EditForm>
+
+
+@code {
+    // Główny obiekt polecenia, powiązany z formularzem
+    private PurchaseOrderReceiptDateUpdateCommand _command = new(new List<PurchaseOrderUpdateDto>());
+
+    // Listy na komunikaty dla użytkownika
+    private List<string> _errorMessages = new();
+    private string? _successMessage;
+
+    protected override void OnInitialized()
+    {
+        // Dodajemy jeden pusty wiersz na start
+        AddRow();
+    }
+
+    private void AddRow()
+    {
+        _command.OrdersToUpdate.Add(new PurchaseOrderUpdateDto("", 0, 0, DateTime.Now, ReceiptDateUpdateType.Confirmed));
+    }
+
+    private void RemoveRow(PurchaseOrderUpdateDto orderToRemove)
+    {
+        _command.OrdersToUpdate.Remove(orderToRemove);
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        _errorMessages.Clear();
+        _successMessage = null;
+
+        try
+        {
+            // Wysyłamy polecenie za pomocą mediatora
+            await Mediator.SendAsync(_command);
+            _successMessage = "All records saved successfully!";
+            _command.OrdersToUpdate.Clear(); // Czyścimy listę po sukcesie
+            AddRow(); // Dodajemy nowy, pusty wiersz
+        }
+        catch (ValidationException ex)
+        {
+            // Przechwytujemy nasz customowy wyjątek i wyświetlamy błędy
+            _errorMessages = ex.Errors.ToList();
+        }
+        catch (Exception ex)
+        {
+            // Ogólna obsługa innych błędów
+            _errorMessages.Add($"An unexpected error occurred: {ex.Message}");
+        }
+    }
+}

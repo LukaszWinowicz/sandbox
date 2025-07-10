@@ -33,7 +33,7 @@ builder.Services.AddDbContext<KerpDbContext>((sp, options) =>
            .AddInterceptors(sp.GetRequiredService<FactoryTenantInterceptor>()));
 
 // 2. Rejestracja dostępu do HttpContext (potrzebne dla CurrentUserService)
-builder.Services.AddHttpContextAccessor();
+//builder.Services.AddHttpContextAccessor();
 
 // 3. Rejestracja naszych interfejsów i ich implementacji
 // Używamy AddScoped, co jest standardem dla operacji na żądanie w aplikacjach webowych.
@@ -45,9 +45,19 @@ builder.Services.AddScoped<IPurchaseOrderRepository, PurchaseOrderRepository>();
 builder.Services.AddScoped<IPurchaseOrderReceiptDateUpdateRepository, PurchaseOrderReceiptDateUpdateRepository>();
 
 // Aplikacja
-builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+if (builder.Environment.IsDevelopment())
+{
+    // W trybie deweloperskim, rejestrujemy naszą zaślepkę
+    builder.Services.AddScoped<ICurrentUserService, FakeCurrentUserService>();
+}
+else
+{
+    // W każdym innym przypadku (Staging, Production), rejestrujemy prawdziwy serwis
+    builder.Services.AddHttpContextAccessor();
+    builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+}
 builder.Services.AddScoped<IReceiptDateUpdateValidator, ReceiptDateUpdateValidator>();
-builder.Services.AddScoped<PurchaseOrderReceiptDateUpdateCommandHandler>();
+builder.Services.AddScoped<ICommandHandler<PurchaseOrderReceiptDateUpdateCommand>, PurchaseOrderReceiptDateUpdateCommandHandler>();
 builder.Services.AddScoped<IMediator, DiyMediator>();
 
 var app = builder.Build();
