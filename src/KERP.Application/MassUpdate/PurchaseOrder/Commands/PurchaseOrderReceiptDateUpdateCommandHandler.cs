@@ -1,6 +1,7 @@
 ﻿using KERP.Application.Interfaces;
 using KERP.Application.MassUpdate.PurchaseOrder.Validation;
 using KERP.Application.Shared.Exceptions;
+using KERP.Application.Shared.Mediator;
 using KERP.Domain.Entities.MassUpdate.PurchaseOrder;
 using KERP.Domain.Interfaces.MassUpdate.PurchaseOrder;
 using KERP.Domain.Interfaces.Shared;
@@ -8,7 +9,7 @@ using KERP.Domain.Interfaces.Shared;
 namespace KERP.Application.MassUpdate.PurchaseOrder.Commands;
 
 
-public class PurchaseOrderReceiptDateUpdateCommandHandler
+public class PurchaseOrderReceiptDateUpdateCommandHandler : ICommandHandler<PurchaseOrderReceiptDateUpdateCommand>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUserService _currentUserService;
