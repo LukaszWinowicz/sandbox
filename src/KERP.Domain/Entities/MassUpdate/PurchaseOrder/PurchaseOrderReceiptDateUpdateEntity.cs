@@ -20,6 +20,11 @@ public class PurchaseOrderReceiptDateUpdateEntity
     /// </summary>
     public required int FactoryId { get; set; }
 
+    /// <summary>
+    /// Właściwość nawigacyjna do powiązanej fabryki.
+    /// To pole już NIE JEST wymagane w momencie tworzenia obiektu.
+    /// </summary>
+    public required FactoryEntity Factory { get; set; }
     public required string UserId { get; set; }
     public DateTime AddedDate { get; set; } = DateTime.UtcNow;
     public bool IsProcessed { get; set; } = false;
