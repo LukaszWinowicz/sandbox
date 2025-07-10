@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Validation\Components\" />
+    <ProjectReference Include="..\KERP.Domain\KERP.Domain.csproj" />
   </ItemGroup>
 
 </Project>
