@@ -23,7 +23,7 @@ builder.Services.AddFluentUIComponents();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 // A. Konfiguracja Identity (dodaj ten fragment)
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<IdentityUser>()//options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<KerpDbContext>();
 
 // B. Rejestracja Interceptora i DbContext
@@ -40,7 +40,6 @@ builder.Services.AddDbContext<KerpDbContext>((sp, options) =>
 
 // Infrastruktura
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IFactoryRepository, FactoryRepository>();
 builder.Services.AddScoped<IPurchaseOrderRepository, PurchaseOrderRepository>();
 builder.Services.AddScoped<IPurchaseOrderReceiptDateUpdateRepository, PurchaseOrderReceiptDateUpdateRepository>();
 

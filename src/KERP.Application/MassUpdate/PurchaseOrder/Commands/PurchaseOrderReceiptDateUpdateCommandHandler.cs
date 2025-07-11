@@ -13,20 +13,17 @@ public class PurchaseOrderReceiptDateUpdateCommandHandler : ICommandHandler<Purc
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUserService _currentUserService;
-    private readonly IFactoryRepository _factoryRepository;
     private readonly IPurchaseOrderReceiptDateUpdateRepository _updateRepository;
     private readonly IReceiptDateUpdateValidator _validator;
 
     public PurchaseOrderReceiptDateUpdateCommandHandler(
         IUnitOfWork unitOfWork,
         ICurrentUserService currentUserService,
-        IFactoryRepository factoryRepository,
         IPurchaseOrderReceiptDateUpdateRepository updateRepository,
         IReceiptDateUpdateValidator validator)
     {
         _unitOfWork = unitOfWork;
         _currentUserService = currentUserService;
-        _factoryRepository = factoryRepository;
         _updateRepository = updateRepository;
         _validator = validator;
     }
@@ -37,10 +34,6 @@ public class PurchaseOrderReceiptDateUpdateCommandHandler : ICommandHandler<Purc
         {
             var userId = _currentUserService.UserId ?? throw new UnauthorizedAccessException();
             var factoryId = _currentUserService.SelectedFactoryId ?? throw new InvalidOperationException("No factory selected.");
-
-            // KROK 1: Usuwamy pobieranie obiektu Factory. Nie jest już potrzebne.
-            var factory = await _factoryRepository.GetByIdAsync(factoryId, cancellationToken)
-            ?? throw new InvalidOperationException($"Factory with ID {factoryId} not found.");
 
             var allErrors = new List<string>();
             int rowNumber = 1;
@@ -73,10 +66,7 @@ public class PurchaseOrderReceiptDateUpdateCommandHandler : ICommandHandler<Purc
                     AddedDate = DateTime.UtcNow,
                     IsProcessed = false,
                     ProcessedDate = null,
-
-                    // KROK 2: Ustawiamy TYLKO klucz obcy. Właściwość nawigacyjna zostaje pusta.
                     FactoryId = factoryId,
-                    Factory = factory
                 };
                 await _updateRepository.AddAsync(newUpdateEntity, cancellationToken);
             }
