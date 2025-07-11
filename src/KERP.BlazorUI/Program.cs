@@ -1,7 +1,7 @@
 ﻿using KERP.Application.Interfaces;
 using KERP.Application.MassUpdate.PurchaseOrder.Commands;
 using KERP.Application.MassUpdate.PurchaseOrder.Validation;
-using KERP.Application.Shared.Mediator;
+using KERP.Application.Shared.CQRS;
 using KERP.BlazorUI.Components;
 using KERP.Domain.Interfaces.MassUpdate.PurchaseOrder;
 using KERP.Domain.Interfaces.Shared;
@@ -58,7 +58,6 @@ else
 }
 builder.Services.AddScoped<IReceiptDateUpdateValidator, ReceiptDateUpdateValidator>();
 builder.Services.AddScoped<ICommandHandler<PurchaseOrderReceiptDateUpdateCommand>, PurchaseOrderReceiptDateUpdateCommandHandler>();
-builder.Services.AddScoped<IMediator, DiyMediator>();
 
 var app = builder.Build();
 

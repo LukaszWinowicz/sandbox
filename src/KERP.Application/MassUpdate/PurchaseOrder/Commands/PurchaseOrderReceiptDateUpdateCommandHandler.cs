@@ -1,7 +1,7 @@
 ﻿using KERP.Application.Interfaces;
 using KERP.Application.MassUpdate.PurchaseOrder.Validation;
 using KERP.Application.Shared.Exceptions;
-using KERP.Application.Shared.Mediator;
+using KERP.Application.Shared.CQRS;
 using KERP.Domain.Entities.MassUpdate.PurchaseOrder;
 using KERP.Domain.Interfaces.MassUpdate.PurchaseOrder;
 using KERP.Domain.Interfaces.Shared;

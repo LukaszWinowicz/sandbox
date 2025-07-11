@@ -4,9 +4,9 @@
 @using KERP.Application.MassUpdate.PurchaseOrder.Commands
 @using KERP.Domain.Enums.MassUpdate.PurchaseOrder
 @using KERP.Application.Shared.Exceptions
-@using KERP.Application.Shared.Mediator
+@using KERP.Application.Shared.CQRS
 
-@inject IMediator Mediator
+@inject ICommandHandler<PurchaseOrderReceiptDateUpdateCommand> ReceiptDateUpdateHandler
 @inject NavigationManager NavigationManager
 
 <h3>Mass Update - Purchase Order Receipt Date</h3>
@@ -107,8 +107,7 @@
 
         try
         {
-            // Wysyłamy polecenie za pomocą mediatora
-            await Mediator.SendAsync(_command);
+            await ReceiptDateUpdateHandler.Handle(_command, CancellationToken.None);
             _successMessage = "All records saved successfully!";
             _command.OrdersToUpdate.Clear(); // Czyścimy listę po sukcesie
             AddRow(); // Dodajemy nowy, pusty wiersz

@@ -1,4 +1,4 @@
-﻿namespace KERP.Application.Shared.Mediator;
+﻿namespace KERP.Application.Shared.CQRS;
 
 public interface ICommandHandler<TCommand>
 {
