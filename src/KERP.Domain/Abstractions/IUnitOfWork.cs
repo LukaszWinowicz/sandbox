@@ -15,5 +15,4 @@ public interface IUnitOfWork
     /// <returns>Task reprezentujący zakończenie operacji.</returns>
     Task SaveChangesAsync(CancellationToken cancellationToken);
 
-    IPurchaseOrderReceiptDateUpdateRepository PurchaseOrderUpdates { get; }
 }

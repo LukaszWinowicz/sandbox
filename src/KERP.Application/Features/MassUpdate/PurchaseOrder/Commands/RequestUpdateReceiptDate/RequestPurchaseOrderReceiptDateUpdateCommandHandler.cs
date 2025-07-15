@@ -13,12 +13,12 @@ namespace KERP.Application.Features.MassUpdate.PurchaseOrder.Commands.RequestUpd
 public sealed class RequestPurchaseOrderReceiptDateUpdateCommandHandler : ICommandHandler<RequestPurchaseOrderReceiptDateUpdateCommand>
 {
     private readonly ICurrentUserContext _currentUserContext;
-    private readonly IPurchaseOrderReceiptDateUpdateRepository _updateRepository;
+    private readonly IReceiptDateUpdateRequestRepository _updateRepository;
     private readonly IUnitOfWork _unitOfWork;
 
     public RequestPurchaseOrderReceiptDateUpdateCommandHandler(
         ICurrentUserContext currentUserContext,
-        IPurchaseOrderReceiptDateUpdateRepository updateRepository,
+        IReceiptDateUpdateRequestRepository updateRepository,
         IUnitOfWork unitOfWork)
     {
         _currentUserContext = currentUserContext;

@@ -1,16 +1,16 @@
 ﻿using KERP.Domain.Abstractions.Repositories.MassUpdate.PurchaseOrder;
 using KERP.Domain.Entities.MassUpdate.PurchaseOrder;
 
-namespace KERP.Infrastructure.Data.Repositories;
+namespace KERP.Infrastructure.Data.Repositories.MassUpdate.PurchaseOrder;
 
 /// <summary>
 /// Implementacja repozytorium dla agregatu aktualizacji dat zamówień.
 /// </summary>
-public sealed class PurchaseOrderReceiptDateUpdateRepository : IPurchaseOrderReceiptDateUpdateRepository
+public sealed class ReceiptDateUpdateRequestRepository : IReceiptDateUpdateRequestRepository
 {
     private readonly AppDbContext _dbContext;
 
-    public PurchaseOrderReceiptDateUpdateRepository(AppDbContext dbContext)
+    public ReceiptDateUpdateRequestRepository(AppDbContext dbContext)
     {
         _dbContext = dbContext;
     }

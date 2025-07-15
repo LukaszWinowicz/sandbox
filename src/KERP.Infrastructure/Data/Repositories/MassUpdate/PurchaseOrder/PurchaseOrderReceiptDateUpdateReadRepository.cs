@@ -3,7 +3,7 @@ using KERP.Application.Features.MassUpdate.PurchaseOrder.Queries.DTOs;
 using KERP.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
-namespace KERP.Infrastructure.Data.Repositories;
+namespace KERP.Infrastructure.Data.Repositories.MassUpdate.PurchaseOrder;
 
 public sealed class PurchaseOrderReceiptDateUpdateReadRepository : IPurchaseOrderReceiptDateUpdateReadRepository
 {

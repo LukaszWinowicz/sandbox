@@ -11,12 +11,9 @@ public sealed class UnitOfWork : IUnitOfWork
 {
     private readonly AppDbContext _dbContext;
 
-    public IPurchaseOrderReceiptDateUpdateRepository PurchaseOrderUpdates { get; }
-
-    public UnitOfWork(AppDbContext dbContext, IPurchaseOrderReceiptDateUpdateRepository repo)
+    public UnitOfWork(AppDbContext dbContext)
     {
         _dbContext = dbContext;
-        PurchaseOrderUpdates = repo;
     }
 
     /// <inheritdoc />

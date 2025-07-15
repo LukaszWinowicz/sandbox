@@ -10,7 +10,7 @@ using KERP.Domain.Abstractions;
 using KERP.Domain.Abstractions.Repositories.MassUpdate.PurchaseOrder;
 using KERP.Infrastructure.Auth;
 using KERP.Infrastructure.Data;
-using KERP.Infrastructure.Data.Repositories;
+using KERP.Infrastructure.Data.Repositories.MassUpdate.PurchaseOrder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.FluentUI.AspNetCore.Components;
@@ -36,7 +36,7 @@ builder.Services.AddScoped<IQueryDispatcher, QueryDispatcher>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Repositories
-builder.Services.AddScoped<IPurchaseOrderReceiptDateUpdateRepository, PurchaseOrderReceiptDateUpdateRepository>();
+builder.Services.AddScoped<IReceiptDateUpdateRequestRepository, ReceiptDateUpdateRequestRepository>();
 builder.Services.AddScoped<IPurchaseOrderReceiptDateUpdateReadRepository, PurchaseOrderReceiptDateUpdateReadRepository>();
 
 // CQRS Handlers

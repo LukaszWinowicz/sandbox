@@ -6,7 +6,7 @@ namespace KERP.Domain.Abstractions.Repositories.MassUpdate.PurchaseOrder;
 /// Repozytorium dla agregatu <see cref="PurchaseOrderReceiptDateUpdateRequestEntity"/>.
 /// Odpowiada za zapis żądań aktualizacji daty przyjęcia.
 /// </summary>
-public interface IPurchaseOrderReceiptDateUpdateRepository
+public interface IReceiptDateUpdateRequestRepository
 {
     /// <summary>
     /// Dodaje nowe żądanie do kolejki aktualizacji.
