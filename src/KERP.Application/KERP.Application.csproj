@@ -14,4 +14,8 @@
     <ProjectReference Include="..\KERP.Domain\KERP.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Abstractions\Results\" />
+  </ItemGroup>
+
 </Project>
