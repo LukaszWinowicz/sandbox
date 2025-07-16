@@ -1,4 +1,5 @@
 ﻿using KERP.Domain.Abstractions;
+using KERP.Domain.Abstractions.Results;
 using KERP.Domain.Enums;
 
 namespace KERP.Domain.Entities.MassUpdate.PurchaseOrder;
@@ -29,7 +30,7 @@ public class PurchaseOrderReceiptDateUpdateRequestEntity : AggregateRoot<Guid>
     /// Metoda fabryczna do tworzenia nowego, poprawnego obiektu żądania aktualizacji.
     /// Gwarantuje, że obiekt jest zawsze tworzony w spójnym stanie.
     /// </summary>
-    public static PurchaseOrderReceiptDateUpdateRequestEntity Create(
+    public static Result<PurchaseOrderReceiptDateUpdateRequestEntity> Create(
         string purchaseOrder,
         int lineNumber,
         int sequence,
@@ -38,8 +39,29 @@ public class PurchaseOrderReceiptDateUpdateRequestEntity : AggregateRoot<Guid>
         int factoryId,
         string userId)
     {
-        // Tutaj można dodać logikę walidacyjną, np. sprawdzić, czy data nie jest z przeszłości.
-        // if (newReceiptDate < DateTime.UtcNow) throw new ArgumentException("Data nie może być z przeszłości.");
+        // Walidacja
+        var errors = new List<string>();
+
+        if (string.IsNullOrWhiteSpace(purchaseOrder))
+            errors.Add("Numer zamówienia nie może być pusty.");
+
+        if (purchaseOrder?.Length > 20)
+            errors.Add("Numer zamówienia jest zbyt długi (maksymalnie 20 znaków).");
+
+        if (lineNumber <= 0)
+            errors.Add("Numer linii musi być wartością dodatnią.");
+
+        if (sequence < 0)
+            errors.Add("Sekwencja nie może być ujemna.");
+
+        if (newReceiptDate.Date < DateTime.UtcNow.Date)
+            errors.Add("Nowa data przyjęcia nie może być datą z przeszłości.");
+
+        if (errors.Any())
+        {
+            return Result<PurchaseOrderReceiptDateUpdateRequestEntity>.Failure(errors);
+        }
+
 
         var updateRequest = new PurchaseOrderReceiptDateUpdateRequestEntity
         {
@@ -58,7 +80,7 @@ public class PurchaseOrderReceiptDateUpdateRequestEntity : AggregateRoot<Guid>
         // Przykład dodania zdarzenia domenowego - odkomentuj, gdy będzie potrzebne.
         // updateRequest.AddDomainEvent(new ReceiptUpdateRequestedEvent(updateRequest.Id, updateRequest.PurchaseOrder));
 
-        return updateRequest;
+        return Result<PurchaseOrderReceiptDateUpdateRequestEntity>.Success(updateRequest);
     }
 
     /// <summary>

@@ -144,32 +144,27 @@
         _errorMessage = null;
         _successMessage = null;
 
-        // KROK 1: Zmapuj dane z mutowalnego modelu formularza na niemutowalną komendę.
         var command = new RequestPurchaseOrderReceiptDateUpdateCommand
             {
                 DateType = _formModel.DateType,
                 OrderLines = _formModel.OrderLines
             };
 
-        try
+        // --- ZMIANA: Obsługa wyniku zamiast try-catch ---
+        var result = await CommandDispatcher.SendAsync(command); // Musisz zaktualizować Dispatcher, aby zwracał wynik
+
+        if (result.IsFailure)
         {
-            // KROK 2: Wyślij poprawnie skonstruowaną komendę.
-            await CommandDispatcher.SendAsync(command);
-
+            // Złączamy wszystkie błędy w jeden komunikat
+            _errorMessage = string.Join("\n", result.Errors);
+        }
+        else
+        {
             _successMessage = $"Pomyślnie wysłano {command.OrderLines.Count} linii do aktualizacji.";
-            Logger.LogInformation("Pomyślnie wysłano komendę aktualizacji dat.");
-
             _formModel.OrderLines.Clear();
             AddLine();
         }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Wystąpił błąd podczas wysyłania komendy aktualizacji dat.");
-            _errorMessage = $"Wystąpił nieoczekiwany błąd: {ex.Message}";
-        }
-        finally
-        {
-            _isSubmitting = false;
-        }
+
+        _isSubmitting = false;
     }
 }

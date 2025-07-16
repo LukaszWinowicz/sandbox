@@ -4,4 +4,5 @@
 /// Interfejs markerowy reprezentujący komendę w architekturze CQRS.
 /// Komendy służą do wykonywania operacji zmieniających stan aplikacji.
 /// </summary>
-public interface ICommand { }
+// Zmieniamy ICommand, aby mógł zwracać wynik
+public interface ICommand<TResult> { }

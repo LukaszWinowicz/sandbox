@@ -11,11 +11,15 @@ public sealed class CommandDispatcher : ICommandDispatcher
         _serviceProvider = serviceProvider;
     }
 
-    public async Task SendAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default)
-        where TCommand : class, ICommand
+    public async Task<TResult> SendAsync<TResult>(ICommand<TResult> command, CancellationToken cancellationToken = default)
     {
-        var handlerType = typeof(ICommandHandler<TCommand>);
+        // Znajdź typ handlera, który pasuje do ICommandHandler<TCommand, TResult>
+        var handlerType = typeof(ICommandHandler<,>).MakeGenericType(command.GetType(), typeof(TResult));
+
+        // Pobierz usługę handlera z kontenera DI
         dynamic handler = _serviceProvider.GetRequiredService(handlerType);
-        await handler.HandleAsync(command, cancellationToken);
+
+        // Wywołaj metodę HandleAsync na znalezionym handlerze
+        return await handler.HandleAsync((dynamic)command, cancellationToken);
     }
 }

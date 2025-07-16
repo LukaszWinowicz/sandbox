@@ -8,6 +8,7 @@ using KERP.Application.Features.MassUpdate.PurchaseOrder.Query.GetReceiptDateUpd
 using KERP.BlazorUI.Components;
 using KERP.Domain.Abstractions;
 using KERP.Domain.Abstractions.Repositories.MassUpdate.PurchaseOrder;
+using KERP.Domain.Abstractions.Results;
 using KERP.Infrastructure.Auth;
 using KERP.Infrastructure.Data;
 using KERP.Infrastructure.Data.Repositories.MassUpdate.PurchaseOrder;
@@ -40,7 +41,7 @@ builder.Services.AddScoped<IReceiptDateUpdateRequestRepository, ReceiptDateUpdat
 builder.Services.AddScoped<IPurchaseOrderReceiptDateUpdateReadRepository, PurchaseOrderReceiptDateUpdateReadRepository>();
 
 // CQRS Handlers
-builder.Services.AddScoped<ICommandHandler<RequestPurchaseOrderReceiptDateUpdateCommand>, RequestPurchaseOrderReceiptDateUpdateCommandHandler>();
+builder.Services.AddScoped<ICommandHandler<RequestPurchaseOrderReceiptDateUpdateCommand, Result<bool>>, RequestPurchaseOrderReceiptDateUpdateCommandHandler>();
 builder.Services.AddScoped<IQueryHandler<GetPurchaseOrderReceiptDateUpdateRequestsQuery, List<PurchaseOrderReceiptDateUpdateRequestDto>>, GetPurchaseOrderReceiptDateUpdateRequestsQueryHandler>();
 
 var app = builder.Build();

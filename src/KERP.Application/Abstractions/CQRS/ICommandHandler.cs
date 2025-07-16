@@ -5,7 +5,7 @@
 /// Odpowiada za wykonanie logiki związanej z komendą.
 /// </summary>
 /// <typeparam name="TCommand">Typ komendy, który handler obsługuje.</typeparam>
-public interface ICommandHandler<TCommand> where TCommand : ICommand
+public interface ICommandHandler<TCommand, TResult> where TCommand : ICommand<TResult>
 {
     /// <summary>
     /// Obsługuje daną komendę.
@@ -13,5 +13,5 @@ public interface ICommandHandler<TCommand> where TCommand : ICommand
     /// <param name="command">Instancja komendy do obsłużenia.</param>
     /// <param name="cancellationToken">Token anulujący operację.</param>
     /// <returns>Task reprezentujący operację asynchroniczną.</returns>
-    Task HandleAsync(TCommand command, CancellationToken cancellationToken);
+    Task<TResult> HandleAsync(TCommand command, CancellationToken cancellationToken);
 }
