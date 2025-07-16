@@ -1,5 +1,6 @@
 ﻿using KERP.Application.Abstractions.CQRS;
 using KERP.Application.Common.Context;
+using KERP.Application.Shared.Validators;
 using KERP.Domain.Abstractions;
 using KERP.Domain.Abstractions.Repositories.MassUpdate.PurchaseOrder;
 using KERP.Domain.Abstractions.Results;
@@ -16,25 +17,28 @@ public sealed class RequestPurchaseOrderReceiptDateUpdateCommandHandler : IComma
     private readonly ICurrentUserContext _currentUserContext;
     private readonly IReceiptDateUpdateRequestRepository _updateRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly PurchaseOrderReceiptDateUpdateValidator _validator;
 
     public RequestPurchaseOrderReceiptDateUpdateCommandHandler(
         ICurrentUserContext currentUserContext,
         IReceiptDateUpdateRequestRepository updateRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        PurchaseOrderReceiptDateUpdateValidator validator)
     {
         _currentUserContext = currentUserContext;
         _updateRepository = updateRepository;
         _unitOfWork = unitOfWork;
+        _validator = validator;
     }
 
     /// <inheritdoc />
     public async Task<Result<bool>> HandleAsync(RequestPurchaseOrderReceiptDateUpdateCommand command, CancellationToken cancellationToken)
     {
-        // 📌 Walidacja wejściowa (opcjonalna)
-        // if (command.OrderLines is null || !command.OrderLines.Any())
-        //     throw new InvalidOperationException("Brak linii do aktualizacji.");
+        // Walidacja wejściowa – wszystkie błędy zbieramy i zwracamy do UI
+        var validationErrors = await _validator.ValidateAsync(command);
+        if (validationErrors.Any())
+            return Result<bool>.Failure(validationErrors);
 
-        var allErrors = new List<string>();
         var validEntities = new List<PurchaseOrderReceiptDateUpdateRequestEntity>();
 
         string userId = _currentUserContext.UserId;
@@ -42,7 +46,8 @@ public sealed class RequestPurchaseOrderReceiptDateUpdateCommandHandler : IComma
 
         foreach (var line in command.OrderLines)
         {
-            var entityResult = PurchaseOrderReceiptDateUpdateRequestEntity.Create(
+            // Tworzymy encję – zakładamy, że dane już są poprawne (brak walidacji technicznej)
+            var entity = PurchaseOrderReceiptDateUpdateRequestEntity.Create(
                 line.PurchaseOrder,
                 line.LineNumber,
                 line.Sequence,
@@ -51,24 +56,10 @@ public sealed class RequestPurchaseOrderReceiptDateUpdateCommandHandler : IComma
                 factoryId,
                 userId
             );
-
-            if (entityResult.IsFailure)
-            {
-                allErrors.AddRange(entityResult.Errors);
-            }
-            else
-            {
-                validEntities.Add(entityResult.Value!);
-            }
+            validEntities.Add(entity);
         }
 
-        if (allErrors.Any())
-        {
-            // Jeśli wystąpił jakikolwiek błąd, nie zapisujemy nic i zwracamy wszystkie błędy.
-            return Result<bool>.Failure(allErrors.Distinct().ToList());
-        }
-
-        // Jeśli wszystko jest w porządku, dodajemy wszystkie encje i zapisujemy.
+        // Dodajemy encje i zapisujemy do bazy
         foreach (var entity in validEntities)
         {
             await _updateRepository.AddAsync(entity, cancellationToken);

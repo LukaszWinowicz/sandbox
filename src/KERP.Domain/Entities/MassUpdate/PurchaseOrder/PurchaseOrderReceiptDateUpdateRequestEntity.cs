@@ -30,7 +30,7 @@ public class PurchaseOrderReceiptDateUpdateRequestEntity : AggregateRoot<Guid>
     /// Metoda fabryczna do tworzenia nowego, poprawnego obiektu żądania aktualizacji.
     /// Gwarantuje, że obiekt jest zawsze tworzony w spójnym stanie.
     /// </summary>
-    public static Result<PurchaseOrderReceiptDateUpdateRequestEntity> Create(
+    public static PurchaseOrderReceiptDateUpdateRequestEntity Create(
         string purchaseOrder,
         int lineNumber,
         int sequence,
@@ -39,32 +39,9 @@ public class PurchaseOrderReceiptDateUpdateRequestEntity : AggregateRoot<Guid>
         int factoryId,
         string userId)
     {
-        // Walidacja
-        var errors = new List<string>();
-
-        if (string.IsNullOrWhiteSpace(purchaseOrder))
-            errors.Add("Numer zamówienia nie może być pusty.");
-
-        if (purchaseOrder?.Length > 20)
-            errors.Add("Numer zamówienia jest zbyt długi (maksymalnie 20 znaków).");
-
-        if (lineNumber <= 0)
-            errors.Add("Numer linii musi być wartością dodatnią.");
-
-        if (sequence < 0)
-            errors.Add("Sekwencja nie może być ujemna.");
-
-        if (newReceiptDate.Date < DateTime.UtcNow.Date)
-            errors.Add("Nowa data przyjęcia nie może być datą z przeszłości.");
-
-        if (errors.Any())
+        return new PurchaseOrderReceiptDateUpdateRequestEntity
         {
-            return Result<PurchaseOrderReceiptDateUpdateRequestEntity>.Failure(errors);
-        }
-
-
-        var updateRequest = new PurchaseOrderReceiptDateUpdateRequestEntity
-        {
+            Id = Guid.NewGuid(),
             PurchaseOrder = purchaseOrder,
             LineNumber = lineNumber,
             Sequence = sequence,
@@ -73,14 +50,11 @@ public class PurchaseOrderReceiptDateUpdateRequestEntity : AggregateRoot<Guid>
             FactoryId = factoryId,
             UserId = userId,
             CreatedAtUtc = DateTime.UtcNow,
-            IsProcessed = false,
-            ProcessedDate = null
+            IsProcessed = false
         };
 
         // Przykład dodania zdarzenia domenowego - odkomentuj, gdy będzie potrzebne.
         // updateRequest.AddDomainEvent(new ReceiptUpdateRequestedEvent(updateRequest.Id, updateRequest.PurchaseOrder));
-
-        return Result<PurchaseOrderReceiptDateUpdateRequestEntity>.Success(updateRequest);
     }
 
     /// <summary>

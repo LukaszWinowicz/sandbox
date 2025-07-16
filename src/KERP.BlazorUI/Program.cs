@@ -5,6 +5,7 @@ using KERP.Application.Common.Context;
 using KERP.Application.Features.MassUpdate.PurchaseOrder.Commands.RequestUpdateReceiptDate;
 using KERP.Application.Features.MassUpdate.PurchaseOrder.Queries.DTOs;
 using KERP.Application.Features.MassUpdate.PurchaseOrder.Query.GetReceiptDateUpdates;
+using KERP.Application.Shared.Validators;
 using KERP.BlazorUI.Components;
 using KERP.Domain.Abstractions;
 using KERP.Domain.Abstractions.Repositories.MassUpdate.PurchaseOrder;
@@ -35,6 +36,7 @@ builder.Services.AddScoped<ICurrentUserContext, CurrentUserContext>();
 builder.Services.AddScoped<ICommandDispatcher, CommandDispatcher>();
 builder.Services.AddScoped<IQueryDispatcher, QueryDispatcher>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<PurchaseOrderReceiptDateUpdateValidator>();
 
 // Repositories
 builder.Services.AddScoped<IReceiptDateUpdateRequestRepository, ReceiptDateUpdateRequestRepository>();
