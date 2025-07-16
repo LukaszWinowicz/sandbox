@@ -2,7 +2,7 @@
 using KERP.Domain.Abstractions.Repositories.MassUpdate.PurchaseOrder;
 using KERP.Domain.Enums;
 
-namespace KERP.Application.Shared.Validators;
+namespace KERP.Application.Features.MassUpdate.PurchaseOrder.Validation;
 
 public class PurchaseOrderReceiptDateUpdateValidator
 {

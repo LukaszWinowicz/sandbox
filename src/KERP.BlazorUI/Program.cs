@@ -5,7 +5,7 @@ using KERP.Application.Common.Context;
 using KERP.Application.Features.MassUpdate.PurchaseOrder.Commands.RequestUpdateReceiptDate;
 using KERP.Application.Features.MassUpdate.PurchaseOrder.Queries.DTOs;
 using KERP.Application.Features.MassUpdate.PurchaseOrder.Query.GetReceiptDateUpdates;
-using KERP.Application.Shared.Validators;
+using KERP.Application.Features.MassUpdate.PurchaseOrder.Validation;
 using KERP.BlazorUI.Components;
 using KERP.Domain.Abstractions;
 using KERP.Domain.Abstractions.Repositories.MassUpdate.PurchaseOrder;

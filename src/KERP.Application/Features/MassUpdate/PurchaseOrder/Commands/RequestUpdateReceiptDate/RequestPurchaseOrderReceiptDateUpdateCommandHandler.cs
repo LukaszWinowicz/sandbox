@@ -1,6 +1,6 @@
 ﻿using KERP.Application.Abstractions.CQRS;
 using KERP.Application.Common.Context;
-using KERP.Application.Shared.Validators;
+using KERP.Application.Features.MassUpdate.PurchaseOrder.Validation;
 using KERP.Domain.Abstractions;
 using KERP.Domain.Abstractions.Repositories.MassUpdate.PurchaseOrder;
 using KERP.Domain.Abstractions.Results;
