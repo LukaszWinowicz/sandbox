@@ -26,7 +26,7 @@ public class PurchaseOrderReceiptDateUpdateValidator : IValidator<RequestPurchas
             if (line.PurchaseOrder?.Length != 10)
                 errors.Add("Numer zamówienia musi mieć dokładnie 10 znaków.");
 
-            if (!await _repo.ExistsAsync(line.PurchaseOrder, CancellationToken.None))
+            if (!await _repo.ExistsAsync(line.PurchaseOrder, cancellationToken))
                 errors.Add($"Zamówienie {line.PurchaseOrder} nie istnieje.");
 
             if (line.LineNumber < 10)

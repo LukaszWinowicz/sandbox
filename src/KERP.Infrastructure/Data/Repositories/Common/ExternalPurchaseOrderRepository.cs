@@ -16,22 +16,36 @@ public class ExternalPurchaseOrderRepository : IExternalPurchaseOrderRepository
 
     public async Task<bool> ExistsAsync(string purchaseOrder, CancellationToken cancellationToken = default)
     {
+        Console.WriteLine($"UserId: {_userContext.UserId}");
+        Console.WriteLine($"FactoryId: {_userContext.FactoryId}");
+
         // Pobieranie fabryki z kontekstu
-        var factory = await _context.Factories
-            .FirstOrDefaultAsync(f => f.Id == _userContext.FactoryId, cancellationToken);
+        try
+        {
+            var factory = await _context.Factories
+                   .FirstOrDefaultAsync(f => f.Id == _userContext.FactoryId, cancellationToken);
 
-        if (factory == null)
-            throw new InvalidOperationException($"Nieznana fabryka: {_userContext.FactoryId}");
+            if (factory == null)
+                throw new InvalidOperationException($"Nieznana fabryka: {_userContext.FactoryId}");
 
-        // Dynamiczne zapytanie SQL
-        var tableName = $"bgq.PurchaseOrder_{factory.Id}";
-        var sql = $"SELECT COUNT(1) FROM {tableName} WHERE PurchaseOrder = @p0";
+            // Dynamiczne zapytanie SQL
+            var tableName = $"bgq.PurchaseOrder_{factory.Id}";
+            var sql = $"SELECT COUNT(1) FROM {tableName} WHERE PurchaseOrder = @p0";
 
-        var count = await _context.Database
-            .SqlQueryRaw<int>(sql, purchaseOrder)
-            .FirstOrDefaultAsync(cancellationToken);
+            var count = await _context.Database
+                .SqlQueryRaw<int>(sql, purchaseOrder)
+                .FirstOrDefaultAsync(cancellationToken);
 
-        return count > 0;
+            return count > 0;
+        }
+        catch (Exception ex )
+        {
+
+            Console.WriteLine($"Błąd podczas pobierania fabryki: {ex.Message}");
+            return false;
+        }
+   
+     
     }
 
     public async Task<bool> ExistsOrderLineAsync(

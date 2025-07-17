@@ -20,10 +20,7 @@ public class AppDbContext : IdentityDbContext
     /// <summary>
     /// Tabela fabryk — konfiguracja systemowa.
     /// </summary>
-    public DbSet<FactoryEntity> Factories { get; set; }
-
-    // DbSet dla encji "tylko do odczytu" z systemu zewnętrznego
-    public DbSet<ExternalPurchaseOrderLineEntity> ExternalPurchaseOrderLines { get; set; }
+    public DbSet<FactoryEntity> Factories { get; set; }  
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -33,11 +30,7 @@ public class AppDbContext : IdentityDbContext
         builder.Entity<PurchaseOrderReceiptDateUpdateRequestEntity>().ToTable("PurchaseOrderReceiptDate", schema: "upd");
         builder.Entity<PurchaseOrderReceiptDateUpdateRequestEntity>().HasKey(e => e.Id);
 
-        builder.Entity<FactoryEntity>().ToTable("Factory");
+        builder.Entity<FactoryEntity>().ToTable("Factories");
         // Możesz dodać konfiguracje typu HasKey, MaxLength itd.
-
-        builder.Entity<ExternalPurchaseOrderLineEntity>().HasNoKey().ToView(null);
-
-
     }
 }
