@@ -14,7 +14,7 @@ public class PurchaseOrderReceiptDateUpdateValidator : IValidator<RequestPurchas
         _repo = repo;
     }
 
-    public async Task<List<string>> ValidateAsync(RequestPurchaseOrderReceiptDateUpdateCommand command, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyCollection<string>> ValidateAsync(RequestPurchaseOrderReceiptDateUpdateCommand command, CancellationToken cancellationToken = default)
     {
         var errors = new List<string>();
 

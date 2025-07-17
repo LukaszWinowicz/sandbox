@@ -1,6 +1,5 @@
 ﻿using KERP.Application.Abstractions.Queries.Repositories;
 using KERP.Application.Common.Context;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace KERP.Infrastructure.Data.Repositories.Common;
@@ -8,36 +7,53 @@ namespace KERP.Infrastructure.Data.Repositories.Common;
 public class ExternalPurchaseOrderRepository : IExternalPurchaseOrderRepository
 {
     private readonly AppDbContext _context;
-    private readonly ICurrentUserContext _currentUserContext;
-    public ExternalPurchaseOrderRepository(AppDbContext context, ICurrentUserContext currentUserContext)
+    private readonly ICurrentUserContext _userContext;
+    public ExternalPurchaseOrderRepository(AppDbContext context, ICurrentUserContext userContext)
     {
         _context = context;
-        _currentUserContext = currentUserContext;
+        _userContext = userContext;
     }
 
     public async Task<bool> ExistsAsync(string purchaseOrder, CancellationToken cancellationToken = default)
     {
-        int factoryId = _currentUserContext.FactoryId;
-        // Krok 1: Zbuduj dynamicznie nazwę tabeli zgodnie z konwencją
-        string tableName = $"bgq.PurchaseOrder_{factoryId}";
+        // Pobieranie fabryki z kontekstu
+        var factory = await _context.Factories
+            .FirstOrDefaultAsync(f => f.Id == _userContext.FactoryId, cancellationToken);
 
-        // Krok 2: Przygotuj bezpieczne zapytanie SQL.
-        // Używamy interpolacji stringów do wstawienia nazwy tabeli (bezpieczne, bo factoryId to int).
-        // Używamy parametryzacji EF Core dla danych wejściowych od użytkownika (@p0).
-        //var sql = $"SELECT 1 FROM {tableName} WHERE PurchaseOrder = {{0}}";
-        var sql = $"SELECT COUNT(*) FROM {tableName} WHERE PurchaseOrder = @po";
-        var count = await _context.Database.ExecuteSqlRawAsync(sql, new[] {
-    new SqlParameter("@po", purchaseOrder)
-});
+        if (factory == null)
+            throw new InvalidOperationException($"Nieznana fabryka: {_userContext.FactoryId}");
+
+        // Dynamiczne zapytanie SQL
+        var tableName = $"bgq.PurchaseOrder_{factory.Id}";
+        var sql = $"SELECT COUNT(1) FROM {tableName} WHERE PurchaseOrder = @p0";
+
+        var count = await _context.Database
+            .SqlQueryRaw<int>(sql, purchaseOrder)
+            .FirstOrDefaultAsync(cancellationToken);
+
         return count > 0;
+    }
 
-        // Krok 3: Wykonaj zapytanie używając FromSqlRaw na DbSet.
-        // To jest potężny mechanizm EF Core do mieszania SQL z LINQ.
-        // Pytamy tylko o istnienie, więc AnyAsync jest idealne i wydajne.
-        var exists = await _context.ExternalPurchaseOrderLines
-            .FromSqlRaw(sql, purchaseOrder)
-            .AnyAsync(cancellationToken);
+    public async Task<bool> ExistsOrderLineAsync(
+            string purchaseOrder,
+            int lineNumber,
+            int sequence,
+            CancellationToken cancellationToken)
+    {
+        var factory = await _context.Factories
+            .FirstOrDefaultAsync(f => f.Id == _userContext.FactoryId, cancellationToken);
 
-        return exists;
+        var tableName = $"bgq.PurchaseOrder_{factory.Id}";
+        var sql = @$"
+            SELECT COUNT(1) FROM {tableName} 
+            WHERE PurchaseOrder = @p0 
+              AND LineNumber = @p1 
+              AND Sequence = @p2";
+
+        var count = await _context.Database
+            .SqlQueryRaw<int>(sql, purchaseOrder, lineNumber, sequence)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        return count > 0;
     }
 }

@@ -2,5 +2,5 @@
 
 public interface IValidator<TCommand>
 {
-    Task<List<string>> ValidateAsync(TCommand command, CancellationToken cancellationToken = default);
+    Task<IReadOnlyCollection<string>> ValidateAsync(TCommand command, CancellationToken cancellationToken = default);
 }
