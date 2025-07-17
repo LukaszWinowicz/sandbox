@@ -1,11 +1,11 @@
 ﻿using KERP.Application.Abstractions.Queries.Repositories;
+using KERP.Application.Abstractions.Validation;
 using KERP.Application.Features.MassUpdate.PurchaseOrder.Commands.RequestUpdateReceiptDate;
-using KERP.Domain.Abstractions.Repositories.MassUpdate.PurchaseOrder;
 using KERP.Domain.Enums;
 
 namespace KERP.Application.Features.MassUpdate.PurchaseOrder.Validation;
 
-public class PurchaseOrderReceiptDateUpdateValidator
+public class PurchaseOrderReceiptDateUpdateValidator : IValidator<RequestPurchaseOrderReceiptDateUpdateCommand>
 {
     private readonly IExternalPurchaseOrderRepository _repo;
 
@@ -14,7 +14,7 @@ public class PurchaseOrderReceiptDateUpdateValidator
         _repo = repo;
     }
 
-    public async Task<List<string>> ValidateAsync(RequestPurchaseOrderReceiptDateUpdateCommand command)
+    public async Task<List<string>> ValidateAsync(RequestPurchaseOrderReceiptDateUpdateCommand command, CancellationToken cancellationToken = default)
     {
         var errors = new List<string>();
 

@@ -1,5 +1,4 @@
 ﻿using KERP.Domain.Abstractions;
-using KERP.Domain.Abstractions.Repositories.MassUpdate.PurchaseOrder;
 
 namespace KERP.Infrastructure.Data;
 
