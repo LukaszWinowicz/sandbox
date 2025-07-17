@@ -1,5 +1,6 @@
 using KERP.Application.Abstractions.CQRS;
 using KERP.Application.Abstractions.Dispatcher;
+using KERP.Application.Abstractions.Repositories.Common;
 using KERP.Application.Abstractions.Repositories.MassUpdate.PurchaseOrder;
 using KERP.Application.Common.Context;
 using KERP.Application.Features.MassUpdate.PurchaseOrder.Commands.RequestUpdateReceiptDate;
@@ -12,6 +13,7 @@ using KERP.Domain.Abstractions.Repositories.MassUpdate.PurchaseOrder;
 using KERP.Domain.Abstractions.Results;
 using KERP.Infrastructure.Auth;
 using KERP.Infrastructure.Data;
+using KERP.Infrastructure.Data.Repositories.Common;
 using KERP.Infrastructure.Data.Repositories.MassUpdate.PurchaseOrder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -41,6 +43,7 @@ builder.Services.AddScoped<PurchaseOrderReceiptDateUpdateValidator>();
 // Repositories
 builder.Services.AddScoped<IReceiptDateUpdateRequestRepository, ReceiptDateUpdateRequestRepository>();
 builder.Services.AddScoped<IPurchaseOrderReceiptDateUpdateReadRepository, PurchaseOrderReceiptDateUpdateReadRepository>();
+builder.Services.AddScoped<IExternalPurchaseOrderRepository, ExternalPurchaseOrderRepository>();
 
 // CQRS Handlers
 builder.Services.AddScoped<ICommandHandler<RequestPurchaseOrderReceiptDateUpdateCommand, Result<bool>>, RequestPurchaseOrderReceiptDateUpdateCommandHandler>();

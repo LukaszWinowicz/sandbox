@@ -22,6 +22,9 @@ public class AppDbContext : IdentityDbContext
     /// </summary>
     public DbSet<FactoryEntity> Factories { get; set; }
 
+    // DbSet dla encji "tylko do odczytu" z systemu zewnętrznego
+    public DbSet<ExternalPurchaseOrderLineEntity> ExternalPurchaseOrderLines { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -33,6 +36,8 @@ public class AppDbContext : IdentityDbContext
         builder.Entity<FactoryEntity>().ToTable("Factory");
         // Możesz dodać konfiguracje typu HasKey, MaxLength itd.
 
-        
+        builder.Entity<ExternalPurchaseOrderLineEntity>().HasNoKey().ToView(null);
+
+
     }
 }

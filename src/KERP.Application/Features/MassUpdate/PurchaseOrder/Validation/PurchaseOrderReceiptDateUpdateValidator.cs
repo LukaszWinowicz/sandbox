@@ -1,4 +1,5 @@
-﻿using KERP.Application.Features.MassUpdate.PurchaseOrder.Commands.RequestUpdateReceiptDate;
+﻿using KERP.Application.Abstractions.Repositories.Common;
+using KERP.Application.Features.MassUpdate.PurchaseOrder.Commands.RequestUpdateReceiptDate;
 using KERP.Domain.Abstractions.Repositories.MassUpdate.PurchaseOrder;
 using KERP.Domain.Enums;
 
@@ -6,9 +7,9 @@ namespace KERP.Application.Features.MassUpdate.PurchaseOrder.Validation;
 
 public class PurchaseOrderReceiptDateUpdateValidator
 {
-    private readonly IReceiptDateUpdateRequestRepository _repo;
+    private readonly IExternalPurchaseOrderRepository _repo;
 
-    public PurchaseOrderReceiptDateUpdateValidator(IReceiptDateUpdateRequestRepository repo)
+    public PurchaseOrderReceiptDateUpdateValidator(IExternalPurchaseOrderRepository repo)
     {
         _repo = repo;
     }
@@ -25,8 +26,8 @@ public class PurchaseOrderReceiptDateUpdateValidator
             if (line.PurchaseOrder?.Length != 10)
                 errors.Add("Numer zamówienia musi mieć dokładnie 10 znaków.");
 
-            //if (!await _repo.ExistsPurchaseOrderAsync(line.PurchaseOrder))
-            //    errors.Add($"Zamówienie {line.PurchaseOrder} nie istnieje.");
+            if (!await _repo.ExistsAsync(line.PurchaseOrder, CancellationToken.None))
+                errors.Add($"Zamówienie {line.PurchaseOrder} nie istnieje.");
 
             if (line.LineNumber < 10)
                 errors.Add("Numer linii musi być większy lub równy 10.");
