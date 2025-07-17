@@ -1,4 +1,4 @@
-﻿using KERP.Application.Abstractions.Repositories.MassUpdate.PurchaseOrder;
+﻿using KERP.Application.Abstractions.Queries.Repositories;
 using KERP.Application.Features.MassUpdate.PurchaseOrder.Queries.DTOs;
 using KERP.Domain.Enums;
 using Microsoft.EntityFrameworkCore;

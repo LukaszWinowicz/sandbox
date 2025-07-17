@@ -1,5 +1,5 @@
 ﻿using KERP.Application.Abstractions.CQRS;
-using KERP.Application.Abstractions.Repositories.MassUpdate.PurchaseOrder;
+using KERP.Application.Abstractions.Queries.Repositories;
 using KERP.Application.Features.MassUpdate.PurchaseOrder.Queries.DTOs;
 
 namespace KERP.Application.Features.MassUpdate.PurchaseOrder.Query.GetReceiptDateUpdates;

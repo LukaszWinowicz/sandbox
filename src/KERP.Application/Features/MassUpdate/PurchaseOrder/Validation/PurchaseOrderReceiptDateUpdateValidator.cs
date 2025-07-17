@@ -1,4 +1,4 @@
-﻿using KERP.Application.Abstractions.Repositories.Common;
+﻿using KERP.Application.Abstractions.Queries.Repositories;
 using KERP.Application.Features.MassUpdate.PurchaseOrder.Commands.RequestUpdateReceiptDate;
 using KERP.Domain.Abstractions.Repositories.MassUpdate.PurchaseOrder;
 using KERP.Domain.Enums;

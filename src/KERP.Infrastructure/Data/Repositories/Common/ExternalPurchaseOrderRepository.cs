@@ -1,4 +1,4 @@
-﻿using KERP.Application.Abstractions.Repositories.Common;
+﻿using KERP.Application.Abstractions.Queries.Repositories;
 using KERP.Application.Common.Context;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;

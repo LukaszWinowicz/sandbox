@@ -1,4 +1,4 @@
-﻿namespace KERP.Application.Abstractions.Repositories.Common;
+﻿namespace KERP.Application.Abstractions.Queries.Repositories;
 
 /// <summary>
 /// Abstrakcja repozytorium dla danych zamówień z systemów zewnętrznych (np. BigQuery).

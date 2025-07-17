@@ -1,7 +1,6 @@
 using KERP.Application.Abstractions.CQRS;
 using KERP.Application.Abstractions.Dispatcher;
-using KERP.Application.Abstractions.Repositories.Common;
-using KERP.Application.Abstractions.Repositories.MassUpdate.PurchaseOrder;
+using KERP.Application.Abstractions.Queries.Repositories;
 using KERP.Application.Common.Context;
 using KERP.Application.Features.MassUpdate.PurchaseOrder.Commands.RequestUpdateReceiptDate;
 using KERP.Application.Features.MassUpdate.PurchaseOrder.Queries.DTOs;
