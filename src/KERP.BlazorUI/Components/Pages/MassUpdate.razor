@@ -1,16 +1,21 @@
 ﻿@page "/mass-update"
 @using KERP.Application.Features.MassUpdates.PurchaseOrder.UpdateReceiptDate
+@using KERP.Application.Features.MassUpdates.PurchaseOrder.GetChangeRequests
 @using KERP.Application.Common.Abstractions
 @using KERP.Domain.Aggregates.PurchaseOrder
 
+@* ✨ KROK 1: Wstrzykujemy OBA dispatchery ✨ *@
 @inject ICommandDispatcher CommandDispatcher
+@inject IQueryDispatcher QueryDispatcher
 @rendermode InteractiveServer
 
 <h3>Masowa aktualizacja dat odbioru</h3>
 
-<p>@_feedbackMessage</p>
+@if (!string.IsNullOrWhiteSpace(_feedbackMessage))
+{
+    <div class="alert alert-info my-3">@_feedbackMessage</div>
+}
 
-@* Używamy EditForm do obsługi formularza i jego walidacji (w przyszłości) *@
 <EditForm Model="@_lines" OnValidSubmit="HandleSubmit">
 
     <div class="mb-3">
@@ -33,7 +38,6 @@
             </tr>
         </thead>
         <tbody>
-            @* Pętla do dynamicznego renderowania wierszy formularza *@
             @foreach (var line in _lines)
             {
                 <tr>
@@ -51,10 +55,45 @@
 
 </EditForm>
 
+@* ✨ KROK 2: Dodajemy tabelę do wyświetlania wyników ✨ *@
+<hr class="my-4" />
+<h3>Ostatnio dodane żądania</h3>
+
+@if (_requests is null)
+{
+    <p><em>Ładowanie...</em></p>
+}
+else if (!_requests.Any())
+{
+    <p>Brak danych do wyświetlenia.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nr Zamówienia</th>
+                <th>Data Żądania</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var request in _requests)
+            {
+                <tr>
+                    <td>@request.Id</td>
+                    <td>@request.PurchaseOrder</td>
+                    <td>@request.CreatedAtUtc.ToLocalTime()</td>
+                    <td>@(request.IsProcessed ? "Przetworzone" : "Oczekujące")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
 
 @code {
-    // Klasa pomocnicza do bindowania danych w formularzu.
-    // Jest to nasz "view model" dla tej strony.
     private class FormLineModel
     {
         public string? PurchaseOrder { get; set; }
@@ -63,36 +102,33 @@
         public DateTime NewReceiptDate { get; set; } = DateTime.Now;
     }
 
-    // Lista przechowująca stan wierszy w formularzu.
     private List<FormLineModel> _lines = new();
-
-    // Wybrany typ daty.
     private ReceiptDateUpdateType _selectedDateType = ReceiptDateUpdateType.Confirmed;
-
-    // Komunikat zwrotny dla użytkownika.
     private string? _feedbackMessage;
 
-    // Metoda cyklu życia Blazora - uruchamiana przy inicjalizacji komponentu.
-    protected override void OnInitialized()
+    // ✨ KROK 3: Zmienna do przechowywania wyników z zapytania ✨
+    private List<ChangeRequestDto>? _requests;
+
+    // ✨ KROK 4: Logika ładowania i odświeżania danych ✨
+    protected override async Task OnInitializedAsync()
     {
-        // Dodajemy jeden pusty wiersz na start.
         AddNewLine();
+        await LoadRequests();
     }
 
-    // Metoda dodająca nowy, pusty wiersz do formularza.
-    private void AddNewLine()
+    private async Task LoadRequests()
     {
-        _lines.Add(new FormLineModel());
+        _requests = await QueryDispatcher.Send(new GetChangeRequestsQuery());
     }
 
-    // Główna metoda obsługująca wysłanie formularza.
+    private void AddNewLine() => _lines.Add(new FormLineModel());
+
     private async Task HandleSubmit()
     {
         _feedbackMessage = "Przetwarzanie...";
 
-        // Krok 1: Mapujemy nasz model formularza (`FormLineModel`) na DTO z warstwy Aplikacji.
         var orderLineDtos = _lines
-            .Where(l => !string.IsNullOrWhiteSpace(l.PurchaseOrder)) // Ignorujemy puste wiersze
+            .Where(l => !string.IsNullOrWhiteSpace(l.PurchaseOrder))
             .Select(l => new OrderLineDto(l.PurchaseOrder!, l.LineNumber, l.Sequence, l.NewReceiptDate))
             .ToList();
 
@@ -102,23 +138,20 @@
             return;
         }
 
-        // Krok 2: Tworzymy obiekt komendy.
         var command = new RequestPurchaseOrderReceiptDateChangeCommand
         {
             OrderLines = orderLineDtos,
             DateType = _selectedDateType
         };
 
-        // Krok 3: Używamy dispatchera do wysłania komendy.
         var result = await CommandDispatcher.Send(command);
 
-        // Krok 4: Obsługujemy wynik.
         if (result.IsSuccess)
         {
             _feedbackMessage = "Sukces! Żądania zostały poprawnie wysłane i zapisane.";
-            // Czyścimy formularz i dodajemy nowy pusty wiersz.
             _lines.Clear();
             AddNewLine();
+            await LoadRequests(); // Odświeżamy tabelę po udanym zapisie
         }
         else
         {
@@ -126,3 +159,4 @@
         }
     }
 }
+
