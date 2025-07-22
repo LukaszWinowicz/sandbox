@@ -4,8 +4,8 @@ using KERP.Application.Validation;
 namespace KERP.Application.Common.Behaviors;
 
 public class ValidationBehavior<TCommand, TResult> : ICommandHandler<TCommand, TResult>
-where TCommand : ICommand<TResult>
-where TResult : Result // Ograniczamy do komend zwracających nasz obiekt Result
+    where TCommand : ICommand<TResult>
+    where TResult : Result
 {
     private readonly ICommandHandler<TCommand, TResult> _decorated;
     private readonly IEnumerable<IValidator<TCommand>> _validators;
@@ -22,7 +22,6 @@ where TResult : Result // Ograniczamy do komend zwracających nasz obiekt Result
     {
         if (!_validators.Any())
         {
-            // Jeśli nie ma walidatorów dla tej komendy, idź dalej
             return await _decorated.Handle(command, cancellationToken);
         }
 
@@ -33,12 +32,22 @@ where TResult : Result // Ograniczamy do komend zwracających nasz obiekt Result
 
         if (errors.Any())
         {
-            // Jeśli są błędy, przerwij potok i zwróć błąd walidacji
-            // Używamy refleksji, aby stworzyć obiekt Result.Failure<TResult>
             var firstError = errors.First();
-            var failureResult = typeof(Result).GetMethod(nameof(Result.Failure), new[] { typeof(Error) })!
-                .MakeGenericMethod(typeof(TResult).GetGenericArguments()[0])
-                .Invoke(null, new object[] { new Error(firstError.PropertyName, firstError.ErrorMessage) });
+            var error = new Error(firstError.PropertyName, firstError.ErrorMessage);
+
+            // Sprawdzamy, czy oczekiwany rezultat to prosty, niegeneryczny Result
+            if (typeof(TResult) == typeof(Result))
+            {
+                // Jeśli tak, tworzymy go i rzutujemy.
+                return (Result.Failure(error) as TResult)!;
+            }
+
+            // Jeśli nie, to znaczy, że jest to generyczny Result<TValue> i używamy refleksji
+            var resultType = typeof(TResult).GetGenericArguments()[0];
+            var failureResult = typeof(Result)
+                .GetMethod(nameof(Result.Failure), new[] { typeof(Error) })!
+                .MakeGenericMethod(resultType)
+                .Invoke(null, new object[] { error });
 
             return (TResult)failureResult!;
         }
