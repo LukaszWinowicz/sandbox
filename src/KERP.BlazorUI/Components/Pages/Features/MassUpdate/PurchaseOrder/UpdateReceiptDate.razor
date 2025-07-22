@@ -52,22 +52,52 @@
     // Funkcja przetwarzająca, przekazywana jako parametr
     private async Task<Result<List<RowValidationResult>>> ProcessRows(List<FormLineModel> models)
     {
-        var dtos = models
-            .Where(l => !string.IsNullOrWhiteSpace(l.PurchaseOrder))
-            .Select(l => new OrderLineDto(l.PurchaseOrder!, l.LineNumber, l.Sequence, l.NewReceiptDate))
-            .ToList();
+        var validationResults = new List<RowValidationResult>();
+        var validDtos = new List<OrderLineDto>();
+        int rowNumber = 1;
 
-        if (!dtos.Any())
+        // Krok 1: Ręczna walidacja każdego wiersza
+        foreach (var model in models)
         {
-            return Result.Failure<List<RowValidationResult>>(new Error("Input.Error", "No valid data to process."));
+            if (string.IsNullOrWhiteSpace(model.PurchaseOrder))
+            {
+                // Jeśli wiersz jest pusty, dodajemy błąd walidacji i przechodzimy dalej
+                validationResults.Add(RowValidationResult.Failure(rowNumber, "Purchase Order number cannot be empty."));
+            }
+            else
+            {
+                // Jeśli wiersz jest poprawny, mapujemy go na DTO i dodajemy do listy do przetworzenia
+                validDtos.Add(new OrderLineDto(model.PurchaseOrder!, model.LineNumber, model.Sequence, model.NewReceiptDate));
+            }
+            rowNumber++;
         }
 
-        var command = new RequestPurchaseOrderReceiptDateChangeCommand
+        // Krok 2: Jeśli były jakiekolwiek poprawne wiersze, wyślij je do handlera
+        if (validDtos.Any())
         {
-            OrderLines = dtos,
-            DateType = _selectedDateType
-        };
+            var command = new RequestPurchaseOrderReceiptDateChangeCommand
+            {
+                OrderLines = validDtos,
+                DateType = _selectedDateType
+            };
 
-        return await CommandDispatcher.Send(command);
+            var handlerResult = await CommandDispatcher.Send(command);
+
+            if (handlerResult.IsSuccess)
+            {
+                // Łączymy wyniki walidacji z wynikami z handlera
+                // Handler zwróci sukcesy dla przetworzonych wierszy, a my mamy już błędy
+                validationResults.AddRange(handlerResult.Value);
+            }
+            else
+            {
+                // Jeśli cały handler zwrócił błąd, dodajemy go jako błąd ogólny
+                validationResults.Add(RowValidationResult.Failure(0, handlerResult.Error.Description));
+            }
+        }
+
+        // Krok 3: Zawsze zwracamy sukces z listą wyników
+        return Result.Success(validationResults);
     }
+
 }
