@@ -1,6 +1,7 @@
 ﻿using KERP.Application.Common.Abstractions;
 using KERP.Application.Common.Dispatchers;
 using KERP.Application.Common.Models;
+using KERP.Application.Features.MassUpdates.PurchaseOrder.GetChangeRequests;
 using KERP.Application.Features.MassUpdates.PurchaseOrder.UpdateReceiptDate;
 using KERP.Application.Validation;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,6 +25,9 @@ public static class DependencyInjection
         // Tutaj w przyszłości zarejestrujemy też walidatory i inne serwisy aplikacyjne.
         services.AddScoped<IValidator<RequestPurchaseOrderReceiptDateChangeCommand>,
         RequestPurchaseOrderReceiptDateChangeCommandValidator>();
+
+        services.AddScoped<IQueryHandler<GetChangeRequestsQuery, List<ChangeRequestDto>>,
+        GetChangeRequestsQueryHandler>();
 
         return services;
     }

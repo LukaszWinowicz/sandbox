@@ -4,6 +4,8 @@ using KERP.Application.Services;
 using KERP.Application.Validation;
 using KERP.Domain.Aggregates.PurchaseOrder;
 using KERP.Domain.Exceptions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace KERP.Application.Features.MassUpdates.PurchaseOrder.UpdateReceiptDate;
 
@@ -17,17 +19,20 @@ public sealed class RequestPurchaseOrderReceiptDateChangeCommandHandler
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUserService _currentUserService; // Zakładamy istnienie serwisu do pobierania danych użytkownika
     private readonly IValidator<RequestPurchaseOrderReceiptDateChangeCommand> _validator;
+    private readonly ILogger<RequestPurchaseOrderReceiptDateChangeCommandHandler> _logger;
 
     public RequestPurchaseOrderReceiptDateChangeCommandHandler(
         IPurchaseOrderReceiptDateChangeRequestRepository requestRepository,
         IUnitOfWork unitOfWork,
         ICurrentUserService currentUserService,
-        IValidator<RequestPurchaseOrderReceiptDateChangeCommand> validator)
+        IValidator<RequestPurchaseOrderReceiptDateChangeCommand> validator,
+        ILogger<RequestPurchaseOrderReceiptDateChangeCommandHandler> logger)
     {
         _requestRepository = requestRepository;
         _unitOfWork = unitOfWork;
         _currentUserService = currentUserService;
         _validator = validator;
+        _logger = logger;
     }
 
     /// <summary>
@@ -77,6 +82,14 @@ public sealed class RequestPurchaseOrderReceiptDateChangeCommandHandler
         {
             // Przechwytujemy wyjątek domenowy i zwracamy go jako elegancki błąd
             return Result.Failure(new Error("Validation.Error", ex.Message));
+        }
+        catch (DbUpdateException ex)
+        {
+            // Logujemy pełny, techniczny wyjątek dla programistów
+            _logger.LogError(ex, "Wystąpił błąd podczas zapisu do bazy danych.");
+
+            // Zwracamy użytkownikowi generyczny, bezpieczny błąd
+            return Result.Failure(new Error("Database.Error", "Wystąpił nieoczekiwany błąd podczas zapisu danych."));
         }
     }
 }

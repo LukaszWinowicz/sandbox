@@ -1,4 +1,5 @@
-﻿using KERP.Domain.Aggregates.PurchaseOrder;
+﻿using KERP.Application.Common.Abstractions;
+using KERP.Domain.Aggregates.PurchaseOrder;
 using KERP.Domain.Aggregates.User;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +8,7 @@ using System.Reflection;
 namespace KERP.Infrastructure.Persistence;
 
 // Zmieniamy dziedziczenie z DbContext na IdentityDbContext<ApplicationUser>
-public class AppDbContext : IdentityDbContext<ApplicationUser>
+public class AppDbContext : IdentityDbContext<ApplicationUser>, IAppDbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {

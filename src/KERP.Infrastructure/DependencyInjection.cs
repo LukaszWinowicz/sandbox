@@ -18,6 +18,10 @@ public static class DependencyInjection
         services.AddDbContext<AppDbContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
+        // Mówimy kontenerowi, że interfejs IAppDbContext jest realizowany przez klasę AppDbContext.
+        // On sam zrozumie, żeby użyć tej samej instancji, co dla wstrzyknięcia samego AppDbContext.
+        services.AddScoped<IAppDbContext>(provider => provider.GetRequiredService<AppDbContext>());
+
         // Rejestracja naszych implementacji jako Scoped
         // Oznacza to, że jeden obiekt będzie używany w ramach jednego żądania HTTP.
         services.AddScoped<IPurchaseOrderReceiptDateChangeRequestRepository, PurchaseOrderReceiptDateChangeRequestRepository>();
