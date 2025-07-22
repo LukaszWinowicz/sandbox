@@ -17,22 +17,16 @@ public sealed class RequestPurchaseOrderReceiptDateChangeCommandHandler
 {
     private readonly IPurchaseOrderReceiptDateChangeRequestRepository _requestRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ICurrentUserService _currentUserService; // Zakładamy istnienie serwisu do pobierania danych użytkownika
-    private readonly IValidator<RequestPurchaseOrderReceiptDateChangeCommand> _validator;
-    private readonly ILogger<RequestPurchaseOrderReceiptDateChangeCommandHandler> _logger;
+    private readonly ICurrentUserService _currentUserService;
 
     public RequestPurchaseOrderReceiptDateChangeCommandHandler(
         IPurchaseOrderReceiptDateChangeRequestRepository requestRepository,
         IUnitOfWork unitOfWork,
-        ICurrentUserService currentUserService,
-        IValidator<RequestPurchaseOrderReceiptDateChangeCommand> validator,
-        ILogger<RequestPurchaseOrderReceiptDateChangeCommandHandler> logger)
+        ICurrentUserService currentUserService)
     {
         _requestRepository = requestRepository;
         _unitOfWork = unitOfWork;
         _currentUserService = currentUserService;
-        _validator = validator;
-        _logger = logger;
     }
 
     /// <summary>
@@ -40,14 +34,6 @@ public sealed class RequestPurchaseOrderReceiptDateChangeCommandHandler
     /// </summary>
     public async Task<Result> Handle(RequestPurchaseOrderReceiptDateChangeCommand command, CancellationToken cancellationToken)
     {
-        ValidationResult validationResult = _validator.Validate(command);
-        if (!validationResult.IsValid)
-        {
-            // Zwracamy pierwszy błąd walidacji dla uproszczenia
-            var firstError = validationResult.Errors.First();
-            return Result.Failure(new Error(firstError.PropertyName, firstError.ErrorMessage));
-        }
-
         try
         {
             // Pobieramy ID użytkownika i fabryki z serwisu kontekstowego
@@ -82,14 +68,6 @@ public sealed class RequestPurchaseOrderReceiptDateChangeCommandHandler
         {
             // Przechwytujemy wyjątek domenowy i zwracamy go jako elegancki błąd
             return Result.Failure(new Error("Validation.Error", ex.Message));
-        }
-        catch (DbUpdateException ex)
-        {
-            // Logujemy pełny, techniczny wyjątek dla programistów
-            _logger.LogError(ex, "Wystąpił błąd podczas zapisu do bazy danych.");
-
-            // Zwracamy użytkownikowi generyczny, bezpieczny błąd
-            return Result.Failure(new Error("Database.Error", "Wystąpił nieoczekiwany błąd podczas zapisu danych."));
         }
     }
 }
