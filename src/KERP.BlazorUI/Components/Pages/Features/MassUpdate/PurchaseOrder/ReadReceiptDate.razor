@@ -1,0 +1,56 @@
+﻿@page "/mass-update/purchase-order/read-receipt-date"
+@using KERP.Application.Features.MassUpdates.PurchaseOrder.GetChangeRequests
+@using KERP.Application.Common.Abstractions
+
+@inject IQueryDispatcher QueryDispatcher
+
+<h3>Ostatnio dodane żądania</h3>
+
+@if (_requests is null)
+{
+    <p><em>Ładowanie...</em></p>
+}
+else if (!_requests.Any())
+{
+    <p>Brak danych do wyświetlenia.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nr Zamówienia</th>
+                <th>Data Żądania</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var request in _requests)
+            {
+                <tr>
+                    <td>@request.Id</td>
+                    <td>@request.PurchaseOrder</td>
+                    <td>@request.CreatedAtUtc.ToLocalTime()</td>
+                    <td>@(request.IsProcessed ? "Przetworzone" : "Oczekujące")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<ChangeRequestDto>? _requests;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadRequests();
+    }
+
+    // Metoda jest teraz publiczna, aby rodzic mógł ją wywołać
+    public async Task LoadRequests()
+    {
+        _requests = await QueryDispatcher.Send(new GetChangeRequestsQuery());
+        StateHasChanged(); // Informujemy Blazora, że musi odświeżyć widok
+    }
+}

@@ -1,0 +1,122 @@
+﻿@using KERP.Application.Common.Models
+@using System.ComponentModel.DataAnnotations
+
+@typeparam TLineModel where TLineModel : class, new()
+
+<div class="card" style="position: relative;">
+    <div class="card-body">
+        @if (IsProcessing)
+        {
+            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255, 255, 255, 0.8); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10;">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p style="margin-top: 10px;">Processing...</p>
+            </div>
+        }
+
+        <EditForm Model="Lines" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+            <table class="table">
+                <thead>
+                    <tr>
+                        @TableHeaderTemplate
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var line in Lines)
+                    {
+                        @TableRowTemplate(line)
+                    }
+                </tbody>
+            </table>
+
+            <div class="d-flex justify-content-end mt-3" style="gap: 10px;">
+                <button type="button" class="btn btn-secondary" @onclick="AddNewLine">Add Row</button>
+                <button type="submit" class="btn btn-primary">Process All Rows</button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@if (_validationHasRun)
+{
+    @if (_processingResults != null && _processingResults.Any(r => !r.IsValid))
+    {
+        <div class="alert alert-danger mt-4">
+            <h5>Validation finished. Found errors in @_processingResults.Count(r => !r.IsValid) row(s):</h5>
+            @foreach (var result in _processingResults.Where(r => !r.IsValid))
+            {
+                <div class="mt-2">
+                    <strong>Row @result.RowNumber:</strong>
+                    <ul>
+                        @foreach (var error in result.Errors)
+                        {
+                            <li>@error</li>
+                        }
+                    </ul>
+                </div>
+            }
+        </div>
+    }
+    else if (_processingResults != null)
+    {
+        <div class="alert alert-success mt-4">
+            <strong>Processing successful!</strong> All rows have been processed correctly.
+        </div>
+    }
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public Func<List<TLineModel>, Task<Result<List<RowValidationResult>>>> ProcessRequestFunc { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public RenderFragment TableHeaderTemplate { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public RenderFragment<TLineModel> TableRowTemplate { get; set; } = default!;
+
+    private List<TLineModel> Lines { get; set; } = new();
+    private List<RowValidationResult> _processingResults = new();
+    private bool IsProcessing { get; set; }
+    private bool _validationHasRun = false;
+
+    protected override void OnInitialized()
+    {
+        AddNewLine();
+    }
+
+    private void AddNewLine()
+    {
+        Lines.Add(new TLineModel());
+    }
+
+    private async Task HandleSubmit()
+    {
+        IsProcessing = true;
+        _validationHasRun = false;
+        StateHasChanged();
+
+        var result = await ProcessRequestFunc(Lines);
+
+        if (result.IsSuccess)
+        {
+            _processingResults = result.Value;
+            _validationHasRun = true;
+        }
+        else
+        {
+            // Obsługa błędu krytycznego, jeśli cała operacja zawiedzie
+            // (np. problem z połączeniem, błąd w dispatcherze)
+            _processingResults = new List<RowValidationResult>
+            {
+                RowValidationResult.Failure(1, $"Critical Error: {result.Error.Description}")
+            };
+            _validationHasRun = true;
+        }
+
+        IsProcessing = false;
+        StateHasChanged();
+    }
+}

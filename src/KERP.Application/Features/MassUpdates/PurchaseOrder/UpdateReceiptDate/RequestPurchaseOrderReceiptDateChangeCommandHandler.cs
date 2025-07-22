@@ -1,11 +1,8 @@
 ﻿using KERP.Application.Common.Abstractions;
 using KERP.Application.Common.Models;
 using KERP.Application.Services;
-using KERP.Application.Validation;
 using KERP.Domain.Aggregates.PurchaseOrder;
 using KERP.Domain.Exceptions;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace KERP.Application.Features.MassUpdates.PurchaseOrder.UpdateReceiptDate;
 
@@ -13,7 +10,7 @@ namespace KERP.Application.Features.MassUpdates.PurchaseOrder.UpdateReceiptDate;
 /// Obsługuje komendę tworzenia żądań zmiany daty odbioru dla zamówień zakupu.
 /// </summary>
 public sealed class RequestPurchaseOrderReceiptDateChangeCommandHandler
-    : ICommandHandler<RequestPurchaseOrderReceiptDateChangeCommand, Result>
+    : ICommandHandler<RequestPurchaseOrderReceiptDateChangeCommand, Result<List<RowValidationResult>>>
 {
     private readonly IPurchaseOrderReceiptDateChangeRequestRepository _requestRepository;
     private readonly IUnitOfWork _unitOfWork;
@@ -32,19 +29,19 @@ public sealed class RequestPurchaseOrderReceiptDateChangeCommandHandler
     /// <summary>
     /// Przetwarza komendę, tworząc wiele agregatów w ramach jednej transakcji.
     /// </summary>
-    public async Task<Result> Handle(RequestPurchaseOrderReceiptDateChangeCommand command, CancellationToken cancellationToken)
+    public async Task<Result<List<RowValidationResult>>> Handle(RequestPurchaseOrderReceiptDateChangeCommand command, CancellationToken cancellationToken)
     {
-        try
-        {
-            // Pobieramy ID użytkownika i fabryki z serwisu kontekstowego
-            // To lepsze niż przesyłanie tych danych w każdej komendzie.
-            var userId = _currentUserService.UserId ?? throw new UnauthorizedAccessException();
-            var factoryId = _currentUserService.FactoryId ?? throw new BusinessRuleValidationException("Brak kontekstu fabryki dla użytkownika.");
+        var userId = _currentUserService.UserId ?? throw new UnauthorizedAccessException();
+        var factoryId = _currentUserService.FactoryId ?? throw new BusinessRuleValidationException("Brak kontekstu fabryki dla użytkownika.");
 
-            // Przetwarzamy każdą linię z komendy
-            foreach (var line in command.OrderLines)
+        var results = new List<RowValidationResult>();
+        var validRequests = new List<PurchaseOrderReceiptDateChangeRequest>();
+        int rowNumber = 1;
+
+        foreach (var line in command.OrderLines)
+        {
+            try
             {
-                // Używamy metody fabrycznej z naszego agregatu, aby stworzyć nowy, spójny obiekt
                 var changeRequest = PurchaseOrderReceiptDateChangeRequest.Create(
                     purchaseOrder: line.PurchaseOrder,
                     lineNumber: line.LineNumber,
@@ -54,20 +51,25 @@ public sealed class RequestPurchaseOrderReceiptDateChangeCommandHandler
                     factoryId: factoryId,
                     userId: userId);
 
-                // Dodajemy nowy agregat do repozytorium (na razie tylko w pamięci, w Change Trackerze)
-                _requestRepository.Add(changeRequest);
+                validRequests.Add(changeRequest);
+                results.Add(RowValidationResult.Success(rowNumber));
             }
-
-            // Zapisujemy wszystkie zmiany do bazy danych w jednej, atomowej transakcji
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-            // Zwracamy wynik sukcesu
-            return Result.Success();
+            catch (BusinessRuleValidationException ex)
+            {
+                results.Add(RowValidationResult.Failure(rowNumber, ex.Message));
+            }
+            rowNumber++;
         }
-        catch (BusinessRuleValidationException ex)
+
+        if (validRequests.Any())
         {
-            // Przechwytujemy wyjątek domenowy i zwracamy go jako elegancki błąd
-            return Result.Failure(new Error("Validation.Error", ex.Message));
+            foreach (var request in validRequests)
+            {
+                _requestRepository.Add(request);
+            }
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
+
+        return Result.Success(results);
     }
 }

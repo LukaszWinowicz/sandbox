@@ -1,0 +1,73 @@
+﻿@page "/mass-update/purchase-order/update-receipt-date"
+@using KERP.Application.Features.MassUpdates.PurchaseOrder.UpdateReceiptDate
+@using KERP.Application.Common.Abstractions
+@using KERP.Domain.Aggregates.PurchaseOrder
+@using KERP.Application.Common.Models
+@rendermode InteractiveServer
+
+@inject ICommandDispatcher CommandDispatcher
+
+<h3>Update Purchase Order Receipt Date</h3>
+<p>Enter or paste data to create requests for updating receipt dates.</p>
+
+<DynamicUpdateForm TLineModel="FormLineModel"
+                   ProcessRequestFunc="ProcessRows"
+                   TableHeaderTemplate="TableHeader"
+                   TableRowTemplate="TableRow">
+</DynamicUpdateForm>
+
+@code {
+    // Definicja modelu dla wiersza formularza
+    public class FormLineModel
+    {
+        public string? PurchaseOrder { get; set; }
+        public int LineNumber { get; set; }
+        public int Sequence { get; set; }
+        public DateTime NewReceiptDate { get; set; } = DateTime.Today;
+    }
+
+    // Definicja szablonu dla nagłówków tabeli
+    private RenderFragment TableHeader => __builder =>
+    {
+        <th>Purchase Order</th>
+        <th>Line</th>
+        <th>Sequence</th>
+        <th>New Receipt Date</th>
+    };
+
+    // Definicja szablonu dla wiersza tabeli
+    private RenderFragment<FormLineModel> TableRow => line => __builder =>
+    {
+        <tr>
+            <td><InputText @bind-Value="line.PurchaseOrder" class="form-control" /></td>
+            <td><InputNumber @bind-Value="line.LineNumber" class="form-control" /></td>
+            <td><InputNumber @bind-Value="line.Sequence" class="form-control" /></td>
+            <td><InputDate @bind-Value="line.NewReceiptDate" class="form-control" /></td>
+        </tr>
+    };
+
+    // Pole do przechowywania dodatkowych danych z UI
+    private ReceiptDateUpdateType _selectedDateType = ReceiptDateUpdateType.Confirmed;
+
+    // Funkcja przetwarzająca, przekazywana jako parametr
+    private async Task<Result<List<RowValidationResult>>> ProcessRows(List<FormLineModel> models)
+    {
+        var dtos = models
+            .Where(l => !string.IsNullOrWhiteSpace(l.PurchaseOrder))
+            .Select(l => new OrderLineDto(l.PurchaseOrder!, l.LineNumber, l.Sequence, l.NewReceiptDate))
+            .ToList();
+
+        if (!dtos.Any())
+        {
+            return Result.Failure<List<RowValidationResult>>(new Error("Input.Error", "No valid data to process."));
+        }
+
+        var command = new RequestPurchaseOrderReceiptDateChangeCommand
+        {
+            OrderLines = dtos,
+            DateType = _selectedDateType
+        };
+
+        return await CommandDispatcher.Send(command);
+    }
+}

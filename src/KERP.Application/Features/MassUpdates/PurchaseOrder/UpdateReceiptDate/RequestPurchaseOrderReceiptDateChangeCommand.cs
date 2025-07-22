@@ -6,7 +6,7 @@ namespace KERP.Application.Features.MassUpdates.PurchaseOrder.UpdateReceiptDate;
 
 
 // Zwracamy prosty Result, który sygnalizuje sukces lub porażkę z listą błędów.
-public sealed class RequestPurchaseOrderReceiptDateChangeCommand : ICommand<Result>
+public sealed class RequestPurchaseOrderReceiptDateChangeCommand : ICommand<Result<List<RowValidationResult>>>
 {
     // Lista linii zamówień do zaktualizowania
     public List<OrderLineDto> OrderLines { get; init; }
