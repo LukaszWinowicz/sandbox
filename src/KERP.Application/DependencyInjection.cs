@@ -18,35 +18,24 @@ public static class DependencyInjection
         services.AddScoped<ICommandDispatcher, CommandDispatcher>();
         services.AddScoped<IQueryDispatcher, QueryDispatcher>();
 
-        // Musimy teraz ręcznie zarejestrować każdy walidator i handler.
-        // Krok 1: Rejestrujemy konkretny walidator.
-        services.AddScoped<IValidator<RequestPurchaseOrderReceiptDateChangeCommand>, RequestPurchaseOrderReceiptDateChangeCommandValidator>();
+        // Używamy Scrutor do automatycznego znalezienia i zarejestrowania
+        // wszystkich handlerów i walidatorów z projektu Application.
+        services.Scan(selector => selector
+            .FromAssemblies(typeof(DependencyInjection).Assembly)
+            .AddClasses(c => c.AssignableTo(typeof(ICommandHandler<,>)))
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
+            .AddClasses(c => c.AssignableTo(typeof(IQueryHandler<,>)))
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
+            .AddClasses(c => c.AssignableTo(typeof(IValidator<>)))
+                .AsImplementedInterfaces()
+                .WithScopedLifetime());
 
-        // Krok 2: Rejestrujemy KONKRETNĄ klasę handlera.
-        services.AddScoped<RequestPurchaseOrderReceiptDateChangeCommandHandler>();
-
-        // Krok 3: Rejestrujemy INTERFEJS handlera, ręcznie budując łańcuch dekoratorów.
-        services.AddScoped<ICommandHandler<RequestPurchaseOrderReceiptDateChangeCommand, Result>>(provider =>
-        {
-            // Pobieramy "prawdziwy" handler, który będzie na końcu łańcucha.
-            var commandHandler = provider.GetRequiredService<RequestPurchaseOrderReceiptDateChangeCommandHandler>();
-
-            // Tworzymy pierwszy dekorator (Validation), owijając nim prawdziwy handler.
-            var validationBehavior = new ValidationBehavior<RequestPurchaseOrderReceiptDateChangeCommand, Result>(
-                commandHandler,
-                provider.GetRequiredService<IEnumerable<IValidator<RequestPurchaseOrderReceiptDateChangeCommand>>>());
-
-            // Tworzymy drugi dekorator (Logging), owijając nim poprzedni dekorator (Validation).
-            var loggingBehavior = new LoggingBehavior<RequestPurchaseOrderReceiptDateChangeCommand, Result>(
-                validationBehavior,
-                provider.GetRequiredService<ILogger<LoggingBehavior<RequestPurchaseOrderReceiptDateChangeCommand, Result>>>());
-
-            // Zwracamy najbardziej zewnętrzny dekorator.
-            return loggingBehavior;
-        });
-
-        // Query Handlery na razie rejestrujemy prosto, bo nie mają dekoratorów
-        services.AddScoped<IQueryHandler<GetChangeRequestsQuery, List<ChangeRequestDto>>, GetChangeRequestsQueryHandler>();
+        // Rejestrujemy nasze dekoratory. Kolejność ma znaczenie!
+        // LoggingBehavior będzie na zewnątrz, ValidationBehavior w środku.
+        services.Decorate(typeof(ICommandHandler<,>), typeof(LoggingBehavior<,>));
+        services.Decorate(typeof(ICommandHandler<,>), typeof(ValidationBehavior<,>));
 
         return services;
     }
