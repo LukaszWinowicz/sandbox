@@ -1,23 +1,5 @@
-using KERP.Application.Abstractions.CQRS;
-using KERP.Application.Abstractions.Dispatcher;
-using KERP.Application.Abstractions.Queries.Repositories;
-using KERP.Application.Common.Context;
-using KERP.Application.Features.MassUpdate.PurchaseOrder.Commands.RequestUpdateReceiptDate;
-using KERP.Application.Features.MassUpdate.PurchaseOrder.Queries.DTOs;
-using KERP.Application.Features.MassUpdate.PurchaseOrder.Query.GetReceiptDateUpdates;
-using KERP.Application.Features.MassUpdate.PurchaseOrder.Validation;
 using KERP.BlazorUI.Components;
-using KERP.Domain.Abstractions;
-using KERP.Domain.Abstractions.Repositories.MassUpdate.PurchaseOrder;
-using KERP.Domain.Abstractions.Results;
-using KERP.Infrastructure.Auth;
-using KERP.Infrastructure.Data;
-using KERP.Infrastructure.Data.Repositories.Common;
-using KERP.Infrastructure.Data.Repositories.MassUpdate.PurchaseOrder;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.FluentUI.AspNetCore.Components;
-using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,28 +7,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddFluentUIComponents();
-
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-    .AddEntityFrameworkStores<AppDbContext>();
-
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<ICurrentUserContext, CurrentUserContext>();
-builder.Services.AddScoped<ICommandDispatcher, CommandDispatcher>();
-builder.Services.AddScoped<IQueryDispatcher, QueryDispatcher>();
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<PurchaseOrderReceiptDateUpdateValidator>();
-
-// Repositories
-builder.Services.AddScoped<IReceiptDateUpdateRequestRepository, ReceiptDateUpdateRequestRepository>();
-builder.Services.AddScoped<IPurchaseOrderReceiptDateUpdateReadRepository, PurchaseOrderReceiptDateUpdateReadRepository>();
-builder.Services.AddScoped<IExternalPurchaseOrderRepository, ExternalPurchaseOrderRepository>();
-
-// CQRS Handlers
-builder.Services.AddScoped<ICommandHandler<RequestPurchaseOrderReceiptDateUpdateCommand, Result<bool>>, RequestPurchaseOrderReceiptDateUpdateCommandHandler>();
-builder.Services.AddScoped<IQueryHandler<GetPurchaseOrderReceiptDateUpdateRequestsQuery, List<PurchaseOrderReceiptDateUpdateRequestDto>>, GetPurchaseOrderReceiptDateUpdateRequestsQueryHandler>();
 
 var app = builder.Build();
 
