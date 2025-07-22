@@ -1,0 +1,128 @@
+﻿@page "/mass-update"
+@using KERP.Application.Features.MassUpdates.PurchaseOrder.UpdateReceiptDate
+@using KERP.Application.Common.Abstractions
+@using KERP.Domain.Aggregates.PurchaseOrder
+
+@inject ICommandDispatcher CommandDispatcher
+@rendermode InteractiveServer
+
+<h3>Masowa aktualizacja dat odbioru</h3>
+
+<p>@_feedbackMessage</p>
+
+@* Używamy EditForm do obsługi formularza i jego walidacji (w przyszłości) *@
+<EditForm Model="@_lines" OnValidSubmit="HandleSubmit">
+
+    <div class="mb-3">
+        <label for="dateType" class="form-label">Typ Daty:</label>
+        <InputSelect id="dateType" @bind-Value="_selectedDateType" class="form-select">
+            @foreach (var type in Enum.GetValues<ReceiptDateUpdateType>())
+            {
+                <option value="@type">@type</option>
+            }
+        </InputSelect>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nr Zamówienia (PO)</th>
+                <th>Nr Linii</th>
+                <th>Sekwencja</th>
+                <th>Nowa Data Odbioru</th>
+            </tr>
+        </thead>
+        <tbody>
+            @* Pętla do dynamicznego renderowania wierszy formularza *@
+            @foreach (var line in _lines)
+            {
+                <tr>
+                    <td><InputText @bind-Value="line.PurchaseOrder" class="form-control" /></td>
+                    <td><InputNumber @bind-Value="line.LineNumber" class="form-control" /></td>
+                    <td><InputNumber @bind-Value="line.Sequence" class="form-control" /></td>
+                    <td><InputDate @bind-Value="line.NewReceiptDate" class="form-control" /></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button type="button" class="btn btn-secondary me-2" @onclick="AddNewLine">Dodaj nowy wiersz</button>
+    <button type="submit" class="btn btn-primary">Wyślij żądania</button>
+
+</EditForm>
+
+
+@code {
+    // Klasa pomocnicza do bindowania danych w formularzu.
+    // Jest to nasz "view model" dla tej strony.
+    private class FormLineModel
+    {
+        public string? PurchaseOrder { get; set; }
+        public int LineNumber { get; set; }
+        public int Sequence { get; set; }
+        public DateTime NewReceiptDate { get; set; } = DateTime.Now;
+    }
+
+    // Lista przechowująca stan wierszy w formularzu.
+    private List<FormLineModel> _lines = new();
+
+    // Wybrany typ daty.
+    private ReceiptDateUpdateType _selectedDateType = ReceiptDateUpdateType.Confirmed;
+
+    // Komunikat zwrotny dla użytkownika.
+    private string? _feedbackMessage;
+
+    // Metoda cyklu życia Blazora - uruchamiana przy inicjalizacji komponentu.
+    protected override void OnInitialized()
+    {
+        // Dodajemy jeden pusty wiersz na start.
+        AddNewLine();
+    }
+
+    // Metoda dodająca nowy, pusty wiersz do formularza.
+    private void AddNewLine()
+    {
+        _lines.Add(new FormLineModel());
+    }
+
+    // Główna metoda obsługująca wysłanie formularza.
+    private async Task HandleSubmit()
+    {
+        _feedbackMessage = "Przetwarzanie...";
+
+        // Krok 1: Mapujemy nasz model formularza (`FormLineModel`) na DTO z warstwy Aplikacji.
+        var orderLineDtos = _lines
+            .Where(l => !string.IsNullOrWhiteSpace(l.PurchaseOrder)) // Ignorujemy puste wiersze
+            .Select(l => new OrderLineDto(l.PurchaseOrder!, l.LineNumber, l.Sequence, l.NewReceiptDate))
+            .ToList();
+
+        if (!orderLineDtos.Any())
+        {
+            _feedbackMessage = "Dodaj przynajmniej jedno żądanie.";
+            return;
+        }
+
+        // Krok 2: Tworzymy obiekt komendy.
+        var command = new RequestPurchaseOrderReceiptDateChangeCommand
+        {
+            OrderLines = orderLineDtos,
+            DateType = _selectedDateType
+        };
+
+        // Krok 3: Używamy dispatchera do wysłania komendy.
+        var result = await CommandDispatcher.Send(command);
+
+        // Krok 4: Obsługujemy wynik.
+        if (result.IsSuccess)
+        {
+            _feedbackMessage = "Sukces! Żądania zostały poprawnie wysłane i zapisane.";
+            // Czyścimy formularz i dodajemy nowy pusty wiersz.
+            _lines.Clear();
+            AddNewLine();
+        }
+        else
+        {
+            _feedbackMessage = $"Wystąpił błąd: {result.Error.Description}";
+        }
+    }
+}

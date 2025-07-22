@@ -1,6 +1,7 @@
 using KERP.BlazorUI.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 using KERP.Infrastructure;
+using KERP.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,9 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddFluentUIComponents();
 
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();

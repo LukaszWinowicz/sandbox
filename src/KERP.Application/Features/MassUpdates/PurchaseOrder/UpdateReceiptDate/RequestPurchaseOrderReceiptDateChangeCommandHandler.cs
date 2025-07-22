@@ -1,6 +1,7 @@
 ﻿using KERP.Application.Common.Abstractions;
 using KERP.Application.Common.Models;
 using KERP.Application.Services;
+using KERP.Application.Validation;
 using KERP.Domain.Aggregates.PurchaseOrder;
 using KERP.Domain.Exceptions;
 
@@ -15,15 +16,18 @@ public sealed class RequestPurchaseOrderReceiptDateChangeCommandHandler
     private readonly IPurchaseOrderReceiptDateChangeRequestRepository _requestRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentUserService _currentUserService; // Zakładamy istnienie serwisu do pobierania danych użytkownika
+    private readonly IValidator<RequestPurchaseOrderReceiptDateChangeCommand> _validator;
 
     public RequestPurchaseOrderReceiptDateChangeCommandHandler(
         IPurchaseOrderReceiptDateChangeRequestRepository requestRepository,
         IUnitOfWork unitOfWork,
-        ICurrentUserService currentUserService)
+        ICurrentUserService currentUserService,
+        IValidator<RequestPurchaseOrderReceiptDateChangeCommand> validator)
     {
         _requestRepository = requestRepository;
         _unitOfWork = unitOfWork;
         _currentUserService = currentUserService;
+        _validator = validator;
     }
 
     /// <summary>
@@ -31,6 +35,14 @@ public sealed class RequestPurchaseOrderReceiptDateChangeCommandHandler
     /// </summary>
     public async Task<Result> Handle(RequestPurchaseOrderReceiptDateChangeCommand command, CancellationToken cancellationToken)
     {
+        ValidationResult validationResult = _validator.Validate(command);
+        if (!validationResult.IsValid)
+        {
+            // Zwracamy pierwszy błąd walidacji dla uproszczenia
+            var firstError = validationResult.Errors.First();
+            return Result.Failure(new Error(firstError.PropertyName, firstError.ErrorMessage));
+        }
+
         try
         {
             // Pobieramy ID użytkownika i fabryki z serwisu kontekstowego

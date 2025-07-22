@@ -1,7 +1,9 @@
 ﻿using KERP.Application.Common.Abstractions;
+using KERP.Application.Services;
 using KERP.Domain.Aggregates.PurchaseOrder;
 using KERP.Infrastructure.Persistence;
 using KERP.Infrastructure.Persistence.Configurations;
+using KERP.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,6 +22,8 @@ public static class DependencyInjection
         // Oznacza to, że jeden obiekt będzie używany w ramach jednego żądania HTTP.
         services.AddScoped<IPurchaseOrderReceiptDateChangeRequestRepository, PurchaseOrderReceiptDateChangeRequestRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
 
         return services;
     }
