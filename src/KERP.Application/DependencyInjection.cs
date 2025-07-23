@@ -1,12 +1,8 @@
 ﻿using KERP.Application.Common.Abstractions;
 using KERP.Application.Common.Behaviors;
 using KERP.Application.Common.Dispatchers;
-using KERP.Application.Common.Models;
-using KERP.Application.Features.MassUpdates.PurchaseOrder.GetChangeRequests;
-using KERP.Application.Features.MassUpdates.PurchaseOrder.UpdateReceiptDate;
 using KERP.Application.Validation;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace KERP.Application;
 
@@ -36,6 +32,7 @@ public static class DependencyInjection
         // LoggingBehavior będzie na zewnątrz, ValidationBehavior w środku.
         services.Decorate(typeof(ICommandHandler<,>), typeof(LoggingBehavior<,>));
         services.Decorate(typeof(ICommandHandler<,>), typeof(ValidationBehavior<,>));
+        services.Decorate(typeof(ICommandHandler<,>), typeof(ExceptionHandlingBehavior<,>));
 
         return services;
     }

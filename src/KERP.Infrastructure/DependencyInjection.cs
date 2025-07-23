@@ -2,7 +2,7 @@
 using KERP.Application.Services;
 using KERP.Domain.Aggregates.PurchaseOrder;
 using KERP.Infrastructure.Persistence;
-using KERP.Infrastructure.Persistence.Configurations;
+using KERP.Infrastructure.Persistence.Repositories;
 using KERP.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

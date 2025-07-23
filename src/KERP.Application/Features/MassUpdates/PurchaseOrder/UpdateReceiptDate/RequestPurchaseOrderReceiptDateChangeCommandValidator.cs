@@ -9,30 +9,47 @@ public class RequestPurchaseOrderReceiptDateChangeCommandValidator
     {
         var errors = new List<ValidationError>();
 
-        if (command.OrderLines is null || !command.OrderLines.Any())
-        {
-            errors.Add(new ValidationError(
-                nameof(command.OrderLines),
-                "Lista linii zamówień nie może być pusta."));
-
-            // Jeśli lista jest pusta, nie ma sensu walidować dalej
-            return new ValidationResult(errors);
-        }
-
         foreach (var line in command.OrderLines)
         {
+            // Purchase Order
             if (string.IsNullOrWhiteSpace(line.PurchaseOrder))
             {
                 errors.Add(new ValidationError(
                     nameof(line.PurchaseOrder),
-                    "Numer zamówienia (PurchaseOrder) jest wymagany dla każdej linii."));
+                    "Numer zamówienia (PurchaseOrder) jest wymagany."));
             }
 
-            if (line.LineNumber <= 0)
+            if (line.PurchaseOrder.Length != 10)
+            {
+                errors.Add(new ValidationError(
+                    nameof(line.PurchaseOrder),
+                    "Numer zamówienia (PurchaseOrder) musi mieć dokładnie 10 znaków."));
+            }
+
+
+            // LineNumber
+            if (line.LineNumber.CompareTo(10) < 0)
             {
                 errors.Add(new ValidationError(
                     nameof(line.LineNumber),
-                    "Numer linii (LineNumber) musi być większy od zera."));
+                    "Line Number zamówienia musi być większy lub równy 10."));
+            }
+
+            // Sequence
+            if (line.LineNumber.CompareTo(1) < 0)
+            {
+                errors.Add(new ValidationError(
+                    nameof(line.Sequence),
+                    "Line Number zamówienia musi być większy lub równy 1."));
+            }
+
+
+            // ReceiptDate  
+            if (line.NewReceiptDate.Date < DateTime.Today)
+            {
+                errors.Add(new ValidationError(
+                    nameof(line.NewReceiptDate),
+                    "Receipt Date musi być z przyszłości."));
             }
         }
 

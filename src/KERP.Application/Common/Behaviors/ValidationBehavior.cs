@@ -1,6 +1,8 @@
 ﻿using KERP.Application.Common.Abstractions;
 using KERP.Application.Common.Models;
 using KERP.Application.Validation;
+using System.Reflection;
+
 namespace KERP.Application.Common.Behaviors;
 
 public class ValidationBehavior<TCommand, TResult> : ICommandHandler<TCommand, TResult>
@@ -35,19 +37,25 @@ public class ValidationBehavior<TCommand, TResult> : ICommandHandler<TCommand, T
             var firstError = errors.First();
             var error = new Error(firstError.PropertyName, firstError.ErrorMessage);
 
-            // Sprawdzamy, czy oczekiwany rezultat to prosty, niegeneryczny Result
             if (typeof(TResult) == typeof(Result))
             {
-                // Jeśli tak, tworzymy go i rzutujemy.
                 return (Result.Failure(error) as TResult)!;
             }
 
-            // Jeśli nie, to znaczy, że jest to generyczny Result<TValue> i używamy refleksji
+            // --- POCZĄTEK POPRAWIONEJ LOGIKI ---
             var resultType = typeof(TResult).GetGenericArguments()[0];
-            var failureResult = typeof(Result)
-                .GetMethod(nameof(Result.Failure), new[] { typeof(Error) })!
-                .MakeGenericMethod(resultType)
-                .Invoke(null, new object[] { error });
+
+            // Znajdź metodę generyczną o nazwie "Failure"
+            var failureMethod = typeof(Result)
+                .GetMethods(BindingFlags.Public | BindingFlags.Static)
+                .First(m => m.Name == nameof(Result.Failure) && m.IsGenericMethodDefinition);
+
+            // Stwórz konkretną metodę generyczną (np. Failure<List<RowValidationResult>>)
+            var genericFailureMethod = failureMethod.MakeGenericMethod(resultType);
+
+            // Wywołaj ją
+            var failureResult = genericFailureMethod.Invoke(null, new object[] { error });
+            // --- KONIEC POPRAWIONEJ LOGIKI ---
 
             return (TResult)failureResult!;
         }
