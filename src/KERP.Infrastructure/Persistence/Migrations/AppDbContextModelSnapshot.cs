@@ -22,28 +22,6 @@ namespace KERP.Infrastructure.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("KERP.Domain.Aggregates.Common.Factory", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("FactoryId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FactoryId")
-                        .IsUnique();
-
-                    b.ToTable("Factories", (string)null);
-                });
-
             modelBuilder.Entity("KERP.Domain.Aggregates.PurchaseOrder.PurchaseOrderReceiptDateChangeRequest", b =>
                 {
                     b.Property<int>("Id")

@@ -1,7 +1,6 @@
 ﻿using KERP.Application.Common.Abstractions;
 using KERP.Application.Common.Models;
-using KERP.Application.Common.Validation;
-
+using KERP.Application.Validation;
 namespace KERP.Application.Common.Behaviors;
 
 public class ValidationBehavior<TCommand, TResult> : ICommandHandler<TCommand, TResult>

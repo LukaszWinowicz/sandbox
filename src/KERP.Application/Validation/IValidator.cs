@@ -1,4 +1,4 @@
-﻿namespace KERP.Application.Common.Validation;
+﻿namespace KERP.Application.Validation;
 
 public interface IValidator<T>
 {

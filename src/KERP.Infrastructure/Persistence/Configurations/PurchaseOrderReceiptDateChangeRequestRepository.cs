@@ -1,6 +1,6 @@
 ﻿using KERP.Domain.Aggregates.PurchaseOrder;
 
-namespace KERP.Infrastructure.Persistence.Repositories;
+namespace KERP.Infrastructure.Persistence.Configurations;
 
 /// <summary>
 /// Konkretna implementacja repozytorium dla agregatu PurchaseOrderReceiptDateChangeRequest.

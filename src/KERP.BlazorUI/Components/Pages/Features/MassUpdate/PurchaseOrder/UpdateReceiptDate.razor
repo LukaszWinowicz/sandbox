@@ -1,9 +1,8 @@
 ﻿@page "/mass-update/purchase-order/update-receipt-date"
-@using KERP.Application.Common.Abstractions
-@using KERP.Application.Common.Models
-@using KERP.Application.Common.Validation
 @using KERP.Application.Features.MassUpdates.PurchaseOrder.UpdateReceiptDate
+@using KERP.Application.Common.Abstractions
 @using KERP.Domain.Aggregates.PurchaseOrder
+@using KERP.Application.Common.Models
 @rendermode InteractiveServer
 
 @inject ICommandDispatcher CommandDispatcher
@@ -63,7 +62,7 @@
             if (string.IsNullOrWhiteSpace(model.PurchaseOrder))
             {
                 // Jeśli wiersz jest pusty, dodajemy błąd walidacji i przechodzimy dalej
-                validationResults.Add(RowValidationResult.WithErrors(rowNumber, null));
+                validationResults.Add(RowValidationResult.Failure(rowNumber, "Purchase Order number cannot be empty."));
             }
             else
             {
@@ -93,7 +92,7 @@
             else
             {
                 // Jeśli cały handler zwrócił błąd, dodajemy go jako błąd ogólny
-                validationResults.Add(RowValidationResult.WithErrors(0, null));
+                validationResults.Add(RowValidationResult.Failure(0, handlerResult.Error.Description));
             }
         }
 
