@@ -2,11 +2,13 @@
 using KERP.Application.Services;
 using KERP.Domain.Aggregates.PurchaseOrder;
 using KERP.Infrastructure.Persistence;
-using KERP.Infrastructure.Persistence.Configurations;
+using KERP.Infrastructure.Persistence.Data;
+using KERP.Infrastructure.Persistence.Repositories;
 using KERP.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace KERP.Infrastructure;
 

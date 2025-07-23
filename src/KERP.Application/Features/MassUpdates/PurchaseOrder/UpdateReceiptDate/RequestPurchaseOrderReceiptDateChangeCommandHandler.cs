@@ -1,5 +1,6 @@
 ﻿using KERP.Application.Common.Abstractions;
 using KERP.Application.Common.Models;
+using KERP.Application.Common.Validation;
 using KERP.Application.Services;
 using KERP.Domain.Aggregates.PurchaseOrder;
 using KERP.Domain.Exceptions;
@@ -56,7 +57,7 @@ public sealed class RequestPurchaseOrderReceiptDateChangeCommandHandler
             }
             catch (BusinessRuleValidationException ex)
             {
-                results.Add(RowValidationResult.Failure(rowNumber, ex.Message));
+                results.Add(RowValidationResult.WithErrors(rowNumber, null));
             }
             rowNumber++;
         }

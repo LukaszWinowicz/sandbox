@@ -1,5 +1,6 @@
 ﻿using KERP.Application.Common.Abstractions;
 using KERP.Application.Common.Models;
+using KERP.Application.Common.Validation;
 using KERP.Domain.Aggregates.PurchaseOrder;
 
 namespace KERP.Application.Features.MassUpdates.PurchaseOrder.UpdateReceiptDate;

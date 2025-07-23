@@ -1,4 +1,4 @@
-﻿namespace KERP.Application.Validation;
+﻿namespace KERP.Application.Common.Validation;
 
 public class ValidationResult
 {

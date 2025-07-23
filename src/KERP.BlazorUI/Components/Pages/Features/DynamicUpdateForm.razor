@@ -1,5 +1,6 @@
-﻿@using KERP.Application.Common.Models
-@using System.ComponentModel.DataAnnotations
+﻿@using System.ComponentModel.DataAnnotations
+@using KERP.Application.Common.Models
+@using KERP.Application.Common.Validation
 
 @typeparam TLineModel where TLineModel : class, new()
 
@@ -50,7 +51,7 @@
                 <div class="mt-2">
                     <strong>Row @result.RowNumber:</strong>
                     <ul>
-                        @foreach (var error in result.Errors)
+                        @foreach (var error in result.FieldErrors)
                         {
                             <li>@error</li>
                         }
@@ -111,7 +112,7 @@
             // (np. problem z połączeniem, błąd w dispatcherze)
             _processingResults = new List<RowValidationResult>
             {
-                RowValidationResult.Failure(1, $"Critical Error: {result.Error.Description}")
+                RowValidationResult.WithErrors(1, null)
             };
             _validationHasRun = true;
         }

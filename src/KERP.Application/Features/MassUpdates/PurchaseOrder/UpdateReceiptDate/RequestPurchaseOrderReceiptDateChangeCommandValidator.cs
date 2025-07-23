@@ -1,4 +1,4 @@
-﻿using KERP.Application.Validation;
+﻿using KERP.Application.Common.Validation;
 
 namespace KERP.Application.Features.MassUpdates.PurchaseOrder.UpdateReceiptDate;
 
