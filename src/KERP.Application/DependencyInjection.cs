@@ -31,7 +31,7 @@ public static class DependencyInjection
         // Rejestrujemy nasze dekoratory. Kolejność ma znaczenie!
         // LoggingBehavior będzie na zewnątrz, ValidationBehavior w środku.
         services.Decorate(typeof(ICommandHandler<,>), typeof(LoggingBehavior<,>));
-        services.Decorate(typeof(ICommandHandler<,>), typeof(ValidationBehavior<,>));
+        //services.Decorate(typeof(ICommandHandler<,>), typeof(ValidationBehavior<,>));
         services.Decorate(typeof(ICommandHandler<,>), typeof(ExceptionHandlingBehavior<,>));
 
         return services;

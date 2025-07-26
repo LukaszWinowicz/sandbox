@@ -111,7 +111,7 @@
             // (np. problem z połączeniem, błąd w dispatcherze)
             _processingResults = new List<RowValidationResult>
             {
-                RowValidationResult.Failure(1, $"Critical Error: {result.Error.Description}")
+                RowValidationResult.Failure(1, $"Critical Error: {result.Value}")
             };
             _validationHasRun = true;
         }

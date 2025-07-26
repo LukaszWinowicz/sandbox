@@ -70,6 +70,6 @@ public sealed class RequestPurchaseOrderReceiptDateChangeCommandHandler
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
-        return Result.Success(results);
+        return Result<List<RowValidationResult>>.Success(results);
     }
 }

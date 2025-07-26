@@ -17,7 +17,7 @@ public class Result
     /// <summary>
     /// Tworzy wynik operacji zakończonej sukcesem.
     /// </summary>
-    public static Result Success() => new Result(true, Array.Empty<Error>());
+    public static Result Success(List<RowValidationResult> results) => new Result(true, Array.Empty<Error>());
 
     /// <summary>
     /// Tworzy wynik operacji zakończonej niepowodzeniem.

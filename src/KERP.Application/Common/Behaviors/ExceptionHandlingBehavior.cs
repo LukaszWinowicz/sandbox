@@ -2,6 +2,7 @@
 using KERP.Application.Common.Models;
 using KERP.Domain.Exceptions;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 
 namespace KERP.Application.Common.Behaviors;
 
@@ -69,6 +70,7 @@ public class ExceptionHandlingBehavior<TCommand, TResult> : ICommandHandler<TCom
         }
 
         // Jeśli to prosty, niegeneryczny Result
-        return (Result.Failure(error) as TResult)!;
+        //return (Result.Failure(error) as TResult)!;
+        return Result.Failure(new List<Error> { error }) as TResult;
     }
 }

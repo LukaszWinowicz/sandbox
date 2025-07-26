@@ -92,12 +92,14 @@
             else
             {
                 // Jeśli cały handler zwrócił błąd, dodajemy go jako błąd ogólny
-                validationResults.Add(RowValidationResult.Failure(0, handlerResult.Error.Description));
+                validationResults.Add(RowValidationResult.Failure(0, handlerResult.Value.ToString()));
             }
         }
 
         // Krok 3: Zawsze zwracamy sukces z listą wyników
-        return Result.Success(validationResults);
+        // return Result.Success(validationResults);
+        return Result<List<RowValidationResult>>.Success(validationResults);
+
     }
 
 }

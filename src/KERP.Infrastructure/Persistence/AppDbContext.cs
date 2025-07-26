@@ -1,5 +1,6 @@
 ﻿using KERP.Application.Common.Abstractions;
 using KERP.Domain.Aggregates.PurchaseOrder;
+using KERP.Domain.Aggregates.TempPurchaseOrder;
 using KERP.Domain.Aggregates.User;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>, IAppDbContext
     }
 
     public DbSet<PurchaseOrderReceiptDateChangeRequest> PurchaseOrderReceiptDateChangeRequests { get; set; }
+    public DbSet<ExternalPurchaseOrder> PurchaseOrders { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
