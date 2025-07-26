@@ -1,12 +1,9 @@
 ﻿namespace KERP.Application.Validation;
 
-public class ValidationResult
+/// <summary>
+/// Reprezentuje rezultat walidacji wejściowej.
+/// </summary>
+public class ValidationResult(IReadOnlyCollection<ValidationError> Errors)
 {
-    public bool IsValid => !Errors.Any();
-    public List<ValidationError> Errors { get; }
-
-    public ValidationResult(List<ValidationError> errors)
-    {
-        Errors = errors;
-    }
+    public static ValidationResult Success() => new ValidationResult(Array.Empty<ValidationError>());
 }
