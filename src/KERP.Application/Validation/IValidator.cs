@@ -1,12 +1,12 @@
-﻿using System.Windows.Input;
+﻿using KERP.Application.Common.Abstractions;
 
 namespace KERP.Application.Validation;
 
 /// <summary>
 /// Definiuje walidatora dla komendy.
 /// </summary>
-/// <typeparam name="TComman">Typ komendy do walidacji.</typeparam>
-public interface IValidator<in TComman> where TComman : ICommand
+/// <typeparam name="TCommand">Typ komendy do walidacji.</typeparam>
+public interface IValidator<in TCommand> where TCommand : ICommand
 {
-    ValidationResult Validate(TComman comman);
+    ValidationResult Validate(TCommand comman);
 }

@@ -9,4 +9,5 @@ public interface ICommand { }
 /// Interfejs-znacznik dla komendy, która zwraca wartość.
 /// </summary>
 /// <typeparam name="TResult">Typ rezultatu.</typeparam>
-public interface ICommand<out TResult> { }
+public interface ICommand<out TResult> : ICommand { }
+
